@@ -11,7 +11,6 @@ branches:
     - /ci-.*/
 
 environment:
-  PYTHONWARNINGS: ignore::DeprecationWarning
   GRAPHVIZ_VERSION: 2.38
   GRAPHVIZ_INSTALLER: graphviz-%GRAPHVIZ_VERSION%.msi
   PATH: '%APPDATA%\Python\%PYTHON%\Scripts;C:\%PYTHON%%ARCH%\Scripts;C:\%PYTHON%\Scripts;C:\Program Files (x86)\Graphviz%GRAPHVIZ_VERSION%\bin;%PATH%'
