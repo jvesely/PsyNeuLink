@@ -19,7 +19,6 @@ env:
     - PYTHON=3.7.6
     - PYTHON=3.6.8
   global:
-    - PYTHONWARNINGS="ignore::DeprecationWarning"
     - PIP_PROGRESS_BAR="off"
     - COVERALLS_PARALLEL=true
 
