@@ -17,6 +17,7 @@ import ctypes
 import numpy as np
 from inspect import isgenerator
 import os
+import platform
 import sys
 
 
@@ -458,7 +459,19 @@ class CompExecution(CUDAExecution):
         return c_input(*_tupleize(input_data))
 
     def freeze_values(self):
-        self.__frozen_vals = copy.deepcopy(self._data_struct)
+        # FIXME: pypy3 doesn't work with deepcopy
+        # https://bitbucket.org/pypy/pypy/issues/3022/pypy3-fails-to-deepcopy-nested-ctype
+        #     def __newobj__(cls, *args):
+        #>       return cls.__new__(cls, *args)
+        #E       TypeError: object.__new__(StructureInstanceAutoFree) is not safe, use StructureInstanceAutoFree.__new__()
+
+        if platform.python_implementation() == 'PyPy':
+            data_ptr = ctypes.addressof(self._data_struct)
+            data_size = ctypes.sizeof(self._data_struct)
+            self.__frozen_vals = type(self._data_struct).from_buffer(
+                ctypes.string_at(data_ptr, data_size))
+        else:
+            self.__frozen_vals = copy.deepcopy(self._data_struct)
 
     def execute_node(self, node, inputs=None, context=None):
         # We need to reconstruct the input dictionary here if it was not provided.
