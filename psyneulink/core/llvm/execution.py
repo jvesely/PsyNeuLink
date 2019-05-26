@@ -14,6 +14,7 @@ import ctypes
 import numpy as np
 from inspect import isgenerator
 import os
+import platform
 import sys
 import time
 from typing import Callable, Optional
@@ -63,8 +64,16 @@ class Execution:
             struct = struct_ty(*initializer)
             struct_end = time.time()
 
+
+            # Pypy doesn't handle ctypes buffer interface properly, create string buffer instead
+            if platform.python_implementation() == 'PyPy':
+                buffer = ctypes.string_at(ctypes.addressof(struct), ctypes.sizeof(struct))
+            else:
+                buffer = struct
+
             # numpy "frombuffer" creates a shared memory view of the provided buffer
-            numpy_struct = np.frombuffer(struct, dtype=self._bin_func.np_arg_dtypes[arg], count=1)
+            # create a copy so the ctypes struct can be freed
+            numpy_struct = np.frombuffer(buffer, dtype=self._bin_func.np_arg_dtypes[arg], count=1).copy()
 
             assert numpy_struct.nbytes == ctypes.sizeof(struct), \
                 "Size mismatch ({}), numpy: {} vs. ctypes:{}".format(name, numpy_struct.nbytes, ctypes.sizeof(struct))
