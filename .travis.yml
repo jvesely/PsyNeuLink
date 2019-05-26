@@ -19,8 +19,33 @@ arch:
 # https://github.com/grpc/grpc/issues/23797
 #  - s390x
 
+stages:
+  - precache
+  - test
+
+jobs:
+  include:
+    - script: true
+      after_script: true
+      stage: precache
+      env: PYTHON=pypy3
+      arch: amd64
+    - script: true
+      after_script: true
+      before_cache: true
+      stage: precache
+      env: PYTHON=pypy3
+      arch: ppc64le
+    - script: true
+      after_script: true
+      before_cache: true
+      stage: precache
+      env: PYTHON=pypy3
+      arch: arm64
+
 env:
   jobs:
+    - PYTHON=pypy3
     - PYTHON=3.8
     - PYTHON=3.7
     - PYTHON=3.6
@@ -43,8 +68,7 @@ addons:
 before_install:
   - lscpu
   - |
-    # Install venv on Linux using Ubuntu distributed python
-    if [ "$TRAVIS_CPU_ARCH" != "amd64" ]; then
+    if [ "$TRAVIS_CPU_ARCH" != "amd64" -o "$PYTHON" == "pypy3" ]; then
       # There are a lot fewer wheels distributed for non-x86 architectures.
       # We end up building a lot of them locally, install dev packages
       export EXTRA_PKGS="build-essential gfortran llvm-10-dev libfreetype6-dev libjpeg-dev liblapack-dev zlib1g-dev"
@@ -58,10 +82,21 @@ before_install:
     # explicitly install numpy (https://github.com/pypa/pip/issues/9239)
     export EXTRA_PIP="cython $(grep numpy requirements.txt)"
 
-  # distutils is only needed for python3.8
-  # https://bugs.launchpad.net/ubuntu/+source/python3.8/+bug/1851684
-  -  sudo apt-get install -y python$PYTHON-dev python$PYTHON-venv python$PYTHON-distutils $EXTRA_PKGS
-  -  python$PYTHON -m venv $HOME/venv
+  - |
+    # Install venv on Linux using Ubuntu distributed python
+    if [ "$PYTHON" == "pypy3" ]; then
+      # Install pypy3 and build dep packages
+      sudo apt-add-repository -y ppa:pypy/ppa
+      sudo apt-get update
+      sudo apt-get install -y pypy3-dev python-pip-whl $EXTRA_PKGS
+
+      pypy3 -m venv $HOME/venv
+    else
+      # distutils is only needed for python3.8
+      # https://bugs.launchpad.net/ubuntu/+source/python3.8/+bug/1851684
+      sudo apt-get install -y python$PYTHON-dev python$PYTHON-venv python$PYTHON-distutils $EXTRA_PKGS
+      python$PYTHON -m venv $HOME/venv
+    fi
 
   # Provide fake xdg-open
   - echo "#!/bin/sh" > $HOME/venv/bin/xdg-open
