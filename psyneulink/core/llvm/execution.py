@@ -122,7 +122,8 @@ class CUDAExecution(Execution):
     def upload_ctype(self, data, name='other'):
         self._uploaded_bytes[name] += ctypes.sizeof(data)
         assert ctypes.sizeof(data) != 0
-        return jit_engine.pycuda.driver.to_device(bytearray(data))
+        buffer = ctypes.string_at(ctypes.addressof(data), ctypes.sizeof(data))
+        return jit_engine.pycuda.driver.to_device(buffer)
 
     def download_ctype(self, source, ty, name='other'):
         self._downloaded_bytes[name] += ctypes.sizeof(ty)
