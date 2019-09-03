@@ -97,7 +97,7 @@ class CUDAExecution:
         # Return dummy buffer. CUDA does not handle 0 size well.
         if ctypes.sizeof(data) == 0:
             return bytearray(b'aaaa')
-        return bytearray(data)
+        return ctypes.string_at(ctypes.addressof(data), ctypes.sizeof(data))
 
     def upload_ctype(self, data, name='other'):
         self._uploaded_bytes[name] += ctypes.sizeof(data)
