@@ -157,6 +157,11 @@ def cleanup():
     LLVMBinaryFunction.get.cache_clear()
     LLVMBinaryFunction.from_obj.cache_clear()
     init_builtins()
+    import gc
+    gc.collect()
+    c = list(LLVMBuilderContext.get_global()._cache.keys())
+    LLVMBuilderContext.get_global()._cache.clear()
+    assert len(c) == 0, c
 
 
 init_builtins()
