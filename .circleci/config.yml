@@ -1,0 +1,75 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+version: 2
+jobs:
+  build:
+    branches:
+     only:
+       - master
+       - devel
+       - circle
+       - /devel-.*/
+       - /circle-.*/
+       - /ci-.*/
+
+    docker:
+      # specify the version you desire here
+      # CircleCI maintains a library of pre-built images
+      - image: circleci/python:3.6.9
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - run: sudo apt-get update
+      - run: sudo apt-get install graphviz
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - pip-cache
+
+      - run:
+          name: install python dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -U pip
+            pip install coveralls
+            pip install git+https://github.com/benureau/leabra.git@master
+            pip install -e .[dev]
+          environment:
+            PIP_PROGRESS_BAR: 'off'
+
+      - save_cache:
+          paths:
+            - ~/.cache/pip
+          key: pip-cache
+
+      # run tests!
+      - run:
+          name: run pytest
+          command: |
+            echo "#!/bin/sh" > venv/bin/xdg-open
+            chmod +x venv/bin/xdg-open
+            . venv/bin/activate
+            python -m pytest -n4 --junitxml=test-reports/junit.xml --cov=psyneulink
+          environment:
+            PYTHONWARNINGS: 'ignore::DeprecationWarning'
+
+      - store_test_results:
+          path: test-reports
+
+      # upload coverage info
+      - run:
+          name: coveralls
+          command: |
+            . venv/bin/activate
+            coveralls
+
+      - store_artifacts:
+          path: test-reports
+#          destination: test-reports
