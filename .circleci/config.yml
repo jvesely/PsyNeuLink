@@ -14,10 +14,9 @@ jobs:
        - /circle-.*/
        - /ci-.*/
 
-    docker:
-      # specify the version you desire here
-      # CircleCI maintains a library of pre-built images
-      - image: circleci/python:3.6.9
+    gpu:
+      - image: ubuntu-1604:201903-01
+    resource_class: 1gpu
 
     working_directory: ~/repo
 
@@ -38,7 +37,7 @@ jobs:
             python3 -m venv venv
             . venv/bin/activate
             pip install -U pip
-            pip install coveralls
+            pip install pycuda
             pip install git+https://github.com/benureau/leabra.git@master
             pip install -e .[dev]
           environment:
@@ -56,8 +55,9 @@ jobs:
             echo "#!/bin/sh" > venv/bin/xdg-open
             chmod +x venv/bin/xdg-open
             . venv/bin/activate
-            python -m pytest -n4 --junitxml=test-reports/junit.xml --cov=psyneulink
+            python -m pytest -m cuda -n4
           environment:
+            PNL_LLVM_DEBUG: 'cuda'
             PYTHONWARNINGS: 'ignore::DeprecationWarning'
 
       - store_test_results:
