@@ -32,6 +32,13 @@ marks_default_skip = [mark_stress_tests]
 def pytest_addoption(parser):
     parser.addoption('--{0}'.format(mark_stress_tests), action='store_true', default=False, help='Run {0} tests (long)'.format(mark_stress_tests))
 
+# Automatically add numpy as np and psyneulink as pnl to all doctests
+@pytest.fixture(autouse=True)
+def add_imports(doctest_namespace):
+    doctest_namespace["np"] = np
+    import psyneulink
+    doctest_namespace["pnl"] = psyneulink
+
 def pytest_runtest_setup(item):
     for m in marks_default_skip:
         if m in item.keywords and not item.config.getvalue(m):
