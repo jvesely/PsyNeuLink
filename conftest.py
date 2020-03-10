@@ -45,6 +45,13 @@ def pytest_sessionstart(session):
     else:
         assert False, "Unsupported precision parameter: {}".format(precision)
 
+# Automatically add numpy as np and psyneulink as pnl to all doctests
+@pytest.fixture(autouse=True)
+def add_imports(doctest_namespace):
+    doctest_namespace["np"] = np
+    import psyneulink
+    doctest_namespace["pnl"] = psyneulink
+
 def pytest_runtest_setup(item):
     # Check that all 'cuda' tests are also marked 'llvm'
     assert 'llvm' in item.keywords or 'cuda' not in item.keywords
