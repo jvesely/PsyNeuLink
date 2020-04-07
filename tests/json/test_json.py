@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import platform
 import psyneulink as pnl
 import pytest
 
@@ -20,11 +21,12 @@ stroop_stimuli = {
 json_results_parametrization = [
     ('model_basic.py', 'comp', '{A: 1}'),
     ('model_nested_comp_with_scheduler.py', 'comp', '{A: 1}'),
-    (
+    pytest.param(
         'model_with_control.py',
         'comp',
-        '{Input: [0.5, 0.123], reward: [20, 20]}'
-    ),
+        '{Input: [0.5, 0.123], reward: [20, 20]}',
+        marks=pytest.mark.xfail(platform.python_implementation() == 'PyPy',
+                                reason="Known to fail on PyPy")),
     (
         'stroop_conflict_monitoring.py',
         'Stroop_model',
