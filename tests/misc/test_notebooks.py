@@ -1,5 +1,6 @@
 """Test that all notebooks in the tutorial run without error"""
 import os
+import platform
 import pytest
 import subprocess
 import sys
@@ -33,6 +34,7 @@ def _find_ipynbs():
 
 
 @pytest.mark.parametrize("filepath", _find_ipynbs(), ids=os.path.basename)
+@pytest.mark.skipif(platform.python_implementation() == 'PyPy' and platform.machine() != 'x86_64', reason="jupter crashes on PyPy and !x86")
 def test_ipynb(filepath):
     old_python_path = os.getenv("PYTHONPATH")
     # pytest populates sys.path to access the tested module
