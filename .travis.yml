@@ -111,7 +111,7 @@ before_install:
   - |
     # Install undeclared dependencies
     if [ "x$EXTRA_PIP" != "x" ]; then
-      pip install $EXTRA_PIP
+      travis_wait pip install $EXTRA_PIP
     fi
 
 before_cache:
@@ -129,8 +129,7 @@ before_cache:
 
 install:
   - pip install coveralls
-  - pip install -e .[dev]
-
+  - travis_wait 90 pip install -e .[dev]
 
 script:
   - if [ "x$RUN_COV" != "x" ] ; then echo "Running with coverage"; export COV_ARGS="--cov=psyneulink"; else echo "Running without coverage"; export COV_ARGS=""; fi
@@ -145,6 +144,7 @@ script:
   # make sure we don't run out of memory.
   - if [ "$TRAVIS_CPU_ARCH" == "ppc64le" ] ; then export MAX_PROCESSES="--maxprocesses=6"; fi
   - if [ "$TRAVIS_CPU_ARCH" == "arm64" ] ; then export MAX_PROCESSES="--maxprocesses=16"; fi
+#  - if [ "$PYTHON" == "pypy3" ] ; then export MAX_PROCESSES="--maxprocesses=1"; fi
   - pytest -n `nproc` -p no:logging --verbosity=0 $COV_ARGS $MAX_PROCESSES
 
 after_script:
