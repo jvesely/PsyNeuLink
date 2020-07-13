@@ -27,6 +27,7 @@ import warnings
 import sys
 # from fractions import Fraction
 import itertools
+import numba
 import numpy as np
 import typecheck as tc
 from numbers import Number
@@ -461,6 +462,7 @@ class OptimizationFunction(Function_Base):
             if SEARCH_SPACE in self._unspecified_args:
                 del self._unspecified_args[self._unspecified_args.index(SEARCH_SPACE)]
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -995,6 +997,7 @@ class GradientOptimization(OptimizationFunction):
 
         self.bounds = bounds
 
+#    @numba.jit # does not work
     def _function(self,
                  variable=None,
                  context=None,
@@ -1662,6 +1665,7 @@ class GridSearch(OptimizationFunction):
 
         return ct_opt_sample, ct_opt_value, ct_alloc, ct_values
 
+#    @numba.jit # does not work with import MPI
     def _function(self,
                  variable=None,
                  context=None,
@@ -2069,6 +2073,7 @@ class GaussianProcess(OptimizationFunction):
         #                                             "must be less than or equal to its second element".
         #                                             format(repr(SEARCH_SPACE), self.__class__.__name__, i))
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,

@@ -5,6 +5,7 @@ graphviz
 llvmlite
 matplotlib
 networkx==1.11
+numba
 numpy
 pillow
 toposort==1.4

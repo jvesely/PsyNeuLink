@@ -33,6 +33,7 @@ when the CombinationFunction is used as the function of an InputPort or OutputPo
 
 import numbers
 
+import numba
 import numpy as np
 import typecheck as tc
 
@@ -245,6 +246,7 @@ class Concatenate(CombinationFunction):  # -------------------------------------
             if not isinstance(offset, numbers.Number):
                 raise FunctionError("{} param of {} ({}) must be a scalar".format(OFFSET, self.name, offset))
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -511,6 +513,7 @@ class Rearrange(CombinationFunction):  # ---------------------------------------
             indices.extend(item)
         return indices
 
+#    @numba.jit # does not work: crash ???
     def _function(self,
                  variable=None,
                  context=None,
@@ -793,6 +796,7 @@ class Reduce(CombinationFunction):  # ------------------------------------------
             if not isinstance(offset, numbers.Number):
                 raise FunctionError("{} param of {} ({}) must be a scalar".format(OFFSET, self.name, offset))
 
+#    @numba.jit does not work: context manager
     def _function(self,
                  variable=None,
                  context=None,
@@ -1279,6 +1283,7 @@ class LinearCombination(
                         #     raise FunctionError("Operation param ({0}) must be Operation.SUM or Operation.PRODUCT".
                         #     format(operation))
 
+#    @numba.jit # does not work
     def _function(self,
                  variable=None,
                  context=None,
@@ -1782,6 +1787,7 @@ class CombineMeans(CombinationFunction):  # ------------------------------------
                     #     raise FunctionError("Operation param ({0}) must be Operation.SUM or Operation.PRODUCT".
                     #     format(operation))
 
+#    @numba.jit # doesn't work: generators/comprehensions
     def _function(self,
                  variable=None,
                  context=None,
@@ -2017,6 +2023,7 @@ class PredictionErrorDeltaFunction(CombinationFunction):
                         len(target_set[WEIGHTS]),
                         len(self.defaults.variable.shape)))
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,

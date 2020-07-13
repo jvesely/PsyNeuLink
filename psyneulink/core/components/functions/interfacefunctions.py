@@ -15,6 +15,7 @@
 
 """
 
+import numba
 import numpy as np
 import typecheck as tc
 import warnings
@@ -134,12 +135,12 @@ class InterfacePortMap(InterfaceFunction):
 
         # self.functionOutputType = None
 
+    @numba.jit
     def _function(
         self,
         variable=None,
         context=None,
         params=None,
-
     ):
         """
         Return: The item of `value <InterfacePortMap.value>` whose index corresponds to the index of

@@ -563,6 +563,7 @@ Class Reference
 import copy
 import collections
 import itertools
+import numba
 import numpy as np
 import threading
 import typecheck as tc
@@ -733,6 +734,7 @@ class DefaultAllocationFunction(Function_Base):
                          owner=owner,
                          )
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,

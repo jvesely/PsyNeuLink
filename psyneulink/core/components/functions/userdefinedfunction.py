@@ -10,6 +10,7 @@
 # *****************************************  USER-DEFINED FUNCTION  ****************************************************
 
 import ctypes
+import numba
 import numpy as np
 import typecheck as tc
 
@@ -511,6 +512,7 @@ class UserDefinedFunction(Function_Base):
 
             p._set(p.default_value, context, skip_history=True)
 
+#    @numba.jit # does not work: ???
     def _function(self, variable, context=None, **kwargs):
 
         # Update value of parms in cust_fct_params

@@ -145,6 +145,7 @@ import types
 import warnings
 from enum import Enum, IntEnum
 
+import numba
 import numpy as np
 import typecheck as tc
 
@@ -598,7 +599,6 @@ class Function_Base(Function):
         variable=None,
         context=None,
         params=None,
-
     ):
         pass
 
@@ -617,6 +617,7 @@ class Function_Base(Function):
             raise FunctionError(f"{param} is not a valid specification for "
                                 f"the {param_name} argument of {self.__class__.__name__}{owner_name}.")
 
+#    @numba.jit # fstrings don't work
     def _get_current_function_param(self, param_name, context=None):
         if param_name == "variable":
             raise FunctionError(f"The method '_get_current_function_param' is intended for retrieving "
@@ -886,6 +887,7 @@ class ArgumentTherapy(Function_Base):
 
         super()._validate_params(request_set, target_set, context)
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,

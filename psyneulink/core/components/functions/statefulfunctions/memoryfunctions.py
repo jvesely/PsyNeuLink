@@ -24,6 +24,7 @@ Functions that store and can return a record of their input.
 
 from collections import deque
 
+import numba
 import numpy as np
 import typecheck as tc
 import warnings
@@ -292,6 +293,7 @@ class Buffer(MemoryFunction):  # -----------------------------------------------
         self.parameters.value.set(value, context, override=True)
         return value
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -1056,6 +1058,7 @@ class ContentAddressableMemory(MemoryFunction):  # -----------------------------
         self.parameters.value.set(value, context, override=True)
         return value
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
