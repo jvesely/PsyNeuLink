@@ -14,9 +14,7 @@ arch:
   - amd64
   - arm64
   - ppc64le
-# Disabled until grpcio works with s390x
-# https://github.com/grpc/grpc/issues/23797
-#  - s390x
+  - s390x
 
 env:
   jobs:
