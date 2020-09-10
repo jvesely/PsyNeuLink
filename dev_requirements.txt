@@ -1,7 +1,7 @@
 ipykernel
 ipython
 jupyter
-nbconvert<6
+nbconvert<7
 psyneulink-sphinx-theme
 pytest
 pytest-benchmark
