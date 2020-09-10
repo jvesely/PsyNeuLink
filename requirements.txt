@@ -3,7 +3,7 @@ dill
 elfi
 graphviz
 grpcio<1.32.0
-grpcio-tools<1.32.0
+grpcio-tools<1.33.0
 llvmlite
 matplotlib
 networkx==1.11
