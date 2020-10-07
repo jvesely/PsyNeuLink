@@ -20,6 +20,7 @@ arch:
 
 env:
   jobs:
+    - PYTHON=3.9
     - PYTHON=3.8
     - PYTHON=3.7
     - PYTHON=3.6
@@ -36,6 +37,9 @@ cache:
 
 addons:
   apt:
+    sources:
+      # python3.9 is not in bionic main repo
+      - sourceline: 'ppa:deadsnakes/ppa'
     packages:
       - graphviz
 
