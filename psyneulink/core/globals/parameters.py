@@ -318,6 +318,11 @@ import weakref
 
 import toposort
 
+try:
+    from psyneulink.core.rpc.graph_pb2 import Entry, ndArray
+except ImportError:
+    pass
+
 from psyneulink.core.globals.context import Context, ContextError, ContextFlags, _get_time, handle_external_context
 from psyneulink.core.globals.context import time as time_object
 from psyneulink.core.globals.keywords import SHARED_COMPONENT_TYPES
@@ -336,7 +341,6 @@ from psyneulink.core.globals.utilities import (
     unproxy_weakproxy,
     update_array_in_place,
 )
-from psyneulink.core.rpc.graph_pb2 import Entry, ndArray
 
 __all__ = [
     'Defaults', 'get_validator_by_function', 'Parameter', 'ParameterAlias', 'ParameterError',
