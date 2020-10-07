@@ -3,7 +3,7 @@ dill<0.3.10
 fastkde>=2.0.0, <2.0.2
 graph-scheduler>=1.2.1, <1.3.0
 graphviz<0.21.0
-grpcio<1.71.0
+grpcio<1.71.0; platform_python_implementation == 'CPython' or implementation_version >= '7.3.12b'
 leabra-psyneulink<0.3.3
 llvmlite<0.45
 matplotlib>=3.7.0, <3.10.1
