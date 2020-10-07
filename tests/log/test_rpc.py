@@ -5,6 +5,8 @@ import pytest
 from queue import Queue
 
 
+pytest.importorskip("grpc")
+
 class TestRPC:
 
     def test_transfer_mech(self):
