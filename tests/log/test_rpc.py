@@ -8,6 +8,8 @@ from collections import OrderedDict
 import psyneulink.core.components.functions.transferfunctions
 from psyneulink.core.globals.keywords import ALLOCATION_SAMPLES, PROJECTIONS
 
+pytest.importorskip("grpc")
+
 class TestRPC:
 
     def test_transfer_mech(self):
