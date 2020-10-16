@@ -11,8 +11,9 @@ os: linux
 dist: bionic
 
 arch:
-  - amd64
+#  - amd64
   - arm64
+  - arm64-graviton2
   - ppc64le
 # Disabled until the scheduling issues are fixed:
 # https://travis-ci.community/t/s390x-build-fails-to-get-queued/9533
@@ -21,6 +22,9 @@ arch:
 stages:
   - precache
   - test
+
+group: edge
+virt: lxd
 
 jobs:
   include:
