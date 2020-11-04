@@ -11,4 +11,6 @@ numpy<1.19.5
 pillow<8.1.0
 toposort<=1.5
 torch<=1.6.0; sys_platform != 'win32' and platform_machine == 'x86_64' and platform_python_implementation == 'CPython'
+torch<=1.6.0 @ https://download.pytorch.org/whl/cpu/torch_stable.html ;
+sys_platform == 'win32' and platform_machine == 'amd64' and platform_python_implementation == 'CPython'
 typecheck-decorator<=1.2
