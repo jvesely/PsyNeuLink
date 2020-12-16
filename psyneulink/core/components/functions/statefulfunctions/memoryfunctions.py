@@ -39,7 +39,7 @@ from psyneulink.core.globals.keywords import \
     ADDITIVE_PARAM, BUFFER_FUNCTION, MEMORY_FUNCTION, COSINE, ContentAddressableMemory_FUNCTION, \
     MIN_INDICATOR, MULTIPLICATIVE_PARAM, NEWEST, NOISE, OLDEST, OVERWRITE, RATE, RANDOM
 from psyneulink.core.globals.utilities import all_within_range, convert_to_np_array, parameter_spec, get_global_seed
-from psyneulink.core.globals.context import Context, ContextFlags, handle_external_context
+from psyneulink.core.globals.context import handle_external_context
 from psyneulink.core.globals.parameters import Parameter
 from psyneulink.core.globals.preferences.basepreferenceset import is_pref_set
 
@@ -270,7 +270,7 @@ class Buffer(MemoryFunction):  # -----------------------------------------------
             previous_value = self._get_current_parameter_value("initializer", context)
 
         if previous_value is None or previous_value == []:
-            self.get_previous_value(context).clear()
+            self.parameters.previous_value._get(context).clear()
             value = deque([], maxlen=self.parameters.history.get(context))
 
         else:
@@ -306,14 +306,14 @@ class Buffer(MemoryFunction):  # -----------------------------------------------
         rate = np.array(self._get_current_parameter_value(RATE, context)).astype(float)
 
         # execute noise if it is a function
-        noise = self._try_execute_param(self._get_current_parameter_value(NOISE, context), variable)
+        noise = self._try_execute_param(self._get_current_parameter_value(NOISE, context), variable, context=context)
 
         # If this is an initialization run, leave deque empty (don't want to count it as an execution step);
         # Just return current input (for validation).
         if self.is_initializing:
             return variable
 
-        previous_value = self.get_previous_value(context)
+        previous_value = self.parameters.previous_value._get(context)
 
         # Apply rate and/or noise, if they are specified, to all stored items
         if len(previous_value):
@@ -715,8 +715,8 @@ class ContentAddressableMemory(MemoryFunction):  # -----------------------------
         )
 
         if self.previous_value.size != 0:
-            self.parameters.key_size._set(len(self.previous_value[KEYS][0]), Context(execution_id=None))
-            self.parameters.val_size._set(len(self.previous_value[VALS][0]), Context(execution_id=None))
+            self.parameters.key_size.set(len(self.previous_value[KEYS][0]))
+            self.parameters.val_size.set(len(self.previous_value[VALS][0]))
 
     def _parse_distance_function_variable(self, variable):
         # actual used variable in execution (get_memory) checks distance
@@ -751,7 +751,7 @@ class ContentAddressableMemory(MemoryFunction):  # -----------------------------
                                            ring_buffer_struct))
 
     def _get_state_initializer(self, context):
-        memory = self.get_previous_value(context)
+        memory = self.parameters.previous_value._get(context)
         mem_init = pnlvm._tupleize([memory[0], memory[1], 0, 0])
         return (*super()._get_state_initializer(context), mem_init)
 
@@ -1027,7 +1027,7 @@ class ContentAddressableMemory(MemoryFunction):  # -----------------------------
             previous_value = self._get_current_parameter_value("initializer", context)
 
         if previous_value == []:
-            self.get_previous_value(context).clear()
+            self.parameters.previous_value._get(context).clear()
             value = np.ndarray(shape=(2, 0, len(self.defaults.variable[0])))
 
         else:
@@ -1073,7 +1073,7 @@ class ContentAddressableMemory(MemoryFunction):  # -----------------------------
         storage_prob = np.array(self._get_current_parameter_value(STORAGE_PROB, context)).astype(float)
 
         # execute noise if it is a function
-        noise = self._try_execute_param(self._get_current_parameter_value(NOISE, context), variable)
+        noise = self._try_execute_param(self._get_current_parameter_value(NOISE, context), variable, context=context)
 
         # get random state
         random_state = self._get_current_parameter_value('random_state', context)
@@ -1084,7 +1084,7 @@ class ContentAddressableMemory(MemoryFunction):  # -----------------------------
             return variable
 
         # Set key_size and val_size if this is the first entry
-        if len(self.get_previous_value(context)[KEYS]) == 0:
+        if len(self.parameters.previous_value._get(context)[KEYS]) == 0:
             self.parameters.key_size._set(len(key), context)
             self.parameters.val_size._set(len(val), context)
 
@@ -1150,7 +1150,7 @@ class ContentAddressableMemory(MemoryFunction):  # -----------------------------
         #           ALSO, SHOULD PROBABILISTIC SUPPRESSION OF RETRIEVAL BE HANDLED HERE OR function (AS IT IS NOW).
 
         self._validate_key(query_key, context)
-        _memory = self.get_previous_value(context)
+        _memory = self.parameters.previous_value._get(context)
 
         # if no memory, return the zero vector
         if len(_memory[KEYS]) == 0:
@@ -1211,7 +1211,7 @@ class ContentAddressableMemory(MemoryFunction):  # -----------------------------
         key = list(memory[KEYS])
         val = list(memory[VALS])
 
-        d = self.get_previous_value(context)
+        d = self.parameters.previous_value._get(context)
 
         matches = [k for k in d[KEYS] if key==list(k)]
 

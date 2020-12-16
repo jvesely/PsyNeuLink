@@ -651,9 +651,9 @@ class AccumulatorIntegrator(IntegratorFunction):  # ----------------------------
 
         rate = self._get_current_parameter_value(RATE, context)
         increment = self._get_current_parameter_value(INCREMENT, context)
-        noise = self._try_execute_param(self._get_current_parameter_value(NOISE, context), variable)
+        noise = self._try_execute_param(self._get_current_parameter_value(NOISE, context), variable, context=context)
 
-        previous_value = np.atleast_2d(self.get_previous_value(context))
+        previous_value = np.atleast_2d(self.parameters.previous_value._get(context))
 
         value = previous_value * rate + noise + increment
 
@@ -849,8 +849,8 @@ class SimpleIntegrator(IntegratorFunction):  # ---------------------------------
         offset = self._get_current_parameter_value(OFFSET, context)
 
         # execute noise if it is a function
-        noise = self._try_execute_param(self._get_current_parameter_value(NOISE, context), variable)
-        previous_value = self.get_previous_value(context)
+        noise = self._try_execute_param(self._get_current_parameter_value(NOISE, context), variable, context=context)
+        previous_value = self.parameters.previous_value._get(context)
         new_value = variable
 
         value = previous_value + (new_value * rate) + noise
@@ -1185,12 +1185,12 @@ class AdaptiveIntegrator(IntegratorFunction):  # -------------------------------
         rate = np.array(self._get_current_parameter_value(RATE, context)).astype(float)
         offset = self._get_current_parameter_value(OFFSET, context)
         # execute noise if it is a function
-        noise = self._try_execute_param(self._get_current_parameter_value(NOISE, context), variable)
+        noise = self._try_execute_param(self._get_current_parameter_value(NOISE, context), variable, context=context)
 
         # # MODIFIED 6/14/19 OLD:
-        # previous_value = np.atleast_2d(self.get_previous_value(context))
+        # previous_value = np.atleast_2d(self.parameters.previous_value._get(context))
         # # MODIFIED 6/14/19 NEW: [JDC]
-        previous_value = self.get_previous_value(context)
+        previous_value = self.parameters.previous_value._get(context)
         # MODIFIED 6/14/19 END
 
         try:
@@ -1681,7 +1681,7 @@ class DualAdaptiveIntegrator(IntegratorFunction):  # ---------------------------
         """
         # rate = np.array(self._get_current_parameter_value(RATE, context)).astype(float)
         # execute noise if it is a function
-        # noise = self._try_execute_param(self._get_current_parameter_value(NOISE, context), variable)
+        # noise = self._try_execute_param(self._get_current_parameter_value(NOISE, context), variable, context=context)
         short_term_rate = self._get_current_parameter_value("short_term_rate", context)
         long_term_rate = self._get_current_parameter_value("long_term_rate", context)
 
@@ -2076,7 +2076,7 @@ class InteractiveActivationIntegrator(IntegratorFunction):  # ------------------
         min_val = np.array(self._get_current_parameter_value("min_val", context)).astype(float)
 
         # execute noise if it is a function
-        noise = self._try_execute_param(self._get_current_parameter_value(NOISE, context), variable)
+        noise = self._try_execute_param(self._get_current_parameter_value(NOISE, context), variable, context=context)
 
         current_input = variable
 
@@ -2092,7 +2092,7 @@ class InteractiveActivationIntegrator(IntegratorFunction):  # ------------------
                 raise FunctionError("The {} argument of {} ({}) must be an int or float, "
                                     "or a list or array of the same length as its variable ({})".
                                     format(repr(REST), self.__class__.__name__, rest, len(variable)))
-        previous_value = self.get_previous_value(context)
+        previous_value = self.parameters.previous_value._get(context)
 
         current_input = np.atleast_2d(variable)
         prev_val = np.atleast_2d(previous_value)
@@ -2451,7 +2451,7 @@ class DriftDiffusionIntegrator(IntegratorFunction):  # -------------------------
         time_step_size = self._get_current_parameter_value(TIME_STEP_SIZE, context)
         random_state = self._get_current_parameter_value("random_state", context)
 
-        previous_value = np.atleast_2d(self.get_previous_value(context))
+        previous_value = np.atleast_2d(self.parameters.previous_value._get(context))
 
         random_draw = np.array([random_state.normal() for _ in list(variable)])
         value = previous_value + rate * variable * time_step_size \
@@ -2868,7 +2868,7 @@ class OrnsteinUhlenbeckIntegrator(IntegratorFunction):  # ----------------------
         time_step_size = self._get_current_parameter_value(TIME_STEP_SIZE, context)
         random_state = self._get_current_parameter_value('random_state', context)
 
-        previous_value = np.atleast_2d(self.get_previous_value(context))
+        previous_value = np.atleast_2d(self.parameters.previous_value._get(context))
 
         random_normal = random_state.normal()
 
@@ -3147,8 +3147,8 @@ class LeakyCompetingIntegrator(IntegratorFunction):  # -------------------------
         offset = self._get_current_parameter_value(OFFSET, context)
 
         # execute noise if it is a function
-        noise = self._try_execute_param(self._get_current_parameter_value(NOISE, context), variable)
-        previous_value = self.get_previous_value(context)
+        noise = self._try_execute_param(self._get_current_parameter_value(NOISE, context), variable, context=context)
+        previous_value = self.parameters.previous_value._get(context)
         new_value = variable
 
         # Gilzenrat: previous_value + (-previous_value + variable)*self.time_step_size + noise --> rate = -1

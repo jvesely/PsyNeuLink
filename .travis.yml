@@ -14,31 +14,9 @@ arch:
   - amd64
   - arm64
   - ppc64le
-# Disabled until the scheduling issues are fixed:
-# https://travis-ci.community/t/s390x-build-fails-to-get-queued/9533
+# Disabled until grpcio works with s390x
+# https://github.com/grpc/grpc/issues/23797
 #  - s390x
-
-stages:
-  - precache
-  - test
-
-jobs:
-  include:
-    - script: true
-      after_script: true
-      stage: precache
-      env: PYTHON=3.8
-      arch: arm64
-    - script: true
-      after_script: true
-      stage: precache
-      env: PYTHON=3.7
-      arch: arm64
-    - script: true
-      after_script: true
-      stage: precache
-      env: PYTHON=3.6
-      arch: arm64
 
 env:
   jobs:
@@ -54,7 +32,7 @@ env:
 # This needs to be explicit, 'cache: pip' only works with 'language: python'
 cache:
   directories:
-    - $HOME/.cache/pip
+    - $HOME/.cache/pip/wheels
 
 addons:
   apt:
@@ -73,8 +51,10 @@ before_install:
       export LLVM_CONFIG=llvm-config-10
       # Disable coverage
       export RUN_COV=""
-      # Add cython to build sdist packages
-      export EXTRA_PIP="cython"
+
+      # matplotlib depends on cython
+      # explicitly install numpy (https://github.com/pypa/pip/issues/9239)
+      export EXTRA_PIP="cython $(grep numpy requirements.txt)"
     fi
     # distutils is only needed for python3.8
     # https://bugs.launchpad.net/ubuntu/+source/python3.8/+bug/1851684
@@ -112,7 +92,7 @@ before_cache:
 
 install:
   - pip install coveralls
-  - pip install -e .[dev,leabra]
+  - pip install -e .[dev]
 
 
 script:
