@@ -46,6 +46,9 @@ addons:
 
 before_install:
   - lscpu
+  # update lib2to3. the old version includes files for python37
+  - sudo apt-get install python3-lib2to3
+
   - |
     # Install venv on Linux using Ubuntu distributed python
     if [ "$TRAVIS_CPU_ARCH" != "amd64" ]; then
