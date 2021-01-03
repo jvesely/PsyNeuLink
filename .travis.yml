@@ -18,6 +18,23 @@ arch:
 # https://github.com/grpc/grpc/issues/23797
 #  - s390x
 
+stages:
+  - precache
+  - test
+
+jobs:
+  include:
+    - script: true
+      after_script: true
+      stage: precache
+      env: PYTHON=3.7
+      arch: ppc64le
+    - script: true
+      after_script: true
+      stage: precache
+      env: PYTHON=3.6
+      arch: ppc64le
+
 env:
   jobs:
     - PYTHON=3.8
