@@ -26,6 +26,13 @@ jobs:
           - python-version: 3.8
             python-architecture: 'x86'
             os: windows-latest
+          # add pypy3 build
+          - python-version: pypy-3.6
+            python-architecture: 'x64'
+            os: ubuntu-latest
+          - python-version: pypy-3.7
+            python-architecture: 'x64'
+            os: ubuntu-latest
 
     steps:
     - name: Checkout sources

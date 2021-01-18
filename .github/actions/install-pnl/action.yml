@@ -18,7 +18,7 @@ runs:
       run: |
         case "$RUNNER_OS" in
           macOS*) brew install graphviz ;;
-          Linux*) sudo apt-get install -y graphviz ;;
+          Linux*) sudo apt-get install -y --no-install-recommends build-essential gfortran llvm-10-dev libfreetype6-dev libjpeg-dev liblapack-dev zlib1g-dev graphviz ;;
           Windows*) choco install --no-progress -y graphviz --version=2.38.0.20190211 ;;
           *) echo "Unsupported OS"; exit 1 ;;
         esac
@@ -39,6 +39,8 @@ runs:
         # explicitly install numpy (https://github.com/pypa/pip/issues/9239)
         python -m pip install --upgrade pip wheel $(grep numpy requirements.txt)
         pip install -e .[${{ inputs.features }}]
+      env:
+        LLVM_CONFIG: llvm-config-10
 
     - name: "Cleanup old wheels"
       shell: bash
