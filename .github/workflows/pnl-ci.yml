@@ -13,6 +13,10 @@ on:
       - 'v**'
   pull_request:
 
+env:
+# github linux/windows runners have 7GB RAM
+  PYPY_GC_MAX: 3GB
+
 # run only the latest instance of this workflow job for the current branch/PR
 # cancel older runs
 # fall back to run id if not available (run id is unique -> no cancellations)
@@ -79,6 +83,16 @@ jobs:
             os: macos
             version-restrict: 'min'
 
+          # add pypy-3.10
+          - python-version: 'pypy-3.10'
+            os: ubuntu
+            extra-args: '--forked'
+
+          # add pypy-3.11
+          - python-version: 'pypy-3.11'
+            os: ubuntu
+            extra-args: '--forked'
+
         exclude:
           # Replaced with the min version run above
           - python-version: '3.10'
@@ -141,6 +155,8 @@ jobs:
       id: install
       with:
         features: 'dev'
+      env:
+        LLVM_SUFFIX: '-22'
 
     - name: Save wheels cache
       uses: actions/cache/save@v6
@@ -198,7 +214,7 @@ jobs:
           choco install --no-progress -y sumatrapdf.install
 
     - name: Test with pytest
-      timeout-minutes: 180
+      timeout-minutes: 360
       run: pytest --junit-xml=tests_out.xml --verbosity=0 -n logical --capture=sys -o console_output_style=count ${{ matrix.extra-args }}
 
     - name: Upload test results
