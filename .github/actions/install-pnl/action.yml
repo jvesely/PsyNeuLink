@@ -18,7 +18,7 @@ runs:
       run: |
         case "$RUNNER_OS" in
           macOS*) brew install graphviz ;;
-          Linux*) sudo apt-get update && sudo apt-get install -y --no-install-recommends graphviz ;;
+          Linux*) sudo apt-get update && sudo apt-get install -y --no-install-recommends graphviz build-essential pkg-config gfortran llvm${LLVM_SUFFIX}-dev libfreetype6-dev libjpeg-dev libopenblas-dev zlib1g-dev ;;
           Windows*) choco install --no-progress -y graphviz --version=2.38.0.20190211 ;;
           *) echo "Unsupported OS"; exit 1 ;;
         esac
@@ -37,14 +37,15 @@ runs:
         echo "VIRTUAL_ENV=$VIRTUAL_ENV" >> $GITHUB_ENV
         echo "$PYTHON_LOC" >> $GITHUB_PATH
 
-    - name: Update pip and wheel
+    - name: Update pip, wheel, and cython
       shell: bash
-      run: python -m pip install --upgrade pip wheel
+      run: python -m pip install --upgrade pip wheel 'cython<3'
 
     - name: Drop pytorch on x86
       shell: bash
       run: |
-        echo > env_constraints.txt
+        # grpcio fails to build with cython >= 3
+        echo 'cython<3' > env_constraints.txt
         if [ $(python -c 'import struct; print(struct.calcsize("P") * 8)') == 32 ]; then
           sed -i /torch/d requirements.txt
           sed -i /modeci_mdf/d requirements.txt
@@ -60,6 +61,9 @@ runs:
           echo "contourpy<1.1.0" >> env_constraints.txt
           # pillow >= 10.0.0 doesn't provide win32 wheel
           echo "pillow < 10.0.0" >> env_constraints.txt
+
+          # pywinpty needs extra libraries if built with cython available
+          pip uninstall cython -y
         fi
 
     - name: Install updated package
@@ -87,6 +91,9 @@ runs:
       shell: bash
       run: |
         pip install -e .[${{ inputs.features }}] -c env_constraints.txt -c broken_trans_deps.txt
+      env:
+        LLVM_CONFIG: llvm-config${{ env.LLVM_SUFFIX }}
+        GRPC_PYTHON_BUILD_WITH_CYTHON: 1
 
     - name: "Cleanup old wheels"
       shell: bash
