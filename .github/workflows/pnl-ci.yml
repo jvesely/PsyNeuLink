@@ -13,6 +13,10 @@ on:
       - 'v**'
   pull_request:
 
+env:
+# github linux/windows runners have 7GB RAM
+  PYPY_GC_MAX: 3GB
+
 # run only the latest instance of this workflow job for the current branch/PR
 # cancel older runs
 # fall back to run id if not available (run id is unique -> no cancellations)
@@ -77,6 +81,34 @@ jobs:
             os: macos
             version-restrict: 'min'
 
+          # add pypy-3.8
+          - python-version: 'pypy-3.8'
+            python-architecture: 'x64'
+            os: ubuntu
+            extra-args: '--forked'
+            llvm-suffix: '-15'
+
+          # add pypy-3.9
+          - python-version: 'pypy-3.9'
+            python-architecture: 'x64'
+            os: ubuntu
+            extra-args: '--forked'
+            llvm-suffix: '-15'
+
+          # add pypy-3.10
+          - python-version: 'pypy-3.10'
+            python-architecture: 'x64'
+            os: ubuntu
+            extra-args: '--forked'
+            llvm-suffix: '-15'
+
+          # add pypy-3.11
+          - python-version: 'pypy-3.11'
+            python-architecture: 'x64'
+            os: ubuntu
+            extra-args: '--forked'
+            llvm-suffix: '-15'
+
         exclude:
           # 3.8/x64 python is broken on aarch64 macos runners
           # https://github.com/actions/setup-python/issues/960
@@ -134,6 +166,8 @@ jobs:
       id: install
       with:
         features: 'dev'
+      env:
+        LLVM_SUFFIX: ${{ matrix.llvm-suffix }}
 
     - name: Lint with flake8
       shell: bash
@@ -159,7 +193,7 @@ jobs:
         esac
 
     - name: Test with pytest
-      timeout-minutes: 180
+      timeout-minutes: 360
       run: pytest --junit-xml=tests_out.xml --verbosity=0 -n logical --capture=sys -o console_output_style=count ${{ matrix.extra-args }}
 
     - name: Upload test results
