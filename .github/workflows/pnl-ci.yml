@@ -24,6 +24,10 @@ jobs:
           - python-version: 3.8
             python-architecture: 'x86'
             os: windows-latest
+          # add pypy3 build
+          - python-version: pypy3
+            python-architecture: 'x64'
+            os: ubuntu-latest
 
     steps:
     - name: Checkout sources
@@ -64,12 +68,18 @@ jobs:
       run: choco install --no-progress -y graphviz --version=2.38.0.20190211
       if: startsWith(runner.os, 'Windows')
 
+    - name: Linux build environment
+      if: matrix.python-version == 'pypy3'
+      run: sudo apt install -y --no-install-recommends build-essential gfortran llvm-10-dev libfreetype6-dev libjpeg-dev liblapack-dev zlib1g-dev
+
     - name: Shared dependencies
       shell: bash
       run: |
         # explicitly install numpy (https://github.com/pypa/pip/issues/9239)
         python -m pip install --upgrade pip wheel $(grep numpy requirements.txt)
         pip install -e .[dev]
+      env:
+        LLVM_CONFIG: llvm-config-10
 
     - name: Windows pytorch
       shell: bash
