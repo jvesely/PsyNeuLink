@@ -25,7 +25,7 @@ runs:
       run: |
         case "$RUNNER_OS" in
           macOS*) brew install graphviz ;;
-          Linux*) sudo apt-get update && sudo apt-get install -y --no-install-recommends graphviz ;;
+          Linux*) sudo apt-get update && sudo apt-get install -y --no-install-recommends graphviz build-essential pkg-config gfortran llvm${LLVM_SUFFIX}-dev libfreetype6-dev libjpeg-dev libopenblas-dev zlib1g-dev ;;
           Windows*) choco install --no-progress -y graphviz --version=2.38.0.20190211 ;;
           *) echo "Unsupported OS"; exit 1 ;;
         esac
@@ -44,9 +44,9 @@ runs:
         echo "VIRTUAL_ENV=$VIRTUAL_ENV" >> $GITHUB_ENV
         echo "$PYTHON_LOC" >> $GITHUB_PATH
 
-    - name: Update pip and wheel
+    - name: Update pip, wheel, and cython
       shell: bash
-      run: python -m pip install --upgrade pip wheel
+      run: python -m pip install --upgrade pip wheel 'cython<3'
 
     - name: Install updated package
       if: ${{ startsWith(github.head_ref, 'dependabot/pip') && matrix.pnl-version != 'base' }}
@@ -81,7 +81,7 @@ runs:
     - name: Python dependencies
       shell: bash
       run: |
-        pip install ${{ steps.dist.outputs.wheel }}[${{ inputs.features }}] -c broken_trans_deps.txt
+        pip install ${{ steps.dist.outputs.wheel }}[${{ inputs.features }}] -c broken_trans_deps.txt --use-pep517
       env:
         # Setting CXXFLAGS works around a missing include that breaks the build
         # of onnx-1/17.0 on recent gcc/clang compilers.
@@ -89,11 +89,19 @@ runs:
         # Note that the MS Visual C equivalent option needs to start with an extra
         # space otherwise the argument gets interpreted as a file location.
         CXXFLAGS: ${{ startsWith(runner.os, 'windows') && ' /FI cstdint' || '-include cstdint' }}
+
         # Setting TEMP works around broken onnx-1.17.0 build on windows where
         # too long paths in default TEMP directory don't work with msbuild.
         # This should be removed once onnx wheels for Python 3.13 are available.
         # Note that $TEMP is only used to set pip's build location on Windows.
         TEMP: ${{ runner.temp }}
+        LLVM_CONFIG: llvm-config${{ env.LLVM_SUFFIX }}
+
+        # grpcio sdist package bundles cythonized files. This can be overridden
+        # by the variable below set to '1'. However, newer grpcio versions fail
+        # to build if this is set in isolated build.
+        # see https://github.com/grpc/grpc/issues/39487
+        GRPC_PYTHON_BUILD_WITH_CYTHON: 0
 
     - name: Cleanup old wheels
       shell: bash
