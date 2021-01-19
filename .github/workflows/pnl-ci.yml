@@ -67,6 +67,9 @@ jobs:
     - name: Shared dependencies
       shell: bash
       run: |
+        python -c "import platform; print(platform.release(), platform.version(), platform.machine())"
+        python -c "import os; print(os.name)"
+        python -c "import sys; print(sys.platform, sys.version)"
         # explicitly install numpy (https://github.com/pypa/pip/issues/9239)
         python -m pip install --upgrade pip wheel $(grep numpy requirements.txt)
         pip install -e .[dev]
