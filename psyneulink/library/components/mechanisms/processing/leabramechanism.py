@@ -620,6 +620,7 @@ def run_leabra_network(network, input_pattern):
     # we temporarily set training false, then turn it on again after we are done
     # TODO: maybe add a warning message here?
     if infer_training_flag_from_network(network):
+        assert False, "INFERRED WARNING"
         set_training(network, False)
         network.set_inputs({'input_layer': input_pattern})
         network.set_outputs({})  # clear network._outputs
