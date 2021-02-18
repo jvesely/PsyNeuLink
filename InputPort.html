@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>InputPort &mdash; PsyNeuLink 4.4.4.4 documentation</title>
+  <title>InputPort &mdash; PsyNeuLink 0.8.5.1 documentation</title>
   
 
   
@@ -96,7 +96,7 @@
               
               
                 <div class="version">
-                  4.4.4.4
+                  0.8.5.1
                 </div>
               
             
@@ -815,22 +815,22 @@ return None so that it is ignored in execute method (i.e., not combined with bas
 <dt id="psyneulink.core.components.ports.inputport.InputPort._parse_port_specific_specs">
 <code class="sig-name descname">_parse_port_specific_specs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">owner</span></em>, <em class="sig-param"><span class="n">port_dict</span></em>, <em class="sig-param"><span class="n">port_specific_spec</span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.ports.inputport.InputPort._parse_port_specific_specs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get weights, exponents and/or any connections specified in an InputPort specification tuple</p>
-<blockquote>
-<div><dl class="simple">
+<dl class="simple">
 <dt>Tuple specification can be:</dt><dd><p>(port_spec, connections)
 (port_spec, weights, exponents, connections)</p>
 </dd>
 </dl>
 <p>See Port._parse_port_specific_spec for additional info.</p>
-</div></blockquote>
-<dl class="simple">
-<dt>.</dt><dd><dl class="simple">
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>port_spec:  1st item of tuple if it is a numeric value;  otherwise None</p></li>
-<li><p>params dict with WEIGHT, EXPONENT and/or PROJECTIONS entries if any of these was specified.</p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>1st item of tuple if it is a numeric value;  otherwise None
+- params dict with WEIGHT, EXPONENT and/or PROJECTIONS entries if any of these was specified.</p>
 </dd>
-</dl>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>port_spec</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>
