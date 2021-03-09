@@ -690,7 +690,7 @@ class CompExecution(CUDAExecution):
         converted_variable = np.asfarray(np.concatenate(variable), dtype=var_dty)
 
         # Output ctype
-        out_ty = bin_func.byref_arg_types[4] * num_evaluations
+        out_ty = bin_func.byref_arg_types[4] * int(num_evaluations)
 
         return ct_comp_param, ct_comp_state, ct_comp_data, converted_variable, out_ty
 
