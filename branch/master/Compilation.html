@@ -6,10 +6,11 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Compilation &mdash; PsyNeuLink 9.2.2.1 documentation</title>
+  <title>Compilation &mdash; PsyNeuLink 0.8.8.0+4.ge6f89c6519 documentation</title>
   
 
   
@@ -96,7 +97,7 @@
               
               
                 <div class="version">
-                  9.2.2.1
+                  0.8.8.0+4
                 </div>
               
             
@@ -194,12 +195,12 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="psyneulink-article" class="psyneulink-article">
               
-  <div class="section" id="compilation">
+  <section id="compilation">
 <h1>Compilation<a class="headerlink" href="#compilation" title="Permalink to this headline">¶</a></h1>
 <p>PsyNeulink includes a runtime compiler to improve performance of executed models.
 This section describes the overview of the compiler design and its use.
 The performance improvements varies, but it has been observed to be between one and three orders of magnitude depending on the model.</p>
-<div class="section" id="overview">
+<section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>The PsyNeuLink runtime compiler works in several steps when invoked via <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.run" title="psyneulink.core.compositions.composition.Composition.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">run</span></code></a> or <a class="reference internal" href="AutodiffComposition.html#psyneulink.library.compositions.autodiffcomposition.AutodiffComposition.execute" title="psyneulink.library.compositions.autodiffcomposition.AutodiffComposition.execute"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">execute</span></code></a>:
 <em>Compilation</em>:</p>
@@ -220,25 +221,23 @@ The performance improvements varies, but it has been observed to be between one 
 </ol>
 </dd>
 </dl>
-</div>
-<div class="section" id="use">
+</section>
+<section id="use">
 <h2>Use<a class="headerlink" href="#use" title="Permalink to this headline">¶</a></h2>
 <p>Compiled form of a model can be invoked by passing one of the following values to the <code class="xref any docutils literal notranslate"><span class="pre">bin_execute</span></code> parameter of <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.run" title="psyneulink.core.compositions.composition.Composition.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">Composition.run</span></code></a>, or <code class="xref any docutils literal notranslate"><span class="pre">Composition.exec</span></code>:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><code class="xref any docutils literal notranslate"><span class="pre">False</span></code> or <code class="xref any docutils literal notranslate"><span class="pre">Python</span></code>: Normal python execution</p></li>
-<li><p><code class="xref any docutils literal notranslate"><span class="pre">LLVM</span></code>: Compile and execute individual nodes. The scheduling loop still runs in Python. If any of the nodes fails to compile, an error is raised. <em>NOTE:</em> Schedules that require access to node data will not work correctly.</p></li>
-<li><p><code class="xref any docutils literal notranslate"><span class="pre">LLVMExec</span></code>: Execution of <code class="xref any docutils literal notranslate"><span class="pre">Composition.exec</span></code> is replaced by a compiled equivalent. If the <a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a> fails to compile, an error is raised.</p></li>
-<li><p><code class="xref any docutils literal notranslate"><span class="pre">LLVMRun</span></code>: Execution of <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.run" title="psyneulink.core.compositions.composition.Composition.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">Composition.run</span></code></a> is replaced by a compiled equivalent. If the <a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a> fails to compiler, an error is raised.</p></li>
-<li><p><code class="xref any docutils literal notranslate"><span class="pre">True</span></code>: This option attempts all three above mentioned granularities, and gracefully falls back to lower granularity. Warnings are raised in place of errors. This is the recommended way to invoke compiled execution as the final fallback is the Python baseline.</p></li>
+<li><p><code class="xref any docutils literal notranslate"><span class="pre">ExecutionMode.Python</span></code>: Normal python execution</p></li>
+<li><p><code class="xref any docutils literal notranslate"><span class="pre">ExecutionMode.LLVM</span></code>: Compile and execute individual nodes. The scheduling loop still runs in Python. If any of the nodes fails to compile, an error is raised. <em>NOTE:</em> Schedules that require access to node data will not work correctly.</p></li>
+<li><p><code class="xref any docutils literal notranslate"><span class="pre">ExecutionMode.LLVMExec</span></code>: Execution of <code class="xref any docutils literal notranslate"><span class="pre">Composition.exec</span></code> is replaced by a compiled equivalent. If the <a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a> fails to compile, an error is raised.</p></li>
+<li><p><code class="xref any docutils literal notranslate"><span class="pre">ExecutionMode.LLVMRun</span></code>: Execution of <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.run" title="psyneulink.core.compositions.composition.Composition.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">Composition.run</span></code></a> is replaced by a compiled equivalent. If the <a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a> fails to compile, an error is raised.</p></li>
+<li><p><code class="xref any docutils literal notranslate"><span class="pre">ExecutionMode.Auto</span></code>: This option attempts all three above mentioned granularities, and gracefully falls back to lower granularity. Warnings are raised in place of errors. This is the recommended way to invoke compiled execution as the final fallback is the Python baseline.</p></li>
 </ul>
 </div></blockquote>
 <p>Note that data other than <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.run" title="psyneulink.core.compositions.composition.Composition.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">Composition.run</span></code></a> outputs are not synchronized between Python and compiled execution.</p>
-<blockquote>
-<div><p>It is possible to invoke compiled version of <code class="xref any docutils literal notranslate"><span class="pre">FUnction</span></code> s and <a class="reference internal" href="Mechanism.html"><span class="doc">Mechanism</span></a> s. This functionality is provided for testing purposes only, because of the lack of data synchronization it is not recommended for general use.</p>
-</div></blockquote>
-</div>
-</div>
+<p>It is possible to invoke compiled version of <a class="reference internal" href="Function.html"><span class="doc">Function</span></a> s and <a class="reference internal" href="Mechanism.html"><span class="doc">Mechanism</span></a> s. This functionality is provided for testing purposes only, because of the lack of data synchronization it is not recommended for general use.</p>
+</section>
+</section>
 
 
              </article>

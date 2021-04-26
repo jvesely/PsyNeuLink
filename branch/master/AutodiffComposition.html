@@ -6,10 +6,11 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>AutodiffComposition &mdash; PsyNeuLink 9.2.2.1 documentation</title>
+  <title>AutodiffComposition &mdash; PsyNeuLink 0.8.8.0+4.ge6f89c6519 documentation</title>
   
 
   
@@ -98,7 +99,7 @@
               
               
                 <div class="version">
-                  9.2.2.1
+                  0.8.8.0+4
                 </div>
               
             
@@ -200,9 +201,9 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="psyneulink-article" class="psyneulink-article">
               
-  <div class="section" id="module-psyneulink.library.compositions.autodiffcomposition">
+  <section id="module-psyneulink.library.compositions.autodiffcomposition">
 <span id="autodiffcomposition"></span><h1>AutodiffComposition<a class="headerlink" href="#module-psyneulink.library.compositions.autodiffcomposition" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="contents">
+<section id="contents">
 <h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><ul class="simple">
@@ -219,8 +220,8 @@
 <li><p><a class="reference internal" href="#autodiffcomposition-class-reference"><span class="std std-ref">Class Reference</span></a></p></li>
 </ul>
 </div></blockquote>
-</div>
-<div class="section" id="overview">
+</section>
+<section id="overview">
 <span id="autodiffcomposition-overview"></span><h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -231,8 +232,8 @@ with <a class="reference external" href="https://pytorch.org/">PyTorch</a>, a po
 than using the <a class="reference internal" href="Composition.html#composition-learning-standard"><span class="std std-ref">standard implementation of learning</span></a> in a Composition, using its
 <a class="reference internal" href="Composition.html#composition-learning-methods"><span class="std std-ref">learning methods</span></a>. An AutodiffComposition is configured and run similarly to a standard
 Composition, with some exceptions that are described below.</p>
-</div>
-<div class="section" id="creating-an-autodiffcomposition">
+</section>
+<section id="creating-an-autodiffcomposition">
 <span id="autodiffcomposition-creation"></span><h2>Creating an AutodiffComposition<a class="headerlink" href="#creating-an-autodiffcomposition" title="Permalink to this headline">¶</a></h2>
 <p>An AutodiffComposition can be created by calling its constructor, and then adding <a class="reference internal" href="Component.html"><span class="doc">Components</span></a> using the
 standard <a class="reference internal" href="Composition.html#composition-creation"><span class="std std-ref">Composition methods</span></a> for doing so.  The constructor also includes an number of
@@ -248,8 +249,8 @@ functionality.</p>
 <p>When comparing models built in PyTorch to those using AutodiffComposition,
 the <code class="xref any docutils literal notranslate"><span class="pre">bias</span></code> parameter of PyTorch modules should be set to <code class="xref any docutils literal notranslate"><span class="pre">False</span></code>, as AutodiffComposition does not currently support trainable biases.</p>
 </div>
-</div>
-<div class="section" id="execution">
+</section>
+<section id="execution">
 <span id="autodiffcomposition-execution"></span><h2>Execution<a class="headerlink" href="#execution" title="Permalink to this headline">¶</a></h2>
 <p>An AutodiffComposition’s <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.run" title="psyneulink.core.compositions.composition.Composition.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">run</span></code></a>, <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.execute" title="psyneulink.core.compositions.composition.Composition.execute"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">execute</span></code></a>, and <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.learn" title="psyneulink.core.compositions.composition.Composition.learn"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">learn</span></code></a> methods are the same as for a <a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a>.</p>
 <p>The following is an example showing how to create a
@@ -276,7 +277,7 @@ simple AutodiffComposition, specify its inputs and targets, and run it with lear
 <span class="gp">&gt;&gt;&gt; </span><span class="n">my_autodiff</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">input_dict</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="section" id="logging">
+<section id="logging">
 <span id="autodiffcomposition-logging"></span><h3>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h3>
 <p>Logging in AutodiffCompositions follows the same procedure as <a class="reference internal" href="Log.html"><span class="doc">logging in a Composition</span></a>. However, since an AutodiffComposition internally converts all of its mechanisms to an equivalent PyTorch model,
 then its inner components are not actually executed. This means that there is limited support for logging parameters of components inside an AutodiffComposition;
@@ -285,8 +286,8 @@ Currently, the only supported parameters are:</p>
 <li><p>the <a class="reference internal" href="AutoAssociativeProjection.html#psyneulink.library.components.projections.pathway.autoassociativeprojection.AutoAssociativeProjection.matrix" title="psyneulink.library.components.projections.pathway.autoassociativeprojection.AutoAssociativeProjection.matrix"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">matrix</span></code></a> parameter of Projections</p></li>
 <li><p>the <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.value" title="psyneulink.core.components.component.Component.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> parameter of its inner components</p></li>
 </ol>
-</div>
-<div class="section" id="nested-execution">
+</section>
+<section id="nested-execution">
 <span id="autodiffcomposition-nested-execution"></span><h3>Nested Execution<a class="headerlink" href="#nested-execution" title="Permalink to this headline">¶</a></h3>
 <p>Like any other <a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a>, an AutodiffComposition may be <a class="reference internal" href="Composition.html#composition-nested"><span class="std std-ref">nested inside another</span></a>.</p>
 <p>The following shows how the AutodiffComposition created in the previous example can be nested and run inside another
@@ -300,13 +301,13 @@ Composition:</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">result1</span> <span class="o">=</span> <span class="n">my_outer_composition</span><span class="o">.</span><span class="n">learn</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">training_input</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="class-reference">
+</section>
+</section>
+<section id="class-reference">
 <span id="autodiffcomposition-class-reference"></span><h2>Class Reference<a class="headerlink" href="#class-reference" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="psyneulink.library.compositions.autodiffcomposition.AutodiffComposition">
-<em class="property">class </em><code class="sig-prename descclassname">psyneulink.library.compositions.autodiffcomposition.</code><code class="sig-name descname">AutodiffComposition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">learning_rate</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">optimizer_type</span><span class="o">=</span><span class="default_value">'sgd'</span></em>, <em class="sig-param"><span class="n">weight_decay</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">loss_spec</span><span class="o">=</span><span class="default_value">'mse'</span></em>, <em class="sig-param"><span class="n">disable_learning</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">refresh_losses</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">disable_cuda</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">cuda_index</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">force_no_retain_graph</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'autodiff_composition'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.library.compositions.autodiffcomposition.AutodiffComposition" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">psyneulink.library.compositions.autodiffcomposition.</code><code class="sig-name descname">AutodiffComposition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">learning_rate</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">optimizer_type</span><span class="o">=</span><span class="default_value">'sgd'</span></em>, <em class="sig-param"><span class="n">weight_decay</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">loss_spec</span><span class="o">=</span><span class="default_value">'mse'</span></em>, <em class="sig-param"><span class="n">disable_learning</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">refresh_losses</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">disable_cuda</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">cuda_index</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">force_no_retain_graph</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">pathways</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'autodiff_composition'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.library.compositions.autodiffcomposition.AutodiffComposition" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subclass of <a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a> that trains models using <a class="reference external" href="https://pytorch.org">PyTorch</a>.
 See <a class="reference internal" href="Composition.html#composition-class-reference"><span class="std std-ref">Composition</span></a> for additional arguments and attributes.</p>
 <dl class="field-list simple">
@@ -400,6 +401,15 @@ If not specified, the Composition will use its automatically generated scheduler
 <li><p><strong>context</strong> – context will be set to self.default_execution_id if unspecified</p></li>
 <li><p><strong>call_before_minibatch</strong> (<em>callable</em>) – called before each minibatch is executed</p></li>
 <li><p><strong>call_after_minibatch</strong> (<em>callable</em>) – called after each minibatch is executed</p></li>
+<li><p><strong>report_output</strong> (<em>ReportOutput : default ReportOutput.OFF</em>) – specifies whether to show output of the Composition and its <a class="reference internal" href="Composition.html#composition-nodes"><span class="std std-ref">Nodes</span></a> trial-by-trial
+as it is generated; see <a class="reference internal" href="Report.html#report-output"><span class="std std-ref">Output Reporting</span></a> for additional details and <a class="reference internal" href="Report.html#psyneulink.core.compositions.report.ReportOutput" title="psyneulink.core.compositions.report.ReportOutput"><code class="xref any py py-class docutils literal notranslate"><span class="pre">ReportOutput</span></code></a> for options.</p></li>
+<li><p><strong>report_params</strong> (<em>ReportParams : default ReportParams.OFF</em>) – specifies whether to show values the <a class="reference internal" href="Parameters.html"><span class="doc">Parameters</span></a> of the Composition and its <a class="reference internal" href="Composition.html#composition-nodes"><span class="std std-ref">Nodes</span></a>
+as part of the output report; see <a class="reference internal" href="Report.html#report-output"><span class="std std-ref">Output Reporting</span></a> for additional details and <a class="reference internal" href="Report.html#psyneulink.core.compositions.report.ReportParams" title="psyneulink.core.compositions.report.ReportParams"><code class="xref any py py-class docutils literal notranslate"><span class="pre">ReportParams</span></code></a> for options.</p></li>
+<li><p><strong>report_progress</strong> (<em>ReportProgress : default ReportProgress.OFF</em>) – specifies whether to report progress of execution in real time; see <a class="reference internal" href="Report.html#report-progress"><span class="std std-ref">Progress Reporting</span></a> for additional
+details.</p></li>
+<li><p><strong>report_simulations</strong> (<em>ReportSimulatons : default ReportSimulations.OFF</em>) – specifies whether to show output and/or progress for <a class="reference internal" href="OptimizationControlMechanism.html#optimizationcontrolmechanism-execution"><span class="std std-ref">simulations</span></a> executed by the Composition’s <a class="reference internal" href="Composition.html#composition-controller"><span class="std std-ref">controller</span></a>; see <a class="reference internal" href="Report.html#report-simulations"><span class="std std-ref">Simulations</span></a> for additional details.</p></li>
+<li><p><strong>report_to_devices</strong> (<em>list</em><em>(</em><a class="reference internal" href="Report.html#psyneulink.core.compositions.report.ReportDevices" title="psyneulink.core.compositions.report.ReportDevices"><em>ReportDevices</em></a><em>) </em><em>: default ReportDevices.CONSOLE</em>) – specifies where output and progress should be reported; see <code class="xref any docutils literal notranslate"><span class="pre">Report_To_Devices</span></code> for additional
+details and <a class="reference internal" href="Report.html#psyneulink.core.compositions.report.ReportDevices" title="psyneulink.core.compositions.report.ReportDevices"><code class="xref any py py-class docutils literal notranslate"><span class="pre">ReportDevices</span></code></a> for options.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -413,7 +423,7 @@ If not specified, the Composition will use its automatically generated scheduler
 
 <dl class="py method">
 <dt id="psyneulink.library.compositions.autodiffcomposition.AutodiffComposition.execute">
-<code class="sig-name descname">execute</code><span class="sig-paren">(</span><em class="sig-param">inputs=None</em>, <em class="sig-param">num_trials=None</em>, <em class="sig-param">minibatch_size=1</em>, <em class="sig-param">do_logging=False</em>, <em class="sig-param">scheduler=None</em>, <em class="sig-param">termination_processing=None</em>, <em class="sig-param">call_before_minibatch=None</em>, <em class="sig-param">call_after_minibatch=None</em>, <em class="sig-param">call_before_time_step=None</em>, <em class="sig-param">call_before_pass=None</em>, <em class="sig-param">call_after_time_step=None</em>, <em class="sig-param">call_after_pass=None</em>, <em class="sig-param">reset_stateful_functions_to=None</em>, <em class="sig-param">context=None</em>, <em class="sig-param">base_context=&lt;psyneulink.core.globals.context.Context object&gt;</em>, <em class="sig-param">clamp_input='soft_clamp'</em>, <em class="sig-param">targets=None</em>, <em class="sig-param">runtime_params=None</em>, <em class="sig-param">bin_execute=False</em>, <em class="sig-param">skip_initialization=False</em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.library.compositions.autodiffcomposition.AutodiffComposition.execute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">execute</code><span class="sig-paren">(</span><em class="sig-param">inputs=None</em>, <em class="sig-param">num_trials=None</em>, <em class="sig-param">minibatch_size=1</em>, <em class="sig-param">do_logging=False</em>, <em class="sig-param">scheduler=None</em>, <em class="sig-param">termination_processing=None</em>, <em class="sig-param">call_before_minibatch=None</em>, <em class="sig-param">call_after_minibatch=None</em>, <em class="sig-param">call_before_time_step=None</em>, <em class="sig-param">call_before_pass=None</em>, <em class="sig-param">call_after_time_step=None</em>, <em class="sig-param">call_after_pass=None</em>, <em class="sig-param">reset_stateful_functions_to=None</em>, <em class="sig-param">context=None</em>, <em class="sig-param">base_context=&lt;psyneulink.core.globals.context.Context object&gt;</em>, <em class="sig-param">clamp_input='soft_clamp'</em>, <em class="sig-param">targets=None</em>, <em class="sig-param">runtime_params=None</em>, <em class="sig-param">execution_mode=&lt;ExecutionMode.Python: 0&gt;</em>, <em class="sig-param">skip_initialization=False</em>, <em class="sig-param">report_output=&lt;ReportOutput.OFF: 0&gt;</em>, <em class="sig-param">report_params=&lt;ReportParams.OFF: 0&gt;</em>, <em class="sig-param">report_progress=&lt;ReportProgress.OFF: 0&gt;</em>, <em class="sig-param">report_simulations=&lt;ReportSimulations.OFF: 0&gt;</em>, <em class="sig-param">report_to_devices=None</em>, <em class="sig-param">report=None</em>, <em class="sig-param">report_num=None</em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.library.compositions.autodiffcomposition.AutodiffComposition.execute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Passes inputs to any <a class="reference internal" href="Composition.html#composition-nodes"><span class="std std-ref">Nodes</span></a> receiving inputs directly from the user (via the “inputs”
 argument) then coordinates with the <a class="reference internal" href="Scheduler.html"><span class="doc">Scheduler</span></a> to execute sets of Nodes that are eligible to execute until
 <a class="reference internal" href="Scheduler.html#scheduler-termination-conditions"><span class="std std-ref">termination conditions</span></a> are met.</p>
@@ -443,8 +453,16 @@ passed the current <em>context</em> (but it is not necessary for your callable t
 passed the current <em>context</em> (but it is not necessary for your callable to take).</p></li>
 <li><p><strong>call_after_pass</strong> (<em>callable : default None</em>) – called after each <a class="reference internal" href="Time.html#psyneulink.core.scheduling.time.TimeScale.PASS" title="psyneulink.core.scheduling.time.TimeScale.PASS"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">PASS</span></code></a> is executed
 passed the current <em>context</em> (but it is not necessary for your callable to take).</p></li>
-<li><p><strong>bin_execute</strong> (<em>bool</em><em> or </em><em>enum.Enum</em><em>[</em><em>LLVM|LLVMexec|Python|PTXExec</em><em>] </em><em>: default Python</em>) – specifies whether to run using the Python interpreter or a <a class="reference internal" href="Composition.html#composition-compilation"><span class="std std-ref">compiled mode</span></a>.
-see <strong>bin_execute</strong> argument of <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.run" title="psyneulink.core.compositions.composition.Composition.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">run</span></code></a> method for additional details.</p></li>
+<li><p><strong>execution_mode</strong> (<em>enum.Enum</em><em>[</em><em>Auto|LLVM|LLVMexec|Python|PTXExec</em><em>] </em><em>: default Python</em>) – specifies whether to run using the Python interpreter or a <a class="reference internal" href="Composition.html#composition-compilation"><span class="std std-ref">compiled mode</span></a>.
+see <strong>execution_mode</strong> argument of <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.run" title="psyneulink.core.compositions.composition.Composition.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">run</span></code></a> method for additional details.</p></li>
+<li><p><strong>report_output</strong> (<em>ReportOutput : default ReportOutput.OFF</em>) – specifies whether to show output of the Composition and its <a class="reference internal" href="Composition.html#composition-nodes"><span class="std std-ref">Nodes</span></a> for the
+execution; see <a class="reference internal" href="Report.html#report-output"><span class="std std-ref">Output Reporting</span></a> for additional details and <a class="reference internal" href="Report.html#psyneulink.core.compositions.report.ReportOutput" title="psyneulink.core.compositions.report.ReportOutput"><code class="xref any py py-class docutils literal notranslate"><span class="pre">ReportOutput</span></code></a> for options.</p></li>
+<li><p><strong>report_params</strong> (<em>ReportParams : default ReportParams.OFF</em>) – specifies whether to show values the <a class="reference internal" href="Parameters.html"><span class="doc">Parameters</span></a> of the Composition and its <a class="reference internal" href="Composition.html#composition-nodes"><span class="std std-ref">Nodes</span></a>
+for the execution; see <a class="reference internal" href="Report.html#report-output"><span class="std std-ref">Output Reporting</span></a> for additional details and <a class="reference internal" href="Report.html#psyneulink.core.compositions.report.ReportParams" title="psyneulink.core.compositions.report.ReportParams"><code class="xref any py py-class docutils literal notranslate"><span class="pre">ReportParams</span></code></a> for options.</p></li>
+<li><p><strong>report_progress</strong> (<em>ReportProgress : default ReportProgress.OFF</em>) – specifies whether to report progress of the execution; see <a class="reference internal" href="Report.html#report-progress"><span class="std std-ref">Progress Reporting</span></a> for additional details.</p></li>
+<li><p><strong>report_simulations</strong> (<em>ReportSimulations : default ReportSimulations.OFF</em>) – specifies whether to show output and/or progress for <a class="reference internal" href="OptimizationControlMechanism.html#optimizationcontrolmechanism-execution"><span class="std std-ref">simulations</span></a> executed by the Composition’s <a class="reference internal" href="Composition.html#composition-controller"><span class="std std-ref">controller</span></a>; see <a class="reference internal" href="Report.html#report-simulations"><span class="std std-ref">Simulations</span></a> for additional details.</p></li>
+<li><p><strong>report_to_devices</strong> (<em>list</em><em>(</em><a class="reference internal" href="Report.html#psyneulink.core.compositions.report.ReportDevices" title="psyneulink.core.compositions.report.ReportDevices"><em>ReportDevices</em></a><em>) </em><em>: default ReportDevices.CONSOLE</em>) – specifies where output and progress should be reported; see <code class="xref any docutils literal notranslate"><span class="pre">Report_To_Devices</span></code> for additional
+details and <a class="reference internal" href="Report.html#psyneulink.core.compositions.report.ReportDevices" title="psyneulink.core.compositions.report.ReportDevices"><code class="xref any py py-class docutils literal notranslate"><span class="pre">ReportDevices</span></code></a> for options.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -458,8 +476,8 @@ see <strong>bin_execute</strong> argument of <a class="reference internal" href=
 
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
              </article>
