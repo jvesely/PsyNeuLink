@@ -6,10 +6,11 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>RegressionCFA &mdash; PsyNeuLink 9.2.2.2 documentation</title>
+  <title>RegressionCFA &mdash; PsyNeuLink 8.7.6.5 documentation</title>
   
 
   
@@ -98,7 +99,7 @@
               
               
                 <div class="version">
-                  9.2.2.2
+                  8.7.6.5
                 </div>
               
             
@@ -202,11 +203,11 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="psyneulink-article" class="psyneulink-article">
               
-  <div class="section" id="regressioncfa">
+  <section id="regressioncfa">
 <h1>RegressionCFA<a class="headerlink" href="#regressioncfa" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<span class="target" id="module-psyneulink.library.compositions.regressioncfa"></span><div class="section" id="contents">
+<span class="target" id="module-psyneulink.library.compositions.regressioncfa"></span><section id="contents">
 <h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><ul class="simple">
@@ -214,23 +215,23 @@
 <li><p><a class="reference internal" href="#regressioncfa-class-reference"><span class="std std-ref">Class Reference</span></a></p></li>
 </ul>
 </div></blockquote>
-</div>
-<div class="section" id="overview">
+</section>
+<section id="overview">
 <span id="regressioncfa-overview"></span><h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>A <a class="reference internal" href="#"><span class="doc">RegressionCFA</span></a> is a subclass of <a class="reference internal" href="CompositionFunctionApproximator.html"><span class="doc">CompositionFunctionApproximator</span></a> that parameterizes a set of <a class="reference internal" href="#psyneulink.library.compositions.regressioncfa.RegressionCFA.regression_weights" title="psyneulink.library.compositions.regressioncfa.RegressionCFA.regression_weights"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">regression_weights</span></code></a> over trials to predict the <a class="reference internal" href="ControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.net_outcome" title="psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.net_outcome"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">net_outcome</span></code></a> for a
 <a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a> (or part of one) controlled by an <a class="reference internal" href="OptimizationControlMechanism.html"><span class="doc">OptimizationControlMechanism</span></a>.  The <a class="reference internal" href="#psyneulink.library.compositions.regressioncfa.RegressionCFA.regression_weights" title="psyneulink.library.compositions.regressioncfa.RegressionCFA.regression_weights"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">regression_weights</span></code></a> are updated by its <code class="xref any docutils literal notranslate"><span class="pre">update_weights</span></code> <a class="reference internal" href="LearningFunctions.html#psyneulink.core.components.functions.learningfunctions.LearningFunction" title="psyneulink.core.components.functions.learningfunctions.LearningFunction"><code class="xref any py py-class docutils literal notranslate"><span class="pre">LearningFunction</span></code></a>
 assigned as its <a class="reference internal" href="CompositionFunctionApproximator.html#psyneulink.core.compositions.compositionfunctionapproximator.CompositionFunctionApproximator.adapt" title="psyneulink.core.compositions.compositionfunctionapproximator.CompositionFunctionApproximator.adapt"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">adapt</span></code></a> method, which is called by the <a class="reference internal" href="CompositionFunctionApproximator.html#psyneulink.core.compositions.compositionfunctionapproximator.CompositionFunctionApproximator.evaluate" title="psyneulink.core.compositions.compositionfunctionapproximator.CompositionFunctionApproximator.evaluate"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">evaluate</span></code></a> method to predict the <a class="reference internal" href="ControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.net_outcome" title="psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.net_outcome"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">net_outcome</span></code></a> for a
-<a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a> (or part of one) controlled by an <code class="xref any docutils literal notranslate"><span class="pre">OptimiziationControlMechanism</span></code>, based on a set of <a class="reference internal" href="OptimizationControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.optimizationcontrolmechanism.OptimizationControlMechanism.feature_values" title="psyneulink.core.components.mechanisms.modulatory.control.optimizationcontrolmechanism.OptimizationControlMechanism.feature_values"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">feature_values</span></code></a>, a <a class="reference internal" href="ControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_allocation" title="psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_allocation"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">control_allocation</span></code></a>,
+<a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a> (or part of one) controlled by an <code class="xref any docutils literal notranslate"><span class="pre">OptimiziationControlMechanism</span></code>, based on a set of <a class="reference internal" href="OptimizationControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.optimizationcontrolmechanism.OptimizationControlMechanism.state_feature_values" title="psyneulink.core.components.mechanisms.modulatory.control.optimizationcontrolmechanism.OptimizationControlMechanism.state_feature_values"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">state_feature_values</span></code></a>, a <a class="reference internal" href="ControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_allocation" title="psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_allocation"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">control_allocation</span></code></a>,
 and the <a class="reference internal" href="ControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.net_outcome" title="psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.net_outcome"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">net_outcome</span></code></a> they produced, passed to it from an <a class="reference internal" href="OptimizationControlMechanism.html"><span class="doc">OptimizationControlMechanism</span></a>.</p>
-<p>The <code class="xref any docutils literal notranslate"><span class="pre">feature_values</span></code> and <a class="reference internal" href="ControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_allocation" title="psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_allocation"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">control_allocation</span></code></a> passed to the RegressorCFA’s <code class="xref any docutils literal notranslate"><span class="pre">adapt</span></code> method, and provided
-as the input to its <code class="xref any docutils literal notranslate"><span class="pre">update_weights</span></code>, are represented in the <a class="reference internal" href="#psyneulink.library.compositions.regressioncfa.RegressionCFA.PredictionVector.vector" title="psyneulink.library.compositions.regressioncfa.RegressionCFA.PredictionVector.vector"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">vector</span></code></a> attribute of a <a class="reference internal" href="#psyneulink.library.compositions.regressioncfa.RegressionCFA.PredictionVector" title="psyneulink.library.compositions.regressioncfa.RegressionCFA.PredictionVector"><code class="xref any py py-class docutils literal notranslate"><span class="pre">PredictionVector</span></code></a> assigned to the RegressorCFA`s <code class="xref any docutils literal notranslate"><span class="pre">prediction_vector</span></code> attribute.  The  <a class="reference internal" href="OptimizationControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.optimizationcontrolmechanism.OptimizationControlMechanism.feature_values" title="psyneulink.core.components.mechanisms.modulatory.control.optimizationcontrolmechanism.OptimizationControlMechanism.feature_values"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">feature_values</span></code></a> are
-assigned to the features field of the <code class="xref any docutils literal notranslate"><span class="pre">prediction_vector</span></code>, and the <code class="xref any docutils literal notranslate"><span class="pre">control_allocation</span></code> is assigned to the control_allocation field of the <code class="xref any docutils literal notranslate"><span class="pre">prediction_vector</span></code>.  The <code class="xref any docutils literal notranslate"><span class="pre">prediction_vector</span></code> may also contain fields
+<p>The <code class="xref any docutils literal notranslate"><span class="pre">state_feature_values</span></code> and <a class="reference internal" href="ControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_allocation" title="psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_allocation"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">control_allocation</span></code></a> passed to the RegressorCFA’s <code class="xref any docutils literal notranslate"><span class="pre">adapt</span></code> method, and provided
+as the input to its <code class="xref any docutils literal notranslate"><span class="pre">update_weights</span></code>, are represented in the <a class="reference internal" href="#psyneulink.library.compositions.regressioncfa.RegressionCFA.PredictionVector.vector" title="psyneulink.library.compositions.regressioncfa.RegressionCFA.PredictionVector.vector"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">vector</span></code></a> attribute of a <a class="reference internal" href="#psyneulink.library.compositions.regressioncfa.RegressionCFA.PredictionVector" title="psyneulink.library.compositions.regressioncfa.RegressionCFA.PredictionVector"><code class="xref any py py-class docutils literal notranslate"><span class="pre">PredictionVector</span></code></a> assigned to the RegressorCFA`s <code class="xref any docutils literal notranslate"><span class="pre">prediction_vector</span></code> attribute.  The  <a class="reference internal" href="OptimizationControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.optimizationcontrolmechanism.OptimizationControlMechanism.state_feature_values" title="psyneulink.core.components.mechanisms.modulatory.control.optimizationcontrolmechanism.OptimizationControlMechanism.state_feature_values"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">state_feature_values</span></code></a> are
+assigned to the state_features field of the <code class="xref any docutils literal notranslate"><span class="pre">prediction_vector</span></code>, and the <code class="xref any docutils literal notranslate"><span class="pre">control_allocation</span></code> is assigned to the control_allocation field of the <code class="xref any docutils literal notranslate"><span class="pre">prediction_vector</span></code>.  The <code class="xref any docutils literal notranslate"><span class="pre">prediction_vector</span></code> may also contain fields
 for the <code class="xref any docutils literal notranslate"><span class="pre">costs</span> <span class="pre">ControlMechanism.costs</span></code> associated with the <a class="reference internal" href="ControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_allocation" title="psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_allocation"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">control_allocation</span></code></a>
 and for interactions among those terms.</p>
 <p>The <code class="xref any docutils literal notranslate"><span class="pre">regression_weights</span></code> returned by the <code class="xref any docutils literal notranslate"><span class="pre">update_weights</span></code> are used by the RegressorCFA’s <code class="xref any docutils literal notranslate"><span class="pre">evaluate</span></code> method to predict
 the <a class="reference internal" href="ControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.net_outcome" title="psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.net_outcome"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">net_outcome</span></code></a> from the <code class="xref any docutils literal notranslate"><span class="pre">prediction_vector</span></code>.</p>
-</div>
-<div class="section" id="class-reference">
+</section>
+<section id="class-reference">
 <span id="regressioncfa-class-reference"></span><h2>Class Reference<a class="headerlink" href="#class-reference" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="psyneulink.library.compositions.regressioncfa.PV">
@@ -239,7 +240,7 @@ the <a class="reference internal" href="ControlMechanism.html#psyneulink.core.co
 <dl class="py attribute">
 <dt id="psyneulink.library.compositions.regressioncfa.PV.F">
 <code class="sig-name descname">F</code><a class="headerlink" href="#psyneulink.library.compositions.regressioncfa.PV.F" title="Permalink to this definition">¶</a></dt>
-<dd><p>Main effect of <code class="xref any docutils literal notranslate"><span class="pre">feature_values</span></code>.</p>
+<dd><p>Main effect of <code class="xref any docutils literal notranslate"><span class="pre">state_feature_values</span></code>.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -251,7 +252,7 @@ the <a class="reference internal" href="ControlMechanism.html#psyneulink.core.co
 <dl class="py attribute">
 <dt id="psyneulink.library.compositions.regressioncfa.PV.FF">
 <code class="sig-name descname">FF</code><a class="headerlink" href="#psyneulink.library.compositions.regressioncfa.PV.FF" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interaction among <code class="xref any docutils literal notranslate"><span class="pre">feature_values</span></code>.</p>
+<dd><p>Interaction among <code class="xref any docutils literal notranslate"><span class="pre">state_feature_values</span></code>.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -263,28 +264,28 @@ the <a class="reference internal" href="ControlMechanism.html#psyneulink.core.co
 <dl class="py attribute">
 <dt id="psyneulink.library.compositions.regressioncfa.PV.FC">
 <code class="sig-name descname">FC</code><a class="headerlink" href="#psyneulink.library.compositions.regressioncfa.PV.FC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interaction between <code class="xref any docutils literal notranslate"><span class="pre">feature_values</span></code> and
+<dd><p>Interaction between <code class="xref any docutils literal notranslate"><span class="pre">state_feature_values</span></code> and
 <a class="reference internal" href="ControlSignal.html#psyneulink.core.components.ports.modulatorysignals.controlsignal.ControlSignal.value" title="psyneulink.core.components.ports.modulatorysignals.controlsignal.ControlSignal.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">values</span></code></a> of <a class="reference internal" href="ControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_signals" title="psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_signals"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">control_signals</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="psyneulink.library.compositions.regressioncfa.PV.FFC">
 <code class="sig-name descname">FFC</code><a class="headerlink" href="#psyneulink.library.compositions.regressioncfa.PV.FFC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interaction between interactions of <code class="xref any docutils literal notranslate"><span class="pre">feature_values</span></code> and <a class="reference internal" href="ControlSignal.html#psyneulink.core.components.ports.modulatorysignals.controlsignal.ControlSignal.value" title="psyneulink.core.components.ports.modulatorysignals.controlsignal.ControlSignal.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">values</span></code></a> of
+<dd><p>Interaction between interactions of <code class="xref any docutils literal notranslate"><span class="pre">state_feature_values</span></code> and <a class="reference internal" href="ControlSignal.html#psyneulink.core.components.ports.modulatorysignals.controlsignal.ControlSignal.value" title="psyneulink.core.components.ports.modulatorysignals.controlsignal.ControlSignal.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">values</span></code></a> of
 <a class="reference internal" href="ControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_signals" title="psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_signals"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">control_signals</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="psyneulink.library.compositions.regressioncfa.PV.FCC">
 <code class="sig-name descname">FCC</code><a class="headerlink" href="#psyneulink.library.compositions.regressioncfa.PV.FCC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interaction between <code class="xref any docutils literal notranslate"><span class="pre">feature_values</span></code> and
+<dd><p>Interaction between <code class="xref any docutils literal notranslate"><span class="pre">state_feature_values</span></code> and
 interactions among <a class="reference internal" href="ControlSignal.html#psyneulink.core.components.ports.modulatorysignals.controlsignal.ControlSignal.value" title="psyneulink.core.components.ports.modulatorysignals.controlsignal.ControlSignal.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">values</span></code></a> of <a class="reference internal" href="ControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_signals" title="psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_signals"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">control_signals</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="psyneulink.library.compositions.regressioncfa.PV.FFCC">
 <code class="sig-name descname">FFCC</code><a class="headerlink" href="#psyneulink.library.compositions.regressioncfa.PV.FFCC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interaction between interactions of <code class="xref any docutils literal notranslate"><span class="pre">feature_values</span></code> and interactions among <a class="reference internal" href="ControlSignal.html#psyneulink.core.components.ports.modulatorysignals.controlsignal.ControlSignal.value" title="psyneulink.core.components.ports.modulatorysignals.controlsignal.ControlSignal.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">values</span></code></a> of <a class="reference internal" href="ControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_signals" title="psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_signals"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">control_signals</span></code></a>.</p>
+<dd><p>Interaction between interactions of <code class="xref any docutils literal notranslate"><span class="pre">state_feature_values</span></code> and interactions among <a class="reference internal" href="ControlSignal.html#psyneulink.core.components.ports.modulatorysignals.controlsignal.ControlSignal.value" title="psyneulink.core.components.ports.modulatorysignals.controlsignal.ControlSignal.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">values</span></code></a> of <a class="reference internal" href="ControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_signals" title="psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_signals"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">control_signals</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -311,7 +312,7 @@ and attributes.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>update_weights</strong> (<a class="reference internal" href="LearningFunctions.html#psyneulink.core.components.functions.learningfunctions.LearningFunction" title="psyneulink.core.components.functions.learningfunctions.LearningFunction"><em>LearningFunction</em></a><em>, </em><em>function</em><em> or </em><em>method : default BayesGLM</em>) – parameterizes the <a class="reference internal" href="#psyneulink.library.compositions.regressioncfa.RegressionCFA.regression_weights" title="psyneulink.library.compositions.regressioncfa.RegressionCFA.regression_weights"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">regression_weights</span></code></a> used by the <a class="reference internal" href="#psyneulink.library.compositions.regressioncfa.RegressionCFA.evaluate" title="psyneulink.library.compositions.regressioncfa.RegressionCFA.evaluate"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">evaluate</span></code></a> method to improve its prediction of <a class="reference internal" href="ControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.net_outcome" title="psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.net_outcome"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">net_outcome</span></code></a>
-from a given set of <code class="xref any docutils literal notranslate"><span class="pre">feature_values</span></code> and a
+from a given set of <code class="xref any docutils literal notranslate"><span class="pre">state_feature_values</span></code> and a
 <a class="reference internal" href="ControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_allocation" title="psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_allocation"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">control_allocation</span></code></a> provided by an <code class="xref any docutils literal notranslate"><span class="pre">OptimiziationControlMechanism</span></code>.
 It must take a 2d array as its first argument, the first item of which is an array the same length of the
 <code class="xref any docutils literal notranslate"><span class="pre">vector</span></code> attribute of its <code class="xref any docutils literal notranslate"><span class="pre">prediction_vector</span></code>, and the second item a 1d array containing a scalar
@@ -326,7 +327,7 @@ If <code class="xref any docutils literal notranslate"><span class="pre">None</s
 <dt id="psyneulink.library.compositions.regressioncfa.RegressionCFA.update_weights">
 <code class="sig-name descname">update_weights</code><a class="headerlink" href="#psyneulink.library.compositions.regressioncfa.RegressionCFA.update_weights" title="Permalink to this definition">¶</a></dt>
 <dd><p>parameterizes the <a class="reference internal" href="#psyneulink.library.compositions.regressioncfa.RegressionCFA.regression_weights" title="psyneulink.library.compositions.regressioncfa.RegressionCFA.regression_weights"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">regression_weights</span></code></a> used by the <a class="reference internal" href="#psyneulink.library.compositions.regressioncfa.RegressionCFA.evaluate" title="psyneulink.library.compositions.regressioncfa.RegressionCFA.evaluate"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">evaluate</span></code></a> method to improve prediction of <a class="reference internal" href="ControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.net_outcome" title="psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.net_outcome"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">net_outcome</span></code></a>
-from a given set of <code class="xref any docutils literal notranslate"><span class="pre">feature_values</span></code> and a
+from a given set of <code class="xref any docutils literal notranslate"><span class="pre">state_feature_values</span></code> and a
 <a class="reference internal" href="ControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_allocation" title="psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism.control_allocation"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">control_allocation</span></code></a> provided by an <code class="xref any docutils literal notranslate"><span class="pre">OptimiziationControlMechanism</span></code>;
 its result is assigned as the value of the <code class="xref any docutils literal notranslate"><span class="pre">regression_weights</span></code> attribute.</p>
 <dl class="field-list simple">
@@ -459,7 +460,7 @@ to generate predicted <code class="xref any docutils literal notranslate"><span 
 <dt id="psyneulink.library.compositions.regressioncfa.RegressionCFA.adapt">
 <code class="sig-name descname">adapt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">feature_values</span></em>, <em class="sig-param"><span class="n">control_allocation</span></em>, <em class="sig-param"><span class="n">net_outcome</span></em>, <em class="sig-param"><span class="n">context</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.library.compositions.regressioncfa.RegressionCFA.adapt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update <code class="xref any docutils literal notranslate"><span class="pre">regression_weights</span></code> so as to improve prediction of
-<strong>net_outcome</strong> from <strong>feature_values</strong> and <strong>control_allocation</strong>.</p>
+<strong>net_outcome</strong> from <strong>state_feature_values</strong> and <strong>control_allocation</strong>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -468,7 +469,7 @@ to generate predicted <code class="xref any docutils literal notranslate"><span 
 <dd><p>Update prediction_vector &lt;RegressorCFA.prediction_vector&gt;`,
 then multiply by regression_weights.</p>
 <p>Uses the current values of <code class="xref any docutils literal notranslate"><span class="pre">regression_weights</span></code> together with
-values of <strong>control_allocation</strong> and <strong>feature_values</strong> arguments to generate predicted <code class="xref any docutils literal notranslate"><span class="pre">net_outcome</span></code>.</p>
+values of <strong>control_allocation</strong> and <strong>state_feature_values</strong> arguments to generate predicted <code class="xref any docutils literal notranslate"><span class="pre">net_outcome</span></code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If this method is assigned as the <code class="xref any docutils literal notranslate"><span class="pre">objective_funtion</span> <span class="pre">of</span> <span class="pre">a</span> <span class="pre">`GradientOptimization</span></code> <a class="reference internal" href="Function.html"><span class="doc">Function</span></a>,
@@ -487,7 +488,7 @@ attribute.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>feature_values</strong> (<em>2d nparray</em>) – arrays of features to assign as the <a class="reference internal" href="#psyneulink.library.compositions.regressioncfa.PV.F" title="psyneulink.library.compositions.regressioncfa.PV.F"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">PV.F</span></code></a> term of <a class="reference internal" href="#psyneulink.library.compositions.regressioncfa.RegressionCFA.PredictionVector.terms" title="psyneulink.library.compositions.regressioncfa.RegressionCFA.PredictionVector.terms"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">terms</span></code></a>.</p></li>
+<li><p><strong>feature_values</strong> (<em>2d nparray</em>) – arrays of state_features to assign as the <a class="reference internal" href="#psyneulink.library.compositions.regressioncfa.PV.F" title="psyneulink.library.compositions.regressioncfa.PV.F"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">PV.F</span></code></a> term of <a class="reference internal" href="#psyneulink.library.compositions.regressioncfa.RegressionCFA.PredictionVector.terms" title="psyneulink.library.compositions.regressioncfa.RegressionCFA.PredictionVector.terms"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">terms</span></code></a>.</p></li>
 <li><p><strong>control_signals</strong> (<em>List</em><em>[</em><a class="reference internal" href="ControlSignal.html#psyneulink.core.components.ports.modulatorysignals.controlsignal.ControlSignal" title="psyneulink.core.components.ports.modulatorysignals.controlsignal.ControlSignal"><em>ControlSignal</em></a><em>]</em>) – list containing the <a class="reference internal" href="ControlSignal.html"><span class="doc">ControlSignals</span></a> of an <a class="reference internal" href="OptimizationControlMechanism.html"><span class="doc">OptimizationControlMechanism</span></a>;  the <a class="reference internal" href="Projection.html#psyneulink.core.components.projections.projection.Projection_Base.variable" title="psyneulink.core.components.projections.projection.Projection_Base.variable"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">variable</span></code></a> of each is assigned as the <a class="reference internal" href="#psyneulink.library.compositions.regressioncfa.PV.C" title="psyneulink.library.compositions.regressioncfa.PV.C"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">PV.C</span></code></a> term of <a class="reference internal" href="#psyneulink.library.compositions.regressioncfa.RegressionCFA.PredictionVector.terms" title="psyneulink.library.compositions.regressioncfa.RegressionCFA.PredictionVector.terms"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">terms</span></code></a>.</p></li>
 <li><p><strong>specified_terms</strong> (<em>List</em><em>[</em><a class="reference internal" href="#psyneulink.library.compositions.regressioncfa.PV" title="psyneulink.library.compositions.regressioncfa.PV"><em>PV</em></a><em>]</em>) – terms to include in <a class="reference internal" href="#psyneulink.library.compositions.regressioncfa.RegressionCFA.PredictionVector.vector" title="psyneulink.library.compositions.regressioncfa.RegressionCFA.PredictionVector.vector"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">vector</span></code></a>; entries must be members of the <a class="reference internal" href="#psyneulink.library.compositions.regressioncfa.PV" title="psyneulink.library.compositions.regressioncfa.PV"><code class="xref any py py-class docutils literal notranslate"><span class="pre">PV</span></code></a> Enum.</p></li>
 </ul>
@@ -583,7 +584,7 @@ corresponding to each term are listed in <a class="reference internal" href="#ps
 <code class="sig-name descname">update_vector</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">variable</span></em>, <em class="sig-param"><span class="n">feature_values</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">context</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.library.compositions.regressioncfa.RegressionCFA.PredictionVector.update_vector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update vector with flattened versions of values returned from the <a class="reference internal" href="#psyneulink.library.compositions.regressioncfa.RegressionCFA.PredictionVector.compute_terms" title="psyneulink.library.compositions.regressioncfa.RegressionCFA.PredictionVector.compute_terms"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">compute_terms</span></code></a> method of the <code class="xref any docutils literal notranslate"><span class="pre">prediction_vector</span></code>.</p>
 <p>Updates <a class="reference internal" href="#psyneulink.library.compositions.regressioncfa.RegressionCFA.PredictionVector.vector" title="psyneulink.library.compositions.regressioncfa.RegressionCFA.PredictionVector.vector"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">vector</span></code></a> with current values of variable and, optionally,
-and feature_values.</p>
+and state_feature_values.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -598,8 +599,8 @@ Values of entries are nd arrays.</p>
 
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
              </article>
