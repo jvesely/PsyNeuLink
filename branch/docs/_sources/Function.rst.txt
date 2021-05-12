@@ -2,6 +2,13 @@ Function
 ========
 
 .. toctree::
+   :maxdepth: 1
+
+   NonStatefulFunctions
+   StatefulFunctions
+   UserDefinedFunction
+
+.. toctree::
    :maxdepth: 3
 
 .. automodule:: psyneulink.core.components.functions.function

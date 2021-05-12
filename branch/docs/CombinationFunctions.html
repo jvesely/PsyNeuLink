@@ -6,10 +6,11 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>CombinationFunctions &mdash; PsyNeuLink 0.8.5.0+7.gef02358329 documentation</title>
+  <title>CombinationFunctions &mdash; PsyNeuLink 0.8.8.1+30.g7353c2e4db documentation</title>
   
 
   
@@ -96,7 +97,7 @@
               
               
                 <div class="version">
-                  0.8.5.0+7
+                  0.8.8.1+30
                 </div>
               
             
@@ -194,7 +195,7 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="psyneulink-article" class="psyneulink-article">
               
-  <div class="section" id="combinationfunctions">
+  <section id="combinationfunctions">
 <h1>CombinationFunctions<a class="headerlink" href="#combinationfunctions" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
@@ -206,7 +207,7 @@
 <li><p><a class="reference internal" href="#psyneulink.core.components.functions.combinationfunctions.CombineMeans" title="psyneulink.core.components.functions.combinationfunctions.CombineMeans"><code class="xref any py py-class docutils literal notranslate"><span class="pre">CombineMeans</span></code></a></p></li>
 <li><p><a class="reference internal" href="#psyneulink.core.components.functions.combinationfunctions.PredictionErrorDeltaFunction" title="psyneulink.core.components.functions.combinationfunctions.PredictionErrorDeltaFunction"><code class="xref any py py-class docutils literal notranslate"><span class="pre">PredictionErrorDeltaFunction</span></code></a></p></li>
 </ul>
-<div class="section" id="overview">
+<section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>Functions that combine multiple items with the same shape, yielding a result with a single item that has the same
 shape as the individual items.</p>
@@ -560,7 +561,7 @@ or a list containing either or both.  Each integer must be an index of an item i
 1d array, and that 1d array is included in the resulting 2d array in the order it appears in <strong>arrangement</strong>.
 If <strong>arrangement</strong> is specified, then only the items of <code class="xref any docutils literal notranslate"><span class="pre">variable</span></code> referenced in the
 specification are included in the result; if <strong>arrangement</strong> is not specified, all of the items of <code class="xref any docutils literal notranslate"><span class="pre">variable</span></code> are concatenated into a single 1d array (i.e., it functions identically to <a class="reference internal" href="#psyneulink.core.components.functions.combinationfunctions.Concatenate" title="psyneulink.core.components.functions.combinationfunctions.Concatenate"><code class="xref any py py-class docutils literal notranslate"><span class="pre">Concatenate</span></code></a>).</p>
-<p><code class="xref any docutils literal notranslate"><span class="pre">function</span></code> returns a 2d array with the items of <a class="reference internal" href="AutoAssociativeLearningMechanism.html#psyneulink.library.components.mechanisms.modulatory.learning.autoassociativelearningmechanism.AutoAssociativeLearningMechanism.variable" title="psyneulink.library.components.mechanisms.modulatory.learning.autoassociativelearningmechanism.AutoAssociativeLearningMechanism.variable"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">variable</span></code></a> rearranged
+<p><code class="xref any docutils literal notranslate"><span class="pre">function</span></code> returns a 2d array with the items of <a class="reference internal" href="ControlProjection.html#psyneulink.core.components.projections.modulatory.controlprojection.ControlProjection.variable" title="psyneulink.core.components.projections.modulatory.controlprojection.ControlProjection.variable"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">variable</span></code></a> rearranged
 (and possibly concatenated) as specified by <strong>arrangement</strong>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span><span class="n">arrangement</span><span class="o">=</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),(</span><span class="mi">0</span><span class="p">)])</span>
@@ -1167,8 +1168,8 @@ parameters in arguments of the constructor.</p></li>
 
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
              </article>
