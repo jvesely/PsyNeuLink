@@ -2916,16 +2916,17 @@ class Mechanism_Base(Mechanism):
         builder.store(builder.load(params_in), params_out)
 
         # Filter out param ports without corresponding params for this function
-        param_ports = [p for p in self._parameter_ports if p.name in obj.llvm_param_ids]
+        param_port_ids = [p_id for p_id in obj.llvm_param_ids if getattr(obj.parameters, p_id, None) in self._parameter_ports]
+        param_ports = [self._parameter_ports[getattr(obj.parameters, p_id)] for p_id in param_port_ids]
 
         def _get_output_ptr(b, i):
             ptr = pnlvm.helpers.get_param_ptr(b, obj, params_out,
-                                              param_ports[i].name)
+                                              param_port_ids[i])
             return b, ptr
 
         def _fill_input(b, p_input, i):
             param_in_ptr = pnlvm.helpers.get_param_ptr(b, obj, params_in,
-                                                       param_ports[i].name)
+                                                       param_port_ids[i])
             # Parameter port inputs are {original parameter, [modulations]},
             # fill in the first one.
             data_ptr = builder.gep(p_input, [ctx.int32_ty(0), ctx.int32_ty(0)])
