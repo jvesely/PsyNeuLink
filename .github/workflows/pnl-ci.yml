@@ -37,9 +37,22 @@ jobs:
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2.2.2
+      if: matrix.python-version != '3.7' || ! startsWith(matrix.os, 'macos')
       with:
         python-version: ${{ matrix.python-version }}
         architecture: ${{ matrix.python-architecture }}
+
+    - name: Set up homebrew Python ${{ matrix.python-version }}
+      if: matrix.python-version == '3.7' && startsWith(matrix.os, 'macos')
+      shell: bash
+      run: |
+        brew install python@3.7
+        /usr/local/opt/python@3.7/bin/python3 --version
+        /usr/local/opt/python@3.7/bin/python3 -m venv ~/py3.7
+        source ~/py3.7/bin/activate
+        # Export venv variables
+        echo "VIRTUAL_ENV=$VIRTUAL_ENV" >> $GITHUB_ENV
+        echo ~/py3.7/bin >> $GITHUB_PATH
 
     - name: Get pip cache location
       shell: bash
