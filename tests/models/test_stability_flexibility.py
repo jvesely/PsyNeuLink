@@ -71,11 +71,18 @@ def generateTrialSequence(N, Frequency):
 
 # Stability-Flexibility Model
 @pytest.mark.benchmark
-# ExecutionMode.LLVM takes too long to compile
-@pytest.mark.usefixtures("comp_mode_no_llvm")
 @pytest.mark.parametrize("num_generators", [3,
                                             pytest.param(100000, marks=pytest.mark.stress)])
-def test_stability_flexibility(comp_mode, benchmark, num_generators):
+@pytest.mark.parametrize("mode", pytest.helpers.get_comp_execution_modes() +
+                                 [pytest.helpers.cuda_param('Python-PTX'),
+                                  pytest.param('Python-LLVM', marks=pytest.mark.llvm)])
+def test_stability_flexibility(mode, benchmark, num_generators):
+
+    if str(mode).startswith('Python-'):
+        ocm_mode = mode.split('-')[1]
+        mode = pnl.ExecutionMode.Python
+    else:
+        ocm_mode = 'Python'
 
     # 16 is minimum number of trial inputs that can be generated
     taskTrain, stimulusTrain, cueTrain, correctResponse = generateTrialSequence(16, 0.5)
@@ -246,6 +253,7 @@ def test_stability_flexibility(comp_mode, benchmark, num_generators):
             function=pnl.GridSearch(save_values=True),
             agent_rep=stabilityFlexibility,
             objective_mechanism=objectiveMech,
+            comp_execution_mode=ocm_mode,
             control_signals=pnl.ControlSignal(
                 modulates=('seed-function', decisionMaker),
                 modulation=pnl.OVERRIDE,
@@ -261,13 +269,20 @@ def test_stability_flexibility(comp_mode, benchmark, num_generators):
               cueInterval: cueTrain,
               correctResponseInfo: correctResponse}
 
-    benchmark(stabilityFlexibility.run, inputs, execution_mode=comp_mode, num_trials=1)
+    benchmark(stabilityFlexibility.run, inputs, execution_mode=mode, num_trials=1)
 
     print(stabilityFlexibility.results[0])
     print(stabilityFlexibility.controller.function.saved_values)
     if num_generators == 3:
-        assert np.allclose(stabilityFlexibility.results[0], [[1200.], [0.2], [0.821]])
+        assert np.allclose(stabilityFlexibility.results[0], [[1200.], [0.2], [0.266]])
         # saved values are only available in Python, and are overwritten after every invocation
-        if comp_mode == pnl.ExecutionMode.Python and not benchmark.enabled:
+        if mode == pnl.ExecutionMode.Python and not benchmark.enabled:
             assert np.allclose(np.squeeze(stabilityFlexibility.controller.function.saved_values),
-                               [0.821, 0.662, -0.499])
+                               [0.077, 0.266, 0.06])
+
+    if num_generators == 100000 and mode == pnl.ExecutionMode.Python:
+        data = stabilityFlexibility.controller.function.saved_values
+
+        from matplotlib import pyplot as plt
+        plt.hist(data, bins=600, range=[-3.0,3.0])
+        plt.show()
