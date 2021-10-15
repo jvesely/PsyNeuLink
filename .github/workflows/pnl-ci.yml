@@ -42,13 +42,28 @@ jobs:
         python-version: ${{ matrix.python-version }}
         architecture: ${{ matrix.python-architecture }}
 
-    - name: Set up homebrew Python ${{ matrix.python-version }}
+    - name: Set up Python ${{ matrix.python-version }} from source
       if: matrix.python-version == '3.7' && startsWith(matrix.os, 'macos')
       shell: bash
       run: |
-        brew install python@3.7
-        /usr/local/opt/python@3.7/bin/python3 --version
-        /usr/local/opt/python@3.7/bin/python3 -m venv ~/py3.7
+        wget https://www.python.org/ftp/python/3.7.12/Python-3.7.12.tgz -O ~/Python-3.7.12.tgz
+        tar -xzf ~/Python-3.7.12.tgz -C ~/
+        brew install openssl readline zlib
+        mkdir ~/python-install
+
+        cd ~/Python-3.7.12
+        PKG_CONFIG_PATH="$(brew --prefix openssl)/lib/pkgconfig" \
+        CPPFLAGS="-I$(brew --prefix readline)/include -I$(brew --prefix zlib)/include" \
+        LDFLAGS="-L$(brew --prefix readline)/lib -L$(brew --prefix zlib)/lib" \
+        ./configure  && make install prefix=~/python-install
+
+        echo "LIST BIN"
+        ls ~/python-install/bin
+        echo "GET VERSION!!!"
+        ~/python-install/bin/python3 --version
+        echo "install venv!!!!!"
+        ~/python-install/bin/python3 -m venv ~/py3.7
+
         source ~/py3.7/bin/activate
         # Export venv variables
         echo "VIRTUAL_ENV=$VIRTUAL_ENV" >> $GITHUB_ENV
