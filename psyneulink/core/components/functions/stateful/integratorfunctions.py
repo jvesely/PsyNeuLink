@@ -27,6 +27,7 @@ Functions that integrate current value of input with previous value.
 """
 
 import contextlib
+import numba
 import numpy as np
 import warnings
 
@@ -626,6 +627,7 @@ class AccumulatorIntegrator(IntegratorFunction):  # ----------------------------
                                                                                            param_name)._get(context)
                     self._set_parameter_value(param_name, runtime_params[param_name], context)
 
+    # @numba.jit # doesn't work: ???
     def _function(self,
                   variable=None,
                   context=None,
@@ -861,6 +863,7 @@ class SimpleIntegrator(IntegratorFunction):  # ---------------------------------
             prefs=prefs,
         )
 
+    # @numba.jit # doesn't work: ???
     def _function(self,
                   variable=None,
                   context=None,
@@ -1207,6 +1210,7 @@ class AdaptiveIntegrator(IntegratorFunction):  # -------------------------------
         builder.store(res, vo_ptr)
         builder.store(res, prev_ptr)
 
+    # @numba.jit # doesn't work: ???
     def _function(self,
                   variable=None,
                   context=None,
@@ -1707,6 +1711,7 @@ class DualAdaptiveIntegrator(IntegratorFunction):  # ---------------------------
                 raise FunctionError("\'{}\' arg for {} must be one of the following: {}".
                                     format(OPERATION, self.name, OPERATIONS))
 
+    # @numba.jit # doesn't work: argument type inference
     def _function(self,
                   variable=None,
                   context=None,
@@ -2098,6 +2103,7 @@ class InteractiveActivationIntegrator(IntegratorFunction):  # ------------------
                 raise FunctionError("Value(s) specified for {} argument of {} ({}) must be in interval [0,1]".
                                     format(repr(DECAY), self.__class__.__name__, decay))
 
+    # @numba.jit # doesn't work: argument type inference
     def _function(self, variable=None, context=None, params=None):
         """
 
@@ -2508,6 +2514,7 @@ class DriftDiffusionIntegrator(IntegratorFunction):  # -------------------------
     def _initialize_previous_value(self, initializer, context=None):
         return super()._initialize_previous_value(self.parameters._parse_initializer(initializer), context)
 
+    # @numba.jit # doesn't work: ???
     def _function(self,
                   variable=None,
                   context=None,
@@ -3164,6 +3171,7 @@ class DriftOnASphereIntegrator(IntegratorFunction):
             raise FunctionError(f"'noise' must be length {d - 1}.")
 
     # --- Integration step ---
+    # @numba.jit # doesn't work: ???
     def _function(self, variable=None, context=None, params=None):
         """
                 Compute one integration step on the unit sphere.
@@ -3604,6 +3612,7 @@ class OrnsteinUhlenbeckIntegrator(IntegratorFunction):  # ----------------------
     def _initialize_previous_value(self, initializer, context=None):
         return super()._initialize_previous_value(self.parameters._parse_initializer(initializer), context)
 
+    # @numba.jit # doesn't work: argument type inference
     def _function(self,
                   variable=None,
                   context=None,
@@ -3886,6 +3895,7 @@ class LeakyCompetingIntegrator(IntegratorFunction):  # -------------------------
             prefs=prefs
         )
 
+    # @numba.jit # doesn't work: argument type inference
     def _function(self,
                   variable=None,
                   context=None,
@@ -4843,6 +4853,7 @@ class FitzHughNagumoIntegrator(
 
         return val
 
+    # @numba.jit # doesn't work: Untyped global name 'convert_all_elements_to_np_array'
     def _function(self,
                   variable=None,
                   context=None,

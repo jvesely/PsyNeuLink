@@ -148,6 +148,7 @@ import types
 import warnings
 from enum import Enum, IntEnum
 
+import numba
 import numpy as np
 try:
     import torch
@@ -762,7 +763,6 @@ class Function_Base(Function):
         variable=None,
         context=None,
         params=None,
-
     ):
         pass
 
@@ -781,6 +781,7 @@ class Function_Base(Function):
             raise FunctionError(f"{param} is not a valid specification for "
                                 f"the {param_name} argument of {self.__class__.__name__}{owner_name}.")
 
+    # @numba.jit # doesn't work: Use of unsupported opcode (LOAD_SUPER_ATTR) found.
     def _get_current_parameter_value(self, param_name, context=None):
         try:
             param = getattr(self.parameters, param_name)
@@ -1189,6 +1190,7 @@ class ArgumentTherapy(Function_Base):
 
         super()._validate_params(request_set, target_set, context)
 
+    # @numba.jit # doesn't work: argument type inference
     def _function(self,
                  variable=None,
                  context=None,

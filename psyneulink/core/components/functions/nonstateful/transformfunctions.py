@@ -38,6 +38,7 @@ import numbers
 import types
 import warnings
 
+import numba
 import numpy as np
 
 try:
@@ -315,6 +316,7 @@ class Concatenate(TransformFunction):  # ---------------------------------------
             if not is_numeric_scalar(offset):
                 raise FunctionError("{} param of {} ({}) must be a scalar".format(OFFSET, self.name, offset))
 
+    # @numba.jit # doesn't work: argument type inference
     def _function(self,
                  variable=None,
                  context=None,
@@ -614,6 +616,7 @@ class Rearrange(TransformFunction):  # -----------------------------------------
             indices.extend(item)
         return indices
 
+    # @numba.jit # doesn't work: crash ???
     def _function(self,
                  variable=None,
                  context=None,
@@ -913,6 +916,7 @@ class Reduce(TransformFunction):  # --------------------------------------------
             if not is_numeric_scalar(offset):
                 raise FunctionError("{} param of {} ({}) must be a scalar".format(OFFSET, self.name, offset))
 
+    # @numba.jit # doesn't work: ???
     def _function(self,
                  variable=None,
                  context=None,
@@ -1409,6 +1413,7 @@ class LinearCombination(
                         #     raise FunctionError("Operation param ({0}) must be Operation.SUM or Operation.PRODUCT".
                         #     format(operation))
 
+    # @numba.jit # doesn't work: ???
     def _function(self,
                  variable=None,
                  context=None,
@@ -2287,6 +2292,7 @@ class MatrixTransform(TransformFunction):  # -----------------------------------
             raise AutodiffCompositionError(f"The 'operation' parameter of {function.componentName} is not supported "
                                            f"by AutodiffComposition; use 'DOT_PRODUCT' or 'L0'.")
 
+    # @numba.jit # doesn't work: ???
     def _function(self,
                  variable=None,
                  context=None,
@@ -2550,6 +2556,7 @@ class MatrixMemory(TransformFunction): #
     def _parse_scores_function_variable(self, variable, context=None):  # noqa U100
         return variable[0]  # MatrixTransform only uses query
 
+    # @numba.jit # doesn't work: argument type inference
     def _function(self,
                  variable:Optional[Union[list, np.array]]=None,
                  context=None,
@@ -3080,6 +3087,7 @@ class CombineMeans(TransformFunction):  # --------------------------------------
                     #     raise FunctionError("Operation param ({0}) must be Operation.SUM or Operation.PRODUCT".
                     #     format(operation))
 
+    # @numba.jit # doesn't work: generators/comprehensions ???
     def _function(self,
                  variable=None,
                  context=None,
@@ -3314,6 +3322,7 @@ class PredictionErrorDeltaFunction(TransformFunction):
                         len(target_set[WEIGHTS]),
                         len(self.defaults.variable.shape)))
 
+    # @numba.jit # doesn't work: argument type inference
     def _function(self,
                  variable=None,
                  context=None,

@@ -100,6 +100,7 @@ Class Reference
 
 import leabra
 import numbers
+import numba
 
 import numpy as np
 
@@ -265,6 +266,7 @@ class LeabraFunction(Function_Base):
                               format(request_set[NETWORK], type(request_set[NETWORK])))
         super()._validate_params(request_set, target_set, context)
 
+    # @numba.jit # doesn't work: Untyped global name 'run_leabra_network'
     def _function(self,
                  variable=None,
                  context=None,

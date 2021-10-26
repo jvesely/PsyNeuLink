@@ -19,6 +19,8 @@
 Functions that return a scalar evaluation of their input.
 
 """
+
+import numba
 import numpy as np
 from beartype import beartype
 
@@ -452,6 +454,7 @@ class Stability(ObjectiveFunction):
         builder.call(metric_fun, [metric_params, metric_state, metric_in, metric_out])
         return builder
 
+    # @numba.jit # doesn't work: argument type inference
     def _function(self,
                  variable=None,
                  context=None,
@@ -1177,6 +1180,7 @@ class Distance(ObjectiveFunction):
 
         return builder
 
+    # @numba.jit # doesn't work: try...except ???
     def _function(self,
                  variable=None,
                  context=None,
@@ -1429,6 +1433,7 @@ class LossFunction(ObjectiveFunction):
                 raise FunctionError(f"Specified loss for {self.name} ({loss}) "
                                     f"must be a member of the Loss enum or a PyTorch loss function.")
 
+    # @numba.jit # doesn't work: argument type inference
     def _function(self,
                  variable=None,
                  context=None,

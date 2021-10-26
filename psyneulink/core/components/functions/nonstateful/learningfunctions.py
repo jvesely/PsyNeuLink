@@ -26,6 +26,7 @@ Functions that parameterize a function, usually of the matrix used by a `Project
 import types
 from collections import namedtuple
 
+import numba
 import numpy as np
 try:
     import torch
@@ -397,6 +398,7 @@ class EMStorage(LearningFunction):
                                  f"(({len(variable)}) should be just one")
         return variable
 
+    # @numba.jit # doesn't work: argument type inference
     def _function(self,
                  variable=None,
                  context=None,
@@ -906,6 +908,7 @@ class BayesGLM(LearningFunction):
             )
             self.initialize_priors()
 
+    # @numba.jit # doesn't work: convert_to_np_array
     def _function(
         self,
         variable=None,
@@ -1207,6 +1210,7 @@ class Kohonen(LearningFunction):  # --------------------------------------------
             self.measure=self.distance_function
             self.distance_function = scalar_distance
 
+    # @numba.jit # doesn't work: ???
     def _function(self,
                  variable=None,
                  context=None,
@@ -1421,6 +1425,7 @@ class Hebbian(LearningFunction):  # --------------------------------------------
         if LEARNING_RATE in target_set and target_set[LEARNING_RATE] is not None:
             self._validate_learning_rate(target_set[LEARNING_RATE], AUTOASSOCIATIVE)
 
+    # @numba.jit # doesn't work: ???
     def _function(self,
                  variable=None,
                  context=None,
@@ -1643,6 +1648,7 @@ class ContrastiveHebbian(LearningFunction):  # ---------------------------------
         if LEARNING_RATE in target_set and target_set[LEARNING_RATE] is not None:
             self._validate_learning_rate(target_set[LEARNING_RATE], AUTOASSOCIATIVE)
 
+    # @numba.jit # doesn't work: convert_to_np_array
     def _function(self,
                  variable=None,
                  context=None,
@@ -1943,6 +1949,7 @@ class Reinforcement(LearningFunction):  # --------------------------------------
         if LEARNING_RATE in target_set and target_set[LEARNING_RATE] is not None:
             self._validate_learning_rate(target_set[LEARNING_RATE], AUTOASSOCIATIVE)
 
+    # @numba.jit # doesn't work: ???
     def _function(self,
                  variable=None,
                  context=None,
@@ -2449,6 +2456,7 @@ class BackPropagation(LearningFunction):
                                     f"'{self.name}' must match the length of the output {activity_output_len} "
                                     f"of the activity vector being monitored ({activation_input}).")
 
+    # @numba.jit # doesn't work: convert_all_elements_to_np_array
     def _function(self,
                  variable=None,
                  context=None,

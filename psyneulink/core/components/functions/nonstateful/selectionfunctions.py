@@ -25,6 +25,7 @@ __all__ = ['SelectionFunction', 'OneHot', 'max_vs_avg', 'max_vs_next']
 
 import warnings
 
+import numba
 import numpy as np
 from beartype import beartype
 
@@ -699,6 +700,7 @@ class OneHot(SelectionFunction):
 
         return direction, abs_val, indicator, tie
 
+    # @numba.jit # doesn't work: ???
     def _function(self,
                  variable=None,
                  context=None,

@@ -67,6 +67,7 @@ TranferFunction Class References
 
 """
 
+import numba
 import numbers
 import types
 import warnings
@@ -349,6 +350,7 @@ class Identity(TransferFunction):  #
 
         # self.functionOutputType = None
 
+    # @numba.jit # doesn't work: ???
     def _function(
             self,
             variable=None,
@@ -555,6 +557,7 @@ class Linear(DeterministicTransferFunction):  #
             prefs=prefs
         )
 
+    # @numba.jit # doesn't work: try..except ???
     def _function(self,
                   variable=None,
                   context=None,
@@ -837,6 +840,7 @@ class Exponential(DeterministicTransferFunction):  # ---------------------------
             prefs=prefs
         )
 
+    # @numba.jit # doesn't work: ???
     def _function(self,
                   variable=None,
                   context=None,
@@ -1117,6 +1121,7 @@ class Logistic(DeterministicTransferFunction):  # ------------------------------
             **kwargs
         )
 
+    # @numba.jit # doesn't work: argument type inference
     def _function(self,
                   variable=None,
                   context=None,
@@ -1426,6 +1431,7 @@ class Tanh(DeterministicTransferFunction):  # ----------------------------------
             **kwargs
         )
 
+    # @numba.jit # doesn't work: argument type inference
     def _function(self,
                   variable=None,
                   context=None,
@@ -1720,6 +1726,7 @@ class ReLU(DeterministicTransferFunction):  # ----------------------------------
             **kwargs
         )
 
+    # @numba.jit # doesn't work: argument type inference
     def _function(self,
                   variable=None,
                   context=None,
@@ -2013,12 +2020,12 @@ class Normalize(DeterministicTransferFunction):
                 return self.class_defaults.variable
         return np.asarray(variable)
 
-
     def _normalize(self, input_value, eps):
         nrm = np.linalg.norm(input_value)
         denominator = max(nrm, eps)
         return input_value / denominator
 
+    # @numba.jit # doesn't work: ???
     def _function(self,
                   variable=None,
                   context=None,
@@ -2433,6 +2440,7 @@ class Gaussian(DeterministicTransferFunction):  # ------------------------------
 
         builder.store(val, ptro)
 
+    # @numba.jit # doesn't work: argument type inference
     def _function(self,
                   variable=None,
                   context=None,
@@ -2704,6 +2712,7 @@ class GaussianDistort(
 
         builder.store(val, ptro)
 
+    # @numba.jit # doesn't work: ???
     def _function(self,
                   variable=None,
                   context=None,
@@ -2920,6 +2929,7 @@ class BinomialDistort(
 
         builder.store(val, ptro)
 
+    # @numba.jit # doesn't work: argument type inference
     def _function(self,
                   variable=None,
                   context=None,
@@ -3113,6 +3123,7 @@ class Dropout(TransferFunction):  #
             prefs=prefs,
         )
 
+    # @numba.jit # doesn't work: argument type inference
     def _function(self,
                   variable=None,
                   context=None,
@@ -3610,6 +3621,7 @@ class SoftMax(TransferFunction):
         else:
             return sm
 
+    # @numba.jit # doesn't work: ???
     def _function(self,
                   variable=None,
                   context=None,
@@ -4115,6 +4127,8 @@ class HypersphericalToCartesian(TransferFunction):
             prefs=prefs,
         )
 
+
+    # @numba.jit # doesn't work: partial type inference
     def _function(self,
                   variable=None,
                   context=None,
@@ -4973,6 +4987,7 @@ class TransferWithCosts(TransferFunction):
                 self.intensity_cost = self.intensity_cost_fct(self.defaults.variable)
                 self.defaults.intensity_cost = self.intensity_cost
 
+    # @numba.jit # doesn't work: _check_args???
     def _function(self,
                   variable=None,
                   params=None,

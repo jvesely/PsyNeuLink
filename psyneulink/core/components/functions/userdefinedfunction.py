@@ -10,6 +10,7 @@
 # *****************************************  USER-DEFINED FUNCTION  ****************************************************
 
 import builtins
+import numba
 import numpy as np
 from beartype import beartype
 
@@ -628,6 +629,7 @@ class UserDefinedFunction(Function_Base):
 
         super()._initialize_parameters(context, **param_defaults)
 
+    # @numba.jit # doesn't work: TypeError: some keyword arguments unexpected
     def _function(self, variable, context=None, **kwargs):
         call_params = self.cust_fct_params.copy()
 
