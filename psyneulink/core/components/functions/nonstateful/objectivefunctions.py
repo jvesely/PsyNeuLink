@@ -21,6 +21,7 @@ Functions that return a scalar evaluation of their input.
 
 import functools
 
+import numba
 import numpy as np
 from beartype import beartype
 
@@ -439,6 +440,7 @@ class Stability(ObjectiveFunction):
         builder.call(metric_fun, [metric_params, metric_state, metric_in, metric_out])
         return builder
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -1140,6 +1142,7 @@ class Distance(ObjectiveFunction):
 
         return builder
 
+#    @numba.jit # does not work: try...except ???
     def _function(self,
                  variable=None,
                  context=None,

@@ -24,6 +24,7 @@ Functions that store and can return a record of their input.
 """
 
 import copy
+import numba
 import numbers
 import warnings
 from collections import deque
@@ -311,6 +312,7 @@ class Buffer(MemoryFunction):  # -----------------------------------------------
         self.parameters.value.set(value, context, override=True)
         return value
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -1432,6 +1434,7 @@ class ContentAddressableMemory(MemoryFunction): # ------------------------------
         self.parameters.value.set(value, context, override=True)
         return value
 
+    @numba.jit
     def _function(self,
                  variable:Optional[Union[list, np.array]]=None,
                  context=None,
@@ -2633,6 +2636,7 @@ class DictionaryMemory(MemoryFunction):  # -------------------------------------
         self.parameters.value.set(value, context, override=True)
         return value
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,

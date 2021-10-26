@@ -24,6 +24,7 @@ Functions that return the sample of a variable yielding the optimized value of a
 
 """
 
+import numba
 import contextlib
 # from fractions import Fraction
 import itertools
@@ -571,6 +572,7 @@ class OptimizationFunction(Function_Base):
         if randomization_dimension is not None:
             self.parameters.randomization_dimension._set(randomization_dimension, context)
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -1326,6 +1328,7 @@ class GradientOptimization(OptimizationFunction):
 
         self.bounds = bounds
 
+#    @numba.jit # does not work
     def _function(self,
                  variable=None,
                  context=None,
@@ -1927,6 +1930,7 @@ class GridSearch(OptimizationFunction):
         builder.store(builder.load(min_value_ptr), out_value_ptr)
         return builder
 
+#    @numba.jit # does not work with import MPI
     def _function(self,
                  variable=None,
                  context=None,
@@ -2363,6 +2367,7 @@ class GaussianProcess(OptimizationFunction):
         #                                             "must be less than or equal to its second element".
         #                                             format(repr(SEARCH_SPACE), self.__class__.__name__, i))
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,

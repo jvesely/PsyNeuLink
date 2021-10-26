@@ -10,6 +10,7 @@
 # *****************************************  USER-DEFINED FUNCTION  ****************************************************
 
 import builtins
+import numba
 import numpy as np
 from beartype import beartype
 
@@ -616,6 +617,7 @@ class UserDefinedFunction(Function_Base):
 
             p._set(p.default_value, context, skip_history=True)
 
+#    @numba.jit # does not work: ???
     def _function(self, variable, context=None, **kwargs):
 
         # Update value of parms in cust_fct_params

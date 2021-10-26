@@ -63,6 +63,7 @@ TranferFunction Class References
 
 """
 
+import numba
 import numbers
 import types
 import warnings
@@ -238,6 +239,7 @@ class Identity(TransferFunction):  # -------------------------------------------
 
         # self.functionOutputType = None
 
+    @numba.jit
     def _function(
         self,
         variable=None,
@@ -413,6 +415,7 @@ class Linear(TransferFunction):  # ---------------------------------------------
             prefs=prefs,
         )
 
+#    @numba.jit # does not work: try..except ???
     def _function(self,
                  variable=None,
                  context=None,
@@ -693,6 +696,7 @@ class Exponential(TransferFunction):  # ----------------------------------------
             prefs=prefs,
         )
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -992,6 +996,7 @@ class Logistic(TransferFunction):  # -------------------------------------------
             prefs=prefs,
         )
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -1316,6 +1321,7 @@ class Tanh(TransferFunction):  # -----------------------------------------------
             prefs=prefs,
         )
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -1582,6 +1588,7 @@ class ReLU(TransferFunction):  # -----------------------------------------------
             prefs=prefs,
         )
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -1802,6 +1809,7 @@ class Angle(TransferFunction):  # ----------------------------------------------
             prefs=prefs,
         )
 
+    # @numba.jit # does not work try...except
     def _function(self,
                  variable=None,
                  context=None,
@@ -2136,6 +2144,7 @@ class Gaussian(TransferFunction):  # -------------------------------------------
 
         builder.store(val, ptro)
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -2406,6 +2415,7 @@ class GaussianDistort(TransferFunction):  #-------------------------------------
 
         builder.store(val, ptro)
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -2622,6 +2632,7 @@ class BinomialDistort(TransferFunction):  #-------------------------------------
 
         builder.store(val, ptro)
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -2815,6 +2826,7 @@ class Dropout(TransferFunction):  #
             prefs=prefs,
         )
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -3134,6 +3146,7 @@ class SoftMax(TransferFunction):
         else:
             return sm
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -3922,6 +3935,7 @@ class LinearMatrix(TransferFunction):  # ---------------------------------------
         builder.call(builtin, [vec_in, matrix, input_length, output_length, vec_out])
         return builder
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -4723,6 +4737,7 @@ class TransferWithCosts(TransferFunction):
                 self.intensity_cost = self.intensity_cost_fct(self.defaults.variable)
                 self.defaults.intensity_cost = self.intensity_cost
 
+#    @numba.jit # does not work: _check_args???
     def _function(self,
                  variable=None,
                  params=None,

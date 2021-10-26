@@ -28,6 +28,7 @@ Functions that integrate current value of input with previous value.
 
 import warnings
 
+import numba
 import numpy as np
 from beartype import beartype
 
@@ -365,6 +366,7 @@ class IntegratorFunction(StatefulFunction):  # ---------------------------------
 
         return value
 
+    @numba.jit
     def _function(self, *args, **kwargs):
         raise FunctionError("IntegratorFunction is not meant to be called explicitly")
 
@@ -617,6 +619,7 @@ class AccumulatorIntegrator(IntegratorFunction):  # ----------------------------
                     self._runtime_params_reset[context.execution_id][param_name] = getattr(self.parameters, param_name)._get(context)
                     self._set_parameter_value(param_name, runtime_params[param_name], context)
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -850,6 +853,7 @@ class SimpleIntegrator(IntegratorFunction):  # ---------------------------------
             prefs=prefs,
         )
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -1190,6 +1194,7 @@ class AdaptiveIntegrator(IntegratorFunction):  # -------------------------------
         builder.store(res, vo_ptr)
         builder.store(res, prev_ptr)
 
+#    @numba.jit # does not work
     def _function(self,
                  variable=None,
                  context=None,
@@ -1693,6 +1698,7 @@ class DualAdaptiveIntegrator(IntegratorFunction):  # ---------------------------
                 raise FunctionError("\'{}\' arg for {} must be one of the following: {}".
                                     format(OPERATION, self.name, OPERATIONS))
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -2086,6 +2092,7 @@ class InteractiveActivationIntegrator(IntegratorFunction):  # ------------------
                 raise FunctionError("Value(s) specified for {} argument of {} ({}) must be in interval [0,1]".
                                     format(repr(DECAY), self.__class__.__name__, decay))
 
+    @numba.jit
     def _function(self, variable=None, context=None, params=None):
         """
 
@@ -2495,6 +2502,7 @@ class DriftDiffusionIntegrator(IntegratorFunction):  # -------------------------
     def _initialize_previous_value(self, initializer, context=None):
         return super()._initialize_previous_value(self.parameters._parse_initializer(initializer), context)
 
+    #@numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -3131,6 +3139,7 @@ class DriftOnASphereIntegrator(IntegratorFunction):  # -------------------------
             raise FunctionError(f"Problem with {fct_msg} specified for 'angle_function' arg of "
                                 f"{self.__class__.__name__} ({angle_function}).")
 
+    # @numba.jit # does not work with try...except
     def _function(self,
                  variable=None,
                  context=None,
@@ -3511,6 +3520,7 @@ class OrnsteinUhlenbeckIntegrator(IntegratorFunction):  # ----------------------
     def _initialize_previous_value(self, initializer, context=None):
         return super()._initialize_previous_value(self.parameters._parse_initializer(initializer), context)
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -3793,6 +3803,9 @@ class LeakyCompetingIntegrator(IntegratorFunction):  # -------------------------
             prefs=prefs
         )
 
+        self.has_initializers = True
+
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -4746,6 +4759,7 @@ class FitzHughNagumoIntegrator(IntegratorFunction):  # -------------------------
 
         return val
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,

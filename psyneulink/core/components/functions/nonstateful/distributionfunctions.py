@@ -24,6 +24,7 @@ Functions that return one or more samples from a distribution.
 
 """
 
+import numba
 import numpy as np
 from beartype import beartype
 from scipy.special import erfinv
@@ -191,6 +192,7 @@ class NormalDist(DistributionFunction):
                 raise FunctionError("The standard_deviation parameter ({}) of {} must be greater than zero.".
                                     format(target_set[STANDARD_DEVIATION], self.name))
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -366,6 +368,7 @@ class UniformToNormalDist(DistributionFunction):
             prefs=prefs,
         )
 
+#    @numba.jit # doesn't work with import
     def _function(self,
                  variable=None,
                  context=None,
@@ -486,6 +489,7 @@ class ExponentialDist(DistributionFunction):
             prefs=prefs,
         )
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -615,6 +619,7 @@ class UniformDist(DistributionFunction):
             prefs=prefs,
         )
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -773,6 +778,7 @@ class GammaDist(DistributionFunction):
             prefs=prefs,
         )
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -908,6 +914,7 @@ class WaldDist(DistributionFunction):
             prefs=prefs,
         )
 
+    @numba.jit
     def _function(self,
                  variable=None,
                  context=None,
@@ -1193,6 +1200,7 @@ class DriftDiffusionAnalytical(DistributionFunction):  # -----------------------
         """
         self._shenhav_et_al_compat_mode = value
 
+#    @numba.jit # does not work
     def _function(self,
                  variable=None,
                  context=None,

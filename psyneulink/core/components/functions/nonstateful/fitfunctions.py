@@ -1,5 +1,6 @@
 import copy
 
+import numba
 import optuna.samplers
 from fastkde import fastKDE
 from scipy.interpolate import interpn
@@ -484,6 +485,7 @@ class PECOptimizationFunction(OptimizationFunction):
 
         return objfunc
 
+    @numba.jit
     def _function(self, variable=None, context=None, params=None, **kwargs):
         """
         Run the optimization algorithm to find the optimal control allocation.

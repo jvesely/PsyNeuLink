@@ -24,6 +24,7 @@ Functions that selects a subset of elements to maintain or transform, while null
 
 __all__ = ['SelectionFunction', 'OneHot', 'max_vs_avg', 'max_vs_next', 'MAX_VS_NEXT', 'MAX_VS_AVG']
 
+import numba
 import numpy as np
 from beartype import beartype
 
@@ -355,6 +356,7 @@ class OneHot(SelectionFunction):
 
         return builder
 
+#    @numba.jit # does not work
     def _function(self,
                  variable=None,
                  context=None,
