@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Condition &mdash; PsyNeuLink 0+untagged.11.g879429c documentation</title>
+  <title>Condition &mdash; PsyNeuLink 0+untagged.11.g166ab7c documentation</title>
   
 
   
@@ -99,7 +99,7 @@
               
               
                 <div class="version">
-                  0+untagged.11.g879429c
+                  0+untagged.11.g166ab7c
                 </div>
               
             
@@ -259,7 +259,7 @@ its elements has changed in value more than a specified amount since the previou
 <span class="n">my_scheduler</span><span class="o">.</span><span class="n">add_condition</span><span class="p">(</span><span class="n">node_A</span><span class="p">,</span> <span class="n">NWhen</span><span class="p">(</span><span class="n">Condition</span><span class="p">(</span><span class="n">converge</span><span class="p">,</span> <span class="n">node_B</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>In the example, a function <code class="docutils literal notranslate"><span class="pre">converge</span></code> is defined that references the change in a node’s <a class="reference internal" href="GatingProjection.html#psyneulink.core.components.projections.modulatory.gatingprojection.GatingProjection.value" title="psyneulink.core.components.projections.modulatory.gatingprojection.GatingProjection.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">value</span></code></a>. The function is assigned to
+<p>In the example, a function <code class="docutils literal notranslate"><span class="pre">converge</span></code> is defined that references the change in a node’s <a class="reference internal" href="GatingMechanism.html#psyneulink.core.components.mechanisms.modulatory.gating.gatingmechanism.GatingMechanism.value" title="psyneulink.core.components.mechanisms.modulatory.gating.gatingmechanism.GatingMechanism.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">value</span></code></a>. The function is assigned to
 the standard <a class="reference internal" href="#psyneulink.core.scheduling.condition.Condition" title="psyneulink.core.scheduling.condition.Condition"><code class="xref py py-class docutils literal notranslate"><span class="pre">Condition</span></code></a> with <code class="docutils literal notranslate"><span class="pre">node_A</span></code> and <code class="docutils literal notranslate"><span class="pre">epsilon</span></code> as its arguments, and <a class="reference internal" href="#conditions-composite"><span class="std std-ref">composite Condition</span></a>
 <a class="reference internal" href="#psyneulink.core.scheduling.condition.NWhen" title="psyneulink.core.scheduling.condition.NWhen"><code class="xref any py py-class docutils literal notranslate"><span class="pre">NWhen</span></code></a> (which is satisfied the first N times after its condition becomes true),  The Condition is assigned to <code class="docutils literal notranslate"><span class="pre">node_B</span></code>,
 thus scheduling it to execute one time when all of the elements of <code class="docutils literal notranslate"><span class="pre">node_A</span></code> have changed by less than <code class="docutils literal notranslate"><span class="pre">epsilon</span></code>.</p>
