@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Component &mdash; PsyNeuLink 0+untagged.10.g0c075bd documentation</title>
+  <title>Component &mdash; PsyNeuLink 0+untagged.10.g137d6b6 documentation</title>
   
 
   
@@ -99,7 +99,7 @@
               
               
                 <div class="version">
-                  0+untagged.10.g0c075bd
+                  0+untagged.10.g137d6b6
                 </div>
               
             
@@ -359,7 +359,7 @@ following examples:</p>
 </pre></div>
 </div>
 <p>The specified Function will be used as a template to create a new Function object that is assigned to the
-<a class="reference internal" href="ControlSignal.html#psyneulink.core.components.ports.modulatorysignals.controlsignal.ControlSignal.function" title="psyneulink.core.components.ports.modulatorysignals.controlsignal.ControlSignal.function"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">function</span></code></a> attribute of the Component.</p>
+<a class="reference internal" href="GatingSignal.html#psyneulink.core.components.ports.modulatorysignals.gatingsignal.GatingSignal.function" title="psyneulink.core.components.ports.modulatorysignals.gatingsignal.GatingSignal.function"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">function</span></code></a> attribute of the Component.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>In the current implementation of PsyNeuLink, if a <a class="reference internal" href="Function.html"><span class="doc">Function</span></a> object (or the constructor for one) is
@@ -418,7 +418,7 @@ In general, only parameters that take numerical values and/or do not affect the 
 or format of the values associated with a Component can be subject to modulation.  For example, for a
 <a class="reference internal" href="TransferMechanism.html"><span class="doc">TransferMechanism</span></a>, <a class="reference internal" href="TransferMechanism.html#psyneulink.core.components.mechanisms.processing.transfermechanism.TransferMechanism.clip" title="psyneulink.core.components.mechanisms.processing.transfermechanism.TransferMechanism.clip"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">clip</span></code></a>, <a class="reference internal" href="TransferMechanism.html#psyneulink.core.components.mechanisms.processing.transfermechanism.TransferMechanism.initial_value" title="psyneulink.core.components.mechanisms.processing.transfermechanism.TransferMechanism.initial_value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">initial_value</span></code></a>,
 <a class="reference internal" href="TransferMechanism.html#psyneulink.core.components.mechanisms.processing.transfermechanism.TransferMechanism.integrator_mode" title="psyneulink.core.components.mechanisms.processing.transfermechanism.TransferMechanism.integrator_mode"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">integrator_mode</span></code></a>, <a class="reference internal" href="Mechanism.html#psyneulink.core.components.mechanisms.mechanism.Mechanism_Base.input_ports" title="psyneulink.core.components.mechanisms.mechanism.Mechanism_Base.input_ports"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">input_ports</span></code></a>,
-<a class="reference internal" href="DDM.html#psyneulink.library.components.mechanisms.processing.integrator.ddm.DDM.output_ports" title="psyneulink.library.components.mechanisms.processing.integrator.ddm.DDM.output_ports"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">output_ports</span></code></a>, and <a class="reference internal" href="Mechanism.html#psyneulink.core.components.mechanisms.mechanism.Mechanism_Base.function" title="psyneulink.core.components.mechanisms.mechanism.Mechanism_Base.function"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">function</span></code></a>, are all listed in parameters, and are user-modifiable,
+<a class="reference internal" href="EpisodicMemoryMechanism.html#psyneulink.library.components.mechanisms.processing.integrator.episodicmemorymechanism.EpisodicMemoryMechanism.output_ports" title="psyneulink.library.components.mechanisms.processing.integrator.episodicmemorymechanism.EpisodicMemoryMechanism.output_ports"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">output_ports</span></code></a>, and <a class="reference internal" href="Mechanism.html#psyneulink.core.components.mechanisms.mechanism.Mechanism_Base.function" title="psyneulink.core.components.mechanisms.mechanism.Mechanism_Base.function"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">function</span></code></a>, are all listed in parameters, and are user-modifiable,
 but are not subject to modulation; whereas <a class="reference internal" href="TransferMechanism.html#psyneulink.core.components.mechanisms.processing.transfermechanism.TransferMechanism.noise" title="psyneulink.core.components.mechanisms.processing.transfermechanism.TransferMechanism.noise"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">noise</span></code></a> and <a class="reference internal" href="TransferMechanism.html#psyneulink.core.components.mechanisms.processing.transfermechanism.TransferMechanism.integration_rate" title="psyneulink.core.components.mechanisms.processing.transfermechanism.TransferMechanism.integration_rate"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">integration_rate</span></code></a> can all be subject to modulation. Parameters that are subject to modulation
 have the <a class="reference internal" href="Parameters.html#psyneulink.core.globals.parameters.Parameter.modulable" title="psyneulink.core.globals.parameters.Parameter.modulable"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">modulable</span></code></a> attribute set to True and are associated with a <a class="reference internal" href="ParameterPort.html"><span class="doc">ParameterPort</span></a> to which
 the ControlSignals can project (by way of a <a class="reference internal" href="ControlProjection.html"><span class="doc">ControlProjection</span></a>).</p>
@@ -1186,6 +1186,26 @@ method of the Component’s <a class="reference internal" href="#psyneulink.core
 <dd><p>Specifies items to be logged; ; these must be be <a class="reference internal" href="#psyneulink.core.components.component.Component.loggable_items" title="psyneulink.core.components.component.Component.loggable_items"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">loggable_items</span></code></a> of the Component’s
 <a class="reference internal" href="#psyneulink.core.components.component.Component.log" title="psyneulink.core.components.component.Component.log"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">log</span></code></a>. This is a convenience method that calls the <code class="xref any docutils literal notranslate"><span class="pre">log_values</span></code> method
 of the Component’s <a class="reference internal" href="#psyneulink.core.components.component.Component.log" title="psyneulink.core.components.component.Component.log"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">log</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psyneulink.core.components.component.Component.all_dependent_parameters">
+<span class="sig-name descname"><span class="pre">all_dependent_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.component.Component.all_dependent_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary of Parameters of this Component and its         <a class="reference internal" href="#psyneulink.core.components.component.Component._dependent_components" title="psyneulink.core.components.component.Component._dependent_components"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">_dependent_components</span></code></a> filtered by <strong>filter_name</strong> and         <strong>filter_regex</strong>. If no filter is specified, all Parameters         are included.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filter_name</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Iterable</em><em>[</em><em>str</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – The                 exact name or names of Parameters to include. Defaults                 to None.</p></li>
+<li><p><strong>filter_regex</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Iterable</em><em>[</em><em>str</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – Regular expression patterns. If any pattern matches a                 Parameter name (using re.match), it will be included                 in the result. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Component]: Dictionary of filtered Parameters</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict[<a class="reference internal" href="Parameters.html#psyneulink.core.globals.parameters.Parameter" title="psyneulink.core.globals.parameters.Parameter">Parameter</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
