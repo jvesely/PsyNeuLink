@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Visualization &mdash; PsyNeuLink 0+untagged.8.g31b8a18 documentation</title>
+  <title>Visualization &mdash; PsyNeuLink 0+untagged.10.gd7b4c53 documentation</title>
   
 
   
@@ -99,7 +99,7 @@
               
               
                 <div class="version">
-                  0+untagged.8.g31b8a18
+                  0+untagged.10.gd7b4c53
                 </div>
               
             
@@ -415,14 +415,14 @@ Mechanisms in the <a class="reference internal" href="Composition.html"><span cl
 the values, if specified – see above), including parameters for all functions.</p></li>
 </ul>
 </p></li>
-<li><p><strong>show_nested</strong> (<em>bool | int | NESTED | INSET : default NESTED</em>) – specifies whether or not to show <a class="reference internal" href="Composition.html#composition-nested"><span class="std std-ref">nested Compositions</span></a> and, if so, how many
+<li><p><strong>show_nested</strong> (<em>bool</em><em> | </em><em>int</em><em> | </em><em>NESTED</em><em> | </em><em>INSET : default NESTED</em>) – specifies whether or not to show <a class="reference internal" href="Composition.html#composition-nested"><span class="std std-ref">nested Compositions</span></a> and, if so, how many
 levels of nesting to show (<em>NESTED</em>, True or int) – with Projections shown directly from Components
 in an enclosing Composition to and from ones in the nested Composition; or each nested Composition as
 a separate inset (<em>INSET</em>).  <em>NESTED</em> specifies all levels of nesting shown; 0 specifies none (same as
 False), and a non-zero integer species that number of nested levels to shown.  Compsitions nested at the
 specified level are shown as a node (pink box by default). and ones below the specified level are not
 shown at all.</p></li>
-<li><p><strong>show_nested_args</strong> (<em>bool | dict : default ALL</em>) – specifies arguments in call to show_graph passed to <a class="reference internal" href="Composition.html#composition-nested"><span class="std std-ref">nested Composition(s)</span></a> if
+<li><p><strong>show_nested_args</strong> (<em>bool</em><em> | </em><em>dict : default ALL</em>) – specifies arguments in call to show_graph passed to <a class="reference internal" href="Composition.html#composition-nested"><span class="std std-ref">nested Composition(s)</span></a> if
 <strong>show_nested</strong> is specified.  A dict can be used to specify any of the arguments allowed for
 show_graph to be used for the nested Composition(s);  <em>ALL</em> passes all arguments specified for the main
 Composition to the nested one(s);  True uses the default values of show_graph args for the nested

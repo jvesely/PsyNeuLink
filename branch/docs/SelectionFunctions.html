@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>SelectionFunctions &mdash; PsyNeuLink 0+untagged.8.g31b8a18 documentation</title>
+  <title>SelectionFunctions &mdash; PsyNeuLink 0+untagged.10.gd7b4c53 documentation</title>
   
 
   
@@ -99,7 +99,7 @@
               
               
                 <div class="version">
-                  0+untagged.8.g31b8a18
+                  0+untagged.10.gd7b4c53
                 </div>
               
             
@@ -240,7 +240,7 @@ with all of its values zeroed except one identified in first item <a class="refe
 <li><p><strong>mode</strong> (<em>MAX_VAL</em><em>, </em><em>MAX_ABS_VAL</em><em>, </em><em>MAX_INDICATOR</em><em>, </em><em>MAX_ABS_INDICATOR</em><em>, </em><em>MIN_VAL</em><em>, </em><em>MIN_ABS_VAL</em><em>, </em><em>MIN_INDICATOR</em><em>,</em>) – </p></li>
 <li><p><strong>MIN_ABS_INDICATOR</strong> (<em>default MAX_VAL</em>) – specifies the nature of the single non-zero value in the array returned by <code class="xref any docutils literal notranslate"><span class="pre">function</span></code>
 (see <a class="reference internal" href="#psyneulink.core.components.functions.selectionfunctions.OneHot.mode" title="psyneulink.core.components.functions.selectionfunctions.OneHot.mode"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">mode</span></code></a> for details).</p></li>
-<li><p><strong>or PROB_INDICATOR</strong> (<em>PROB</em>) – specifies the nature of the single non-zero value in the array returned by <code class="xref any docutils literal notranslate"><span class="pre">function</span></code>
+<li><p><strong>PROB_INDICATOR</strong> (<em>PROB or</em>) – specifies the nature of the single non-zero value in the array returned by <code class="xref any docutils literal notranslate"><span class="pre">function</span></code>
 (see <a class="reference internal" href="#psyneulink.core.components.functions.selectionfunctions.OneHot.mode" title="psyneulink.core.components.functions.selectionfunctions.OneHot.mode"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">mode</span></code></a> for details).</p></li>
 <li><p><strong>params</strong> (<em>Dict</em><em>[</em><em>param keyword: param value</em><em>] </em><em>: default None</em>) – a <a class="reference internal" href="ParameterPort.html#parameterport-specification"><span class="std std-ref">parameter dictionary</span></a> that specifies the parameters for the
 function.  Values specified for parameters in the dictionary override any assigned to those parameters in
@@ -346,8 +346,8 @@ It is called only if the parameter_validation attribute is <code class="xref any
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>(</strong><strong>request_set</strong><strong>) </strong><strong>- set of params to be validated</strong> (<em>dict</em>) – </p></li>
-<li><p><strong>(</strong><strong>target_set</strong><strong>) </strong><strong>- repository of params that have been validated</strong> (<em>dict</em>) – </p></li>
+<li><p><strong>validated</strong> (<em>dict</em><em> (</em><em>target_set</em><em>) </em><em>- repository of params that have been</em>) – </p></li>
+<li><p><strong>validated</strong> – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Return none</dt>

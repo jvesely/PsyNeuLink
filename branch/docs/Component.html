@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Component &mdash; PsyNeuLink 0+untagged.8.g31b8a18 documentation</title>
+  <title>Component &mdash; PsyNeuLink 0+untagged.10.gd7b4c53 documentation</title>
   
 
   
@@ -99,7 +99,7 @@
               
               
                 <div class="version">
-                  0+untagged.8.g31b8a18
+                  0+untagged.10.gd7b4c53
                 </div>
               
             
@@ -512,12 +512,12 @@ irrespective of its <a class="reference internal" href="DDM.html#psyneulink.libr
 <ul class="simple" id="component-num-executions-before-finished">
 <li><p><strong>num_executions_before_finished</strong> – contains the number of times the Component has executed prior to finishing
 (and since it last finished);  depending upon the class, these may all be within a single call to the Component’s
-<a class="reference internal" href="#psyneulink.core.components.component.Component.execute" title="psyneulink.core.components.component.Component.execute"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">execute</span></code></a> method, or extend over several calls.  It is set to 0 each time <a class="reference internal" href="DDM.html#psyneulink.library.components.mechanisms.processing.integrator.ddm.DDM.is_finished" title="psyneulink.library.components.mechanisms.processing.integrator.ddm.DDM.is_finished"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">is_finished</span></code></a> evalutes
+<a class="reference internal" href="#psyneulink.core.components.component.Component.execute" title="psyneulink.core.components.component.Component.execute"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">execute</span></code></a> method, or extend over several calls.  It is set to 0 each time <a class="reference internal" href="DDM.html#psyneulink.library.components.mechanisms.processing.integrator.ddm.DDM.is_finished" title="psyneulink.library.components.mechanisms.processing.integrator.ddm.DDM.is_finished"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">is_finished</span></code></a> evaluates
 to True. Note that this is distinct from the <a class="reference internal" href="#component-execution-count"><span class="std std-ref">execution_count</span></a> and <a class="reference internal" href="#component-num-executions"><span class="std std-ref">num_executions</span></a> attributes.</p></li>
 </ul>
 <ul class="simple" id="component-max-executions-before-finished">
 <li><p><strong>max_executions_before_finished</strong> – determines the maximum number of executions allowed before finishing
-(i.e., the maxmium allowable value of <a class="reference internal" href="#psyneulink.core.components.component.Component.num_executions_before_finished" title="psyneulink.core.components.component.Component.num_executions_before_finished"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">num_executions_before_finished</span></code></a>).
+(i.e., the maximum allowable value of <a class="reference internal" href="#psyneulink.core.components.component.Component.num_executions_before_finished" title="psyneulink.core.components.component.Component.num_executions_before_finished"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">num_executions_before_finished</span></code></a>).
 If it is exceeded, a warning message is generated.  Note that this only pertains to <a class="reference internal" href="#component-num-executions-before-finished"><span class="std std-ref">num_executions_before_finished</span></a>, and not its <a class="reference internal" href="#component-execution-count"><span class="std std-ref">execution_count</span></a>, which can be
 unlimited.</p></li>
 </ul>
@@ -527,7 +527,7 @@ unlimited.</p></li>
 <ul class="simple" id="component-execution-count">
 <li><p><strong>execution_count</strong> – maintains a record of the number of times a Component has executed since it was constructed,
 <em>excluding</em>  executions carried out during initialization and validation, but including all others whether they are
-of the Component on its own are as part of a <a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a>, and irresective of the <a class="reference internal" href="Context.html"><span class="doc">context</span></a> in which
+of the Component on its own are as part of a <a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a>, and irrespective of the <a class="reference internal" href="Context.html"><span class="doc">context</span></a> in which
 they are occur. The value can be changed “manually” or programmatically by assigning an integer
 value directly to the attribute.  Note that this is the distinct from the <a class="reference internal" href="#component-num-executions"><span class="std std-ref">num_executions</span></a>
 and <a class="reference internal" href="#component-num-executions-before-finished"><span class="std std-ref">num_executions_before_finished</span></a> attributes.</p></li>
@@ -923,7 +923,7 @@ if request_set is None, then all values in the target_set are assigned from the 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="psyneulink.core.components.component.Component.reset_params">
-<span class="sig-name descname"><span class="pre">reset_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">mode=&lt;ResetMode.INSTANCE_TO_CLASS:</span> <span class="pre">1&gt;</span></em>, <em class="sig-param"><span class="pre">context=None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.component.Component.reset_params" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">reset_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">ResetMode.INSTANCE_TO_CLASS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.component.Component.reset_params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reset current and/or instance defaults</p>
 <dl class="simple">
 <dt>If called with:</dt><dd><ul class="simple">
@@ -1036,8 +1036,8 @@ It is called only if the parameter_validation attribute is <code class="xref any
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>(</strong><strong>request_set</strong><strong>) </strong><strong>- set of params to be validated</strong> (<em>dict</em>) – </p></li>
-<li><p><strong>(</strong><strong>target_set</strong><strong>) </strong><strong>- repository of params that have been validated</strong> (<em>dict</em>) – </p></li>
+<li><p><strong>validated</strong> (<em>dict</em><em> (</em><em>target_set</em><em>) </em><em>- repository of params that have been</em>) – </p></li>
+<li><p><strong>validated</strong> – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Return none</dt>
@@ -1151,7 +1151,7 @@ value based on its default_variable.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="psyneulink.core.components.component.Component.is_finished">
 <span class="sig-name descname"><span class="pre">is_finished</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.component.Component.is_finished" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set by a Component to signal completion of its <a class="reference internal" href="#component-execution"><span class="std std-ref">execution</span></a> in a <a class="reference internal" href="Time.html#psyneulink.core.scheduling.time.TimeScale.TRIAL" title="psyneulink.core.scheduling.time.TimeScale.TRIAL"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">TRIAL</span></code></a>; used by <a class="reference internal" href="Condition.html#conditions-component-based"><span class="std std-ref">Component-based Conditions</span></a> to predicate the
+<dd><p>Set by a Component to signal completion of its <a class="reference internal" href="#component-execution"><span class="std std-ref">execution</span></a> in a <a class="reference internal" href="Time.html#psyneulink.core.scheduling.time.TimeScale.TRIAL" title="psyneulink.core.scheduling.time.TimeScale.TRIAL"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">TRIAL</span></code></a>; used by <code class="xref any docutils literal notranslate"><span class="pre">Component-based</span> <span class="pre">Conditions</span></code> to predicate the
 execution of one or more other Components on a Component.</p>
 </dd></dl>
 
@@ -1173,7 +1173,7 @@ method of the Component’s <a class="reference internal" href="#psyneulink.core
 
 <dl class="py method">
 <dt class="sig sig-object py" id="psyneulink.core.components.component.Component.set_delivery_conditions">
-<span class="sig-name descname"><span class="pre">set_delivery_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">items</span></em>, <em class="sig-param"><span class="pre">delivery_condition=&lt;LogCondition.EXECUTION:</span> <span class="pre">896&gt;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.component.Component.set_delivery_conditions" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_delivery_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delivery_condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">LogCondition.EXECUTION</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.component.Component.set_delivery_conditions" title="Permalink to this definition">¶</a></dt>
 <dd><p>_set_delivery_conditions(                      items                                delivery_condition=EXECUTION          )</p>
 <p>Specifies items to be delivered to external application via gRPC; these must be be <a class="reference internal" href="#psyneulink.core.components.component.Component.loggable_items" title="psyneulink.core.components.component.Component.loggable_items"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">loggable_items</span></code></a>
 of the Component’s <a class="reference internal" href="#psyneulink.core.components.component.Component.log" title="psyneulink.core.components.component.Component.log"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">log</span></code></a>. This is a convenience method that calls the <a class="reference internal" href="Log.html#psyneulink.core.globals.log.Log._set_delivery_conditions" title="psyneulink.core.globals.log.Log._set_delivery_conditions"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">_set_delivery_conditions</span></code></a>
@@ -1186,6 +1186,26 @@ method of the Component’s <a class="reference internal" href="#psyneulink.core
 <dd><p>Specifies items to be logged; ; these must be be <a class="reference internal" href="#psyneulink.core.components.component.Component.loggable_items" title="psyneulink.core.components.component.Component.loggable_items"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">loggable_items</span></code></a> of the Component’s
 <a class="reference internal" href="#psyneulink.core.components.component.Component.log" title="psyneulink.core.components.component.Component.log"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">log</span></code></a>. This is a convenience method that calls the <code class="xref any docutils literal notranslate"><span class="pre">log_values</span></code> method
 of the Component’s <a class="reference internal" href="#psyneulink.core.components.component.Component.log" title="psyneulink.core.components.component.Component.log"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">log</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psyneulink.core.components.component.Component.all_dependent_parameters">
+<span class="sig-name descname"><span class="pre">all_dependent_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.component.Component.all_dependent_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary of Parameters of this Component and its         <a class="reference internal" href="#psyneulink.core.components.component.Component._dependent_components" title="psyneulink.core.components.component.Component._dependent_components"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">_dependent_components</span></code></a> filtered by <strong>filter_name</strong> and         <strong>filter_regex</strong>. If no filter is specified, all Parameters         are included.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filter_name</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Iterable</em><em>[</em><em>str</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – The                 exact name or names of Parameters to include. Defaults                 to None.</p></li>
+<li><p><strong>filter_regex</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Iterable</em><em>[</em><em>str</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – Regular expression patterns. If any pattern matches a                 Parameter name (using re.match), it will be included                 in the result. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Component]: Dictionary of filtered Parameters</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict[<a class="reference internal" href="Parameters.html#psyneulink.core.globals.parameters.Parameter" title="psyneulink.core.globals.parameters.Parameter">Parameter</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
