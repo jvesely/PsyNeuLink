@@ -21,7 +21,7 @@ dill==0.3.1.1
 docutils==0.16
 elfi==0.7.5
 entrypoints==0.3
-execnet==1.7.1
+execnet==1.9.0
 future==0.18.2
 google==3.0.0
 gprof2dot==2019.11.30
