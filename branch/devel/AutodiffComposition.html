@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>AutodiffComposition &mdash; PsyNeuLink 0+untagged.10.g137d6b6 documentation</title>
+  <title>AutodiffComposition &mdash; PsyNeuLink 0+untagged.5.g0b08b1e documentation</title>
   
 
   
@@ -101,7 +101,7 @@
               
               
                 <div class="version">
-                  0+untagged.10.g137d6b6
+                  0+untagged.5.g0b08b1e
                 </div>
               
             
@@ -285,8 +285,8 @@ simple AutodiffComposition, specify its inputs and targets, and run it with lear
 then its inner components are not actually executed. This means that there is limited support for logging parameters of components inside an AutodiffComposition;
 Currently, the only supported parameters are:</p>
 <ol class="arabic simple">
-<li><p>the <a class="reference internal" href="ObjectiveFunctions.html#psyneulink.core.components.functions.objectivefunctions.Stability.matrix" title="psyneulink.core.components.functions.objectivefunctions.Stability.matrix"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">matrix</span></code></a> parameter of Projections</p></li>
-<li><p>the <a class="reference internal" href="GatingProjection.html#psyneulink.core.components.projections.modulatory.gatingprojection.GatingProjection.value" title="psyneulink.core.components.projections.modulatory.gatingprojection.GatingProjection.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> parameter of its inner components</p></li>
+<li><p>the <a class="reference internal" href="AutoAssociativeProjection.html#psyneulink.library.components.projections.pathway.autoassociativeprojection.AutoAssociativeProjection.matrix" title="psyneulink.library.components.projections.pathway.autoassociativeprojection.AutoAssociativeProjection.matrix"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">matrix</span></code></a> parameter of Projections</p></li>
+<li><p>the <a class="reference internal" href="ControlProjection.html#psyneulink.core.components.projections.modulatory.controlprojection.ControlProjection.value" title="psyneulink.core.components.projections.modulatory.controlprojection.ControlProjection.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> parameter of its inner components</p></li>
 </ol>
 </section>
 <section id="nested-execution">
@@ -436,7 +436,7 @@ argument) then coordinates with the <a class="reference internal" href="Schedule
 <li><p><strong>inputs</strong> ({ <a class="reference internal" href="Composition.html#composition-nodes"><span class="std std-ref">Node</span></a>: list } : default None) – a dictionary containing a key-value pair for each <a class="reference internal" href="Composition.html#composition-nodes"><span class="std std-ref">Node</span></a> in the Composition that
 receives inputs from the user. For each pair, the key is the <a class="reference internal" href="Composition.html#composition-nodes"><span class="std std-ref">Node</span></a> (a <a class="reference internal" href="Mechanism.html"><span class="doc">Mechanism</span></a> or <a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a>) and the value is an input, the shape of which must match the Node’s
 default variable. If <strong>inputs</strong> is not specified, the <a class="reference internal" href="Component.html#component-variable"><span class="std std-ref">default_variable</span></a> for
-each <a class="reference internal" href="Pathway.html#psyneulink.core.compositions.pathway.PathwayRole.INPUT" title="psyneulink.core.compositions.pathway.PathwayRole.INPUT"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">INPUT</span></code></a> Node is used as its input (see <a class="reference internal" href="Composition.html#composition-execution-inputs"><span class="std std-ref">Input Formats</span></a> for
+each <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.NodeRole.INPUT" title="psyneulink.core.compositions.composition.NodeRole.INPUT"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">INPUT</span></code></a> Node is used as its input (see <a class="reference internal" href="Composition.html#composition-execution-inputs"><span class="std std-ref">Input Formats</span></a> for
 additional details).</p></li>
 <li><p><strong>clamp_input</strong> (<em>SOFT_CLAMP : default SOFT_CLAMP</em>) – </p></li>
 <li><p><strong>runtime_params</strong> (<em>Dict</em><em>[</em><em>Node: Dict</em><em>[</em><em>Parameter: Tuple</em><em>(</em><em>Value</em><em>, </em><a class="reference internal" href="Condition.html#psyneulink.core.scheduling.condition.Condition" title="psyneulink.core.scheduling.condition.Condition"><em>Condition</em></a><em>)</em><em>]</em><em>] </em><em>: default None</em>) – specifies alternate parameter values to be used only during this <a class="reference internal" href="Log.html#psyneulink.core.globals.log.LogCondition.EXECUTION" title="psyneulink.core.globals.log.LogCondition.EXECUTION"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">EXECUTION</span></code></a> when the specified
@@ -445,7 +445,7 @@ dictionaries).</p></li>
 <li><p><strong>skip_initialization</strong> (<em>: default False</em>) – </p></li>
 <li><p><strong>scheduler</strong> (<em>Scheduler : default None</em>) – the scheduler object that owns the conditions that will instruct the execution of the Composition
 If not specified, the Composition will use its automatically generated scheduler.</p></li>
-<li><p><strong>context</strong> (<a class="reference internal" href="Context.html#psyneulink.core.globals.context.Context.execution_id" title="psyneulink.core.globals.context.Context.execution_id"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">execution_id</span></code></a> : default <a class="reference internal" href="Scheduler.html#psyneulink.core.scheduling.scheduler.Scheduler.default_execution_id" title="psyneulink.core.scheduling.scheduler.Scheduler.default_execution_id"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">default_execution_id</span></code></a>) – <a class="reference internal" href="Composition.html#composition-execution-context"><span class="std std-ref">execution context</span></a> in which the <a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a> will be executed.</p></li>
+<li><p><strong>context</strong> (<a class="reference internal" href="Context.html#psyneulink.core.globals.context.Context.execution_id" title="psyneulink.core.globals.context.Context.execution_id"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">execution_id</span></code></a> : default <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.default_execution_id" title="psyneulink.core.compositions.composition.Composition.default_execution_id"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">default_execution_id</span></code></a>) – <a class="reference internal" href="Composition.html#composition-execution-context"><span class="std std-ref">execution context</span></a> in which the <a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a> will be executed.</p></li>
 <li><p><strong>base_context</strong> (<a class="reference internal" href="Context.html#psyneulink.core.globals.context.Context.execution_id" title="psyneulink.core.globals.context.Context.execution_id"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">execution_id</span></code></a> : Context(execution_id=None)) – the context corresponding to the <a class="reference internal" href="Composition.html#composition-execution-context"><span class="std std-ref">execution context</span></a> from which this
 execution will be initialized, if values currently do not exist for <strong>context</strong>.</p></li>
 <li><p><strong>call_before_time_step</strong> (<em>callable : default None</em>) – called before each <a class="reference internal" href="Time.html#psyneulink.core.scheduling.time.TimeScale.TIME_STEP" title="psyneulink.core.scheduling.time.TimeScale.TIME_STEP"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">TIME_STEP</span></code></a> is executed
