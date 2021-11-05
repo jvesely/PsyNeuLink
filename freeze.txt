@@ -18,7 +18,7 @@ cycler==0.10.0
 decorator==4.4.2
 defusedxml==0.6.0
 dill==0.3.1.1
-docutils==0.16
+docutils==0.18
 elfi==0.7.5
 entrypoints==0.3
 execnet==1.7.1
