@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Quick Reference &mdash; PsyNeuLink 9.5.0.0 documentation</title>
+  <title>Quick Reference &mdash; PsyNeuLink 9.9.7.1 documentation</title>
   
 
   
@@ -28,6 +28,8 @@
 
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!-- <link rel="stylesheet" href="_static/pygments.css" type="text/css" /> -->
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -99,7 +101,7 @@
               
               
                 <div class="version">
-                  9.5.0.0
+                  9.9.7.1
                 </div>
               
             
@@ -203,7 +205,7 @@
 <h2>Sections<a class="headerlink" href="#sections" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><ul class="simple">
-<li><p><a class="reference internal" href="#conventions"><span class="std std-ref">Conventions</span></a></p></li>
+<li><p><a class="reference internal" href="ConventionsAndDefinitions.html#conventions"><span class="std std-ref">Conventions</span></a></p></li>
 <li><p><a class="reference internal" href="#repository-organization"><span class="std std-ref">Repository Organization</span></a></p></li>
 <li><dl class="simple">
 <dt><a class="reference internal" href="#psyneulink-objects"><span class="std std-ref">PsyNeuLink Objects</span></a></dt><dd><ul>
@@ -340,7 +342,7 @@ operations such as optimization (e.g., <a class="reference internal" href="Optim
 </dl>
 </li>
 <li><dl class="simple">
-<dt><a class="reference internal" href="LearningMechanism.html"><span class="doc">Learning Mechanism</span></a></dt><dd><p>Modifies the matrix of a <a class="reference internal" href="MappingProjection.html"><span class="doc">MappingProjection</span></a>.  Subtypes are specialized for autoassociative (e.g.,
+<dt><a class="reference internal" href="LearningMechanism.html"><span class="doc">LearningMechanism</span></a></dt><dd><p>Modifies the matrix of a <a class="reference internal" href="MappingProjection.html"><span class="doc">MappingProjection</span></a>.  Subtypes are specialized for autoassociative (e.g.,
 Hebbian) learning, and various supervised learning algorithms (e.g., reinforcement and backprogation).</p>
 </dd>
 </dl>
@@ -383,7 +385,7 @@ or output of a Mechanism.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><a class="reference internal" href="LearningProjection.html"><span class="doc">LearningProjection</span></a></dt><dd><p>Takes a LearningSignal from a <a class="reference internal" href="LearningMechanism.html"><span class="doc">Learning Mechanism</span></a> and uses it to modify the matrix of a
+<dt><a class="reference internal" href="LearningProjection.html"><span class="doc">LearningProjection</span></a></dt><dd><p>Takes a LearningSignal from a <a class="reference internal" href="LearningMechanism.html"><span class="doc">LearningMechanism</span></a> and uses it to modify the matrix of a
 MappingProjection.</p>
 </dd>
 </dl>
@@ -440,7 +442,7 @@ is created by first calling its constructor and then using its <a class="referen
 Every Composition has a <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.graph" title="psyneulink.core.compositions.composition.Composition.graph"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">graph</span></code></a> attribute, in which each Mechanism or nested Composition is a
 node and each <a class="reference internal" href="Projection.html"><span class="doc">Projection</span></a> is a directed edge.  The graph defines the default flow of computation (from each node to
 the ones to which it projects)when it is executed using its <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.run" title="psyneulink.core.compositions.composition.Composition.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">run</span></code></a> method, that may be modified by
-<a class="reference internal" href="Condition.html"><span class="doc">Conditions</span></a> assigned to the Composition’s <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.scheduler" title="psyneulink.core.compositions.composition.Composition.scheduler"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">scheduler</span></code></a> (see
+<a class="reference internal" href="Condition.html"><span class="doc">Conditions</span></a> assigned to the Composition’s <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.scheduler" title="psyneulink.core.compositions.composition.Composition.scheduler"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">scheduler</span></code></a> (see
 <a class="reference internal" href="#quick-reference-scheduling"><span class="std std-ref">below</span></a>.  The graph can be displayed using the Composition’s <code class="xref any docutils literal notranslate"><span class="pre">show_graph</span></code> method, an example of which is shown in the following figure:</p>
 <figure class="align-default" id="id4">
 <span id="quick-reference-compositions-figure"></span><a class="reference internal image-reference" href="_images/QuickReference_Composition_fig.svg"><img alt="_images/QuickReference_Composition_fig.svg" src="_images/QuickReference_Composition_fig.svg" width="75%" /></a>
@@ -456,7 +458,7 @@ complete description of the model implemented by this Composition).</span><a cla
 <section id="scheduling">
 <span id="quick-reference-scheduling"></span><h2><a class="reference internal" href="Scheduler.html"><span class="doc">Scheduling</span></a><a class="headerlink" href="#scheduling" title="Permalink to this headline">¶</a></h2>
 <p>PsyNeuLink Mechanisms can be executed on their own.  However, usually they are executed as part of a Composition to
-which they belong, when that is executed using its <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.run" title="psyneulink.core.compositions.composition.Composition.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">run</span></code></a> method.  When a Composition is <code class="xref any docutils literal notranslate"><span class="pre">run</span></code>, its Components are executed under the control of its <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.scheduler" title="psyneulink.core.compositions.composition.Composition.scheduler"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">scheduler</span></code></a>.  This
+which they belong, when that is executed using its <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.run" title="psyneulink.core.compositions.composition.Composition.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">run</span></code></a> method.  When a Composition is <code class="xref any docutils literal notranslate"><span class="pre">run</span></code>, its Components are executed under the control of its <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.scheduler" title="psyneulink.core.compositions.composition.Composition.scheduler"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">scheduler</span></code></a>.  This
 is a <a class="reference internal" href="Scheduler.html"><span class="doc">Scheduler</span></a>, that executes the Composition iteratively in rounds of execution referred to as a <a class="reference internal" href="Time.html#psyneulink.core.scheduling.time.TimeScale.PASS" title="psyneulink.core.scheduling.time.TimeScale.PASS"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">PASS</span></code></a>, in which
 each node (Mechanism and/or nested Composition) in the Composition’s <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.graph" title="psyneulink.core.compositions.composition.Composition.graph"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">graph</span></code></a> is given an
 opportunity to execute.  By default, each node executes exactly once per <a class="reference internal" href="Time.html#psyneulink.core.scheduling.time.TimeScale.PASS" title="psyneulink.core.scheduling.time.TimeScale.PASS"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">PASS</span></code></a>, in the order determined by the edges
@@ -465,8 +467,8 @@ used to determine when a node begins and/or ends executing, how many times it ex
 which it executes relative to other nodes, and any other dependency that can be expressed in terms of the
 attributes of other Components in PsyNeuLink. Using a <a class="reference internal" href="Scheduler.html"><span class="doc">Scheduler</span></a> and a combination of <a class="reference internal" href="Condition.html#condition-pre-specified"><span class="std std-ref">pre-specified</span></a> and <a class="reference internal" href="Condition.html#condition-custom"><span class="std std-ref">custom</span></a> Conditions, any pattern of execution can be configured
 that is logically possible.</p>
-<p>A Composition continues to execute <a class="reference internal" href="Time.html#psyneulink.core.scheduling.time.TimeScale.PASS" title="psyneulink.core.scheduling.time.TimeScale.PASS"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">PASS</span></code></a>es until its <a class="reference internal" href="Time.html#psyneulink.core.scheduling.time.TimeScale.TRIAL" title="psyneulink.core.scheduling.time.TimeScale.TRIAL"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">TRIAL</span></code></a> <a class="reference internal" href="Scheduler.html#scheduler-termination-conditions"><span class="std std-ref">termination Condition</span></a> is met, which constitutes a <a class="reference internal" href="Time.html#psyneulink.core.scheduling.time.TimeScale.TRIAL" title="psyneulink.core.scheduling.time.TimeScale.TRIAL"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">TRIAL</span></code></a> of executions.  This is associated with a
-single input to the Composition. Multiple <a class="reference internal" href="Time.html#psyneulink.core.scheduling.time.TimeScale.TRIAL" title="psyneulink.core.scheduling.time.TimeScale.TRIAL"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">TRIAL</span></code></a> s (corresponding to a sequences of inputs) can be executed using a
+<p>A Composition continues to execute <a class="reference internal" href="Time.html#psyneulink.core.scheduling.time.TimeScale.PASS" title="psyneulink.core.scheduling.time.TimeScale.PASS"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">PASS</span></code></a>es until its <a class="reference internal" href="Log.html#psyneulink.core.globals.log.LogCondition.TRIAL" title="psyneulink.core.globals.log.LogCondition.TRIAL"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">TRIAL</span></code></a> <a class="reference internal" href="Scheduler.html#scheduler-termination-conditions"><span class="std std-ref">termination Condition</span></a> is met, which constitutes a <a class="reference internal" href="Log.html#psyneulink.core.globals.log.LogCondition.TRIAL" title="psyneulink.core.globals.log.LogCondition.TRIAL"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">TRIAL</span></code></a> of executions.  This is associated with a
+single input to the Composition. Multiple <a class="reference internal" href="Log.html#psyneulink.core.globals.log.LogCondition.TRIAL" title="psyneulink.core.globals.log.LogCondition.TRIAL"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">TRIAL</span></code></a> s (corresponding to a sequences of inputs) can be executed using a
 Composition’s <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.run" title="psyneulink.core.compositions.composition.Composition.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">run</span></code></a> method.</p>
 </section>
 <section id="logging">
@@ -475,7 +477,7 @@ Composition’s <a class="reference internal" href="Composition.html#psyneulink.
 conditions.  <a class="reference internal" href="Log.html"><span class="doc">Logs</span></a> are dictionaries, with an entry for each Component being logged.  The key for each entry is
 the name of the Component, and the value is a record of the Component’s <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.value" title="psyneulink.core.components.component.Component.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> recorded under the
 conditions specified by its <code class="xref any docutils literal notranslate"><span class="pre">logPref</span></code> attribute, specified as a <code class="xref any docutils literal notranslate"><span class="pre">LogLevel</span></code>; each record is a
-tuple, the first item of which is a time stamp (the <a class="reference internal" href="Time.html#psyneulink.core.scheduling.time.TimeScale.TIME_STEP" title="psyneulink.core.scheduling.time.TimeScale.TIME_STEP"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">TIME_STEP</span></code></a> of the <a class="reference internal" href="Time.html#psyneulink.core.scheduling.time.TimeScale.RUN" title="psyneulink.core.scheduling.time.TimeScale.RUN"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">RUN</span></code></a>), the second a string indicating the
+tuple, the first item of which is a time stamp (the <a class="reference internal" href="Time.html#psyneulink.core.scheduling.time.TimeScale.TIME_STEP" title="psyneulink.core.scheduling.time.TimeScale.TIME_STEP"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">TIME_STEP</span></code></a> of the <a class="reference internal" href="Log.html#psyneulink.core.globals.log.LogCondition.RUN" title="psyneulink.core.globals.log.LogCondition.RUN"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">RUN</span></code></a>), the second a string indicating the
 context in which the value was recorded, and the third the <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.value" title="psyneulink.core.components.component.Component.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> itself.</p>
 </section>
 <section id="graphic-display">
@@ -576,11 +578,10 @@ debugging, but suppressible for efficiency of execution).</p>
 
      
        <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
          <script src="_static/jquery.js"></script>
          <script src="_static/underscore.js"></script>
          <script src="_static/doctools.js"></script>
-         <script src="_static/language_data.js"></script>
-         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
      
 
   
