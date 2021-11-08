@@ -173,7 +173,6 @@ def test_stability_flexibility(comp_mode, benchmark, num_generators):
                                                                   threshold=THRESHOLD,
                                                                   noise=NOISE,
                                                                   time_step_size=0.001),
-                            reset_stateful_function_when=pnl.AtTrialStart(),
                             output_ports=[pnl.DECISION_VARIABLE, pnl.RESPONSE_TIME],
                             name='DDM')
 
