@@ -3,6 +3,7 @@ import numpy as np
 import random
 import pytest
 
+
 # Define function to generate a counterbalanced trial sequence with a specified switch trial frequency
 def generateTrialSequence(N, Frequency):
 
@@ -76,7 +77,10 @@ def generateTrialSequence(N, Frequency):
 @pytest.mark.parametrize("mode", pytest.helpers.get_comp_execution_modes() +
                                  [pytest.helpers.cuda_param('Python-PTX'),
                                   pytest.param('Python-LLVM', marks=pytest.mark.llvm)])
-def test_stability_flexibility(mode, benchmark, num_generators):
+@pytest.mark.parametrize('prng', ['Default', 'Philox'])
+def test_stability_flexibility(mode, benchmark, num_generators, prng):
+    if mode == pnl.ExecutionMode.LLVM:
+        pytest.skip("takes too long to compile")
 
     if str(mode).startswith('Python-'):
         ocm_mode = mode.split('-')[1]
@@ -263,6 +267,10 @@ def test_stability_flexibility(mode, benchmark, num_generators):
             )
         )
     )
+    if prng == 'Philox':
+        stabilityFlexibility.controller.function.parameters.random_state.set(pnl.core.globals.utilities._SeededPhilox([0]))
+        decisionMaker.parameters.random_state.set(pnl.core.globals.utilities._SeededPhilox([0]))
+        decisionMaker.function.parameters.random_state.set(pnl.core.globals.utilities._SeededPhilox([0]))
 
     inputs = {taskLayer: taskTrain,
               stimulusInfo: stimulusTrain,
@@ -274,11 +282,19 @@ def test_stability_flexibility(mode, benchmark, num_generators):
     print(stabilityFlexibility.results[0])
     print(stabilityFlexibility.controller.function.saved_values)
     if num_generators == 3:
-        assert np.allclose(stabilityFlexibility.results[0], [[1200.], [0.2], [0.266]])
+        if prng == 'Default':
+            assert np.allclose(stabilityFlexibility.results[0], [[1200.], [0.2], [0.266]])
+        elif prng == 'Philox':
+            assert np.allclose(stabilityFlexibility.results[0], [[1200.], [0.2], [0.235]])
+
         # saved values are only available in Python, and are overwritten after every invocation
         if mode == pnl.ExecutionMode.Python and not benchmark.enabled:
-            assert np.allclose(np.squeeze(stabilityFlexibility.controller.function.saved_values),
-                               [0.077, 0.266, 0.06])
+            if prng == 'Default':
+                assert np.allclose(np.squeeze(stabilityFlexibility.controller.function.saved_values),
+                                   [0.077, 0.266, 0.06])
+            elif prng == 'Philox':
+                assert np.allclose(np.squeeze(stabilityFlexibility.controller.function.saved_values),
+                                   [0.235, 0.086, 0.229])
 
     if num_generators == 100000 and mode == pnl.ExecutionMode.Python:
         data = stabilityFlexibility.controller.function.saved_values
