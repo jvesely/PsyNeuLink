@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Condition &mdash; PsyNeuLink 0+untagged.10.g827247c documentation</title>
+  <title>Condition &mdash; PsyNeuLink 0+untagged.10.gfd9e8a3 documentation</title>
   
 
   
@@ -99,7 +99,7 @@
               
               
                 <div class="version">
-                  0+untagged.10.g827247c
+                  0+untagged.10.gfd9e8a3
                 </div>
               
             
@@ -236,7 +236,7 @@ context and assigned automatically, as in the following example:</p>
 <span class="n">my_scheduler</span><span class="o">.</span><span class="n">add_condition</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">EveryNCalls</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>Here, <code class="docutils literal notranslate"><span class="pre">EveryNCalls(A,</span> <span class="pre">2)</span></code> for example, is assigned the <a class="reference internal" href="ObjectiveFunctions.html#psyneulink.core.components.functions.objectivefunctions.Stability.owner" title="psyneulink.core.components.functions.objectivefunctions.Stability.owner"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">owner</span></code></a> <code class="docutils literal notranslate"><span class="pre">B</span></code>.</p>
+<p>Here, <code class="docutils literal notranslate"><span class="pre">EveryNCalls(A,</span> <span class="pre">2)</span></code> for example, is assigned the <a class="reference internal" href="SelectionFunctions.html#psyneulink.core.components.functions.selectionfunctions.OneHot.owner" title="psyneulink.core.components.functions.selectionfunctions.OneHot.owner"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">owner</span></code></a> <code class="docutils literal notranslate"><span class="pre">B</span></code>.</p>
 </section>
 <section id="custom-conditions">
 <span id="condition-custom"></span><h3><em>Custom Conditions</em><a class="headerlink" href="#custom-conditions" title="Permalink to this headline">¶</a></h3>
@@ -385,7 +385,7 @@ satisfied when or any time after the specified nodes have executed the specified
 of times among themselves, in total.</p></li>
 <li><p><a class="reference internal" href="#psyneulink.core.scheduling.condition.EveryNCalls" title="psyneulink.core.scheduling.condition.EveryNCalls"><code class="xref any py py-class docutils literal notranslate"><span class="pre">EveryNCalls</span></code></a> (node, int[, TimeScale])
 satisfied when the specified node has executed the specified number of times since the
-last time <a class="reference internal" href="ObjectiveFunctions.html#psyneulink.core.components.functions.objectivefunctions.Stability.owner" title="psyneulink.core.components.functions.objectivefunctions.Stability.owner"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">owner</span></code></a> has run.</p></li>
+last time <a class="reference internal" href="SelectionFunctions.html#psyneulink.core.components.functions.selectionfunctions.OneHot.owner" title="psyneulink.core.components.functions.selectionfunctions.OneHot.owner"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">owner</span></code></a> has run.</p></li>
 <li><p><a class="reference internal" href="#psyneulink.core.scheduling.condition.JustRan" title="psyneulink.core.scheduling.condition.JustRan"><code class="xref any py py-class docutils literal notranslate"><span class="pre">JustRan</span></code></a> (node)
 satisfied if the specified node was assigned to run in the previous <a class="reference internal" href="Time.html#psyneulink.core.scheduling.time.TimeScale.TIME_STEP" title="psyneulink.core.scheduling.time.TimeScale.TIME_STEP"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">TIME_STEP</span></code></a>.</p></li>
 <li><p><a class="reference internal" href="#psyneulink.core.scheduling.condition.AllHaveRun" title="psyneulink.core.scheduling.condition.AllHaveRun"><code class="xref any py py-class docutils literal notranslate"><span class="pre">AllHaveRun</span></code></a> (<a href="#id15"><span class="problematic" id="id16">*</span></a>nodes)
