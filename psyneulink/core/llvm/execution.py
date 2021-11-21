@@ -230,7 +230,7 @@ class FuncExecution(CUDAExecution):
 
     def execute(self, variable):
         # Make sure function inputs are 2d.
-        # Mechanism inptus are already 3d so the first part is nop.
+        # Mechanism inputs are already 3d so the first part is nop.
         new_variable = np.asfarray(np.atleast_2d(variable),
                                    dtype=self._vi_dty)
 
@@ -411,11 +411,14 @@ class CompExecution(CUDAExecution):
         #   followed by a list of projection parameters; get the first one
         # output structure consists of a list of node outputs,
         #   followed by a list of nested data structures; get the first one
-        field = data._fields_[0][0]
-        res_struct = getattr(data, field)
+        field_name = data._fields_[0][0]
+        res_struct = getattr(data, field_name)
+
+        # Get the index into the array of all nodes
         index = self._composition._get_node_index(node)
-        field = res_struct._fields_[index][0]
-        res_struct = getattr(res_struct, field)
+        field_name = res_struct._fields_[index][0]
+        res_struct = getattr(res_struct, field_name)
+
         return _convert_ctype_to_python(res_struct)
 
     def extract_node_struct(self, node, struct):
