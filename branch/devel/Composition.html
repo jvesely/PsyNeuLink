@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Composition &mdash; PsyNeuLink 0+untagged.10.g1f3295e documentation</title>
+  <title>Composition &mdash; PsyNeuLink 0+untagged.23.g267d2df documentation</title>
   
 
   
@@ -99,7 +99,7 @@
               
               
                 <div class="version">
-                  0+untagged.10.g1f3295e
+                  0+untagged.23.g267d2df
                 </div>
               
             
@@ -3686,6 +3686,18 @@ labeled as EdgeType.FEEDBACK (True) but are not in a cycle</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="psyneulink.core.compositions.composition.Composition._get_source">
+<span class="sig-name descname"><span class="pre">_get_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">projection</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.compositions.composition.Composition._get_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return tuple with port, node and comp of sender for <strong>projection</strong> (possibly in a nested Composition).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psyneulink.core.compositions.composition.Composition._get_destination">
+<span class="sig-name descname"><span class="pre">_get_destination</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">projection</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.compositions.composition.Composition._get_destination" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return tuple with port, node and comp of receiver for <strong>projection</strong> (possibly in a nested Composition).</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="psyneulink.core.compositions.composition.Composition.add_pathway">
 <span class="sig-name descname"><span class="pre">add_pathway</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathway</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.compositions.composition.Composition.add_pathway" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add an existing <a class="reference internal" href="#composition-pathways"><span class="std std-ref">Pathway</span></a> to the Composition</p>
@@ -4039,9 +4051,12 @@ located in the same level of nesting.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="psyneulink.core.compositions.composition.Composition._build_predicted_inputs_dict">
 <span class="sig-name descname"><span class="pre">_build_predicted_inputs_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicted_input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.compositions.composition.Composition._build_predicted_inputs_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get inputs for evaluate method used to execute simulations of Composition.</p>
-<p>Get values of state_input_ports which receive projections from items providing relevant input (and any
-processing of those values specified</p>
+<dd><p>Format predict_inputs from controller as input to evaluate method used to execute simulations of Composition.</p>
+<dl class="simple">
+<dt>Get values of state_input_ports that receive projections from items providing relevant input (and any</dt><dd><p>processing of those values specified), and format as input_dict suitable for run() method (called in evaluate)</p>
+</dd>
+</dl>
+<p>Deal with inputs for nodes in nested Compositions</p>
 </dd></dl>
 
 <dl class="py method">
