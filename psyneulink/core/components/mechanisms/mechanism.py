@@ -3055,7 +3055,21 @@ class Mechanism_Base(Mechanism):
         # Allocate a shadow structure to overload user supplied parameters
         params_out = builder.alloca(params_in.type.pointee, name="modulated_parameters")
         if len(param_ports) != len(obj.llvm_param_ids):
-            builder = pnlvm.helpers.memcpy(builder, params_out, params_in)
+            if self is obj:
+                for i, n in enumerate(obj.llvm_param_ids):
+                    src = builder.gep(params_in, [ctx.int32_ty(0), ctx.int32_ty(i)])
+                    dst = builder.gep(params_out, [ctx.int32_ty(0), ctx.int32_ty(i)])
+                    if n in {"_parameter_ports", "input_ports", "output_ports", "function",
+                             "integrator_function", "combination_function", "recurrent_projection"} or \
+                            getattr(obj, n) in param_ports:
+                        print(self, "AVOIDED COPY:", n, dst.type.pointee)
+                        continue
+
+                    print(self, "COPIED:", n, dst.type.pointee)
+                    builder.store(builder.load(src), dst)
+                    #builder = pnlvm.helpers.memcpy(builder, dst, src)
+            else:
+                builder = pnlvm.helpers.memcpy(builder, params_out, params_in)
 
         def _get_output_ptr(b, i):
             ptr = ctx.get_param_or_state_ptr(b, obj, param_ports[i].source, param_struct_ptr=params_out)
