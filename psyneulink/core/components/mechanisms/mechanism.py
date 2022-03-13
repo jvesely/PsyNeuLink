@@ -3077,7 +3077,7 @@ class Mechanism_Base(Mechanism):
                                                             ip_output, tags=tags)
 
         # Update execution counter
-        exec_count_ptr = pnlvm.helpers.get_state_ptr(builder, self, m_state, "execution_count")
+        exec_count_ptr = pnlvm.helpers.get_state_ptr(builder, self, m_state, EXECUTION_COUNT)
         exec_count = builder.load(exec_count_ptr)
         exec_count = builder.fadd(exec_count, exec_count.type(1))
         builder.store(exec_count, exec_count_ptr)
