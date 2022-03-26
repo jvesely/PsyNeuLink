@@ -169,11 +169,14 @@ def test_stability_flexibility(comp_mode, benchmark, num_generators):
                                           name='Scaled DDM Input')
 
     # Decision Module
-    decisionMaker = pnl.DDM(function=pnl.DriftDiffusionIntegrator(starting_point=STARTING_POINT,
+    decisionMaker = pnl.DDM(function=pnl.DriftDiffusionIntegrator(non_decision_time=STARTING_POINT,
                                                                   threshold=THRESHOLD,
-                                                                  noise=NOISE,
+                                                                  noise=np.sqrt(NOISE),
                                                                   time_step_size=0.001),
                             output_ports=[pnl.DECISION_VARIABLE, pnl.RESPONSE_TIME],
+                            reset_stateful_function_when=pnl.Never(),
+                            execute_until_finished=False,
+                            max_executions_before_finished=1000,
                             name='DDM')
 
     # Composition Creation
@@ -237,6 +240,7 @@ def test_stability_flexibility(comp_mode, benchmark, num_generators):
     stabilityFlexibility.add_controller(
         pnl.OptimizationControlMechanism(
             state_features=[taskLayer.input_port, stimulusInfo.input_port, cueInterval.input_port, correctResponseInfo.input_port],
+            function=pnl.GridSearch(save_values=True),
             agent_rep=stabilityFlexibility,
             objective_mechanism=objectiveMech,
             control_signals=pnl.ControlSignal(
