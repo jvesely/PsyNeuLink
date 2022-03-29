@@ -132,7 +132,10 @@ def test_stability_flexibility(comp_mode, benchmark, num_generators):
 
     # Control Mechanism Setting Cue-To-Stimulus Interval
     csiController = pnl.ControlMechanism(monitor_for_control=cueInterval,
-                                         control_signals=[(pnl.TERMINATION_THRESHOLD, controlModule)],
+                                         control_signals=pnl.ControlSignal(
+                                            modulates=(pnl.TERMINATION_THRESHOLD, controlModule),
+                                            default_allocation=1200
+                                         ),
                                          modulation=pnl.OVERRIDE)
 
     # Hadamard product of controlModule and Stimulus Information
@@ -246,6 +249,7 @@ def test_stability_flexibility(comp_mode, benchmark, num_generators):
             control_signals=pnl.ControlSignal(
                 modulates=('seed-function', decisionMaker),
                 modulation=pnl.OVERRIDE,
+                default_allocation=[num_generators],
                 allocation_samples=pnl.SampleSpec(start=0, stop=num_generators - 1, step=1),
                 cost_options=pnl.CostFunctions.NONE
             )
