@@ -915,13 +915,13 @@ def gen_composition_exec(ctx, composition, *, tags:frozenset):
         # Reset internal TIME_STEP clock for each node
         # NOTE: This is done _after_ condition evaluation, otherwise
         #       TIME_STEP related conditions will only see 0 executions
-        for idx, node in enumerate(composition.nodes):
-            ran_prev_step = builder.extract_value(previous_step, [idx])
-            time_loc = num_exec_locs[node]
-            with builder.if_then(ran_prev_step):
-                num_exec_time_ptr = builder.gep(time_loc, [ctx.int32_ty(0),
-                                                           ctx.int32_ty(TimeScale.TIME_STEP.value)])
-                builder.store(num_exec_time_ptr.type.pointee(0), num_exec_time_ptr)
+#        for idx, node in enumerate(composition.nodes):
+#            ran_prev_step = builder.extract_value(previous_step, [idx])
+#            time_loc = num_exec_locs[node]
+#            with builder.if_then(ran_prev_step):
+#                num_exec_time_ptr = builder.gep(time_loc, [ctx.int32_ty(0),
+#                                                           ctx.int32_ty(TimeScale.TIME_STEP.value)])
+#                builder.store(num_exec_time_ptr.type.pointee(0), num_exec_time_ptr)
 
         for idx, node in enumerate(composition.nodes):
 
@@ -978,10 +978,10 @@ def gen_composition_exec(ctx, composition, *, tags:frozenset):
             # Bumping automatically zeros lower elements
             cond_gen.bump_ts(builder, cond, (0, 1, 0))
             # Reset internal PASS clock for each node
-            for time_loc in num_exec_locs.values():
-                num_exec_time_ptr = builder.gep(time_loc, [ctx.int32_ty(0),
-                                                           ctx.int32_ty(TimeScale.PASS.value)])
-                builder.store(num_exec_time_ptr.type.pointee(0), num_exec_time_ptr)
+#            for time_loc in num_exec_locs.values():
+#                num_exec_time_ptr = builder.gep(time_loc, [ctx.int32_ty(0),
+#                                                           ctx.int32_ty(TimeScale.PASS.value)])
+#                builder.store(num_exec_time_ptr.type.pointee(0), num_exec_time_ptr)
 
         builder.branch(loop_condition)
 

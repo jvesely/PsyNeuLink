@@ -3172,6 +3172,8 @@ class Mechanism_Base(Mechanism):
         num_executions_ptr = ctx.get_param_or_state_ptr(builder, self, "num_executions", state_struct_ptr=m_state)
         for scale in TimeScale:
             assert scale.value < len(num_executions_ptr.type.pointee)
+            if not hasattr(self, 'termination_measure') or scale != self.parameters.termination_measure.get():
+                continue
             num_exec_time_ptr = builder.gep(num_executions_ptr,
                                             [ctx.int32_ty(0), ctx.int32_ty(scale.value)],
                                             name="num_executions_{}_ptr".format(scale))
