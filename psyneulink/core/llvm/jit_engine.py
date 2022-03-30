@@ -107,10 +107,10 @@ def _ptx_jit_constructor():
 
     # PassManagerBuilder is used only for inlining simple functions
     __pass_manager_builder = binding.PassManagerBuilder()
-    __pass_manager_builder.opt_level = 0
-    __pass_manager_builder.size_level = 1
+    __pass_manager_builder.opt_level = 2
+#    __pass_manager_builder.size_level = 1
     # The threshold of '7' is empirically selected.
-    __pass_manager_builder.inlining_threshold = 7
+    __pass_manager_builder.inlining_threshold = 512
 
     # Use default device
     # TODO: Add support for multiple devices
