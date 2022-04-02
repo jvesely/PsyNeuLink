@@ -233,10 +233,6 @@ def test_stability_flexibility(mode, benchmark, num_generators, prng):
     stabilityFlexibility.add_projection(sender=decisionMaker.output_ports[0], receiver=decisionGate)
     stabilityFlexibility.add_projection(sender=decisionMaker.output_ports[1], receiver=responseGate)
 
-    # Sets scheduler conditions, so that the gates are not executed (and hence the composition doesn't finish) until decisionMaker is finished
-    stabilityFlexibility.scheduler.add_condition(decisionGate, pnl.WhenFinished(decisionMaker))
-    stabilityFlexibility.scheduler.add_condition(responseGate, pnl.WhenFinished(decisionMaker))
-
 
     # Add ObjectiveMechanism to store the values in 'saved_values'
     objectiveMech = pnl.ObjectiveMechanism(name="RESPONSE_Objective")
@@ -271,6 +267,10 @@ def test_stability_flexibility(mode, benchmark, num_generators, prng):
         stabilityFlexibility.controller.function.parameters.random_state.set(pnl.core.globals.utilities._SeededPhilox([0]))
         decisionMaker.parameters.random_state.set(pnl.core.globals.utilities._SeededPhilox([0]))
         decisionMaker.function.parameters.random_state.set(pnl.core.globals.utilities._SeededPhilox([0]))
+
+    # Sets scheduler conditions, so that the gates are not executed (and hence the composition doesn't finish) until decisionMaker is finished
+    stabilityFlexibility.scheduler.add_condition(decisionGate, pnl.WhenFinished(decisionMaker))
+    stabilityFlexibility.scheduler.add_condition(responseGate, pnl.WhenFinished(decisionMaker))
 
     inputs = {taskLayer: taskTrain,
               stimulusInfo: stimulusTrain,
