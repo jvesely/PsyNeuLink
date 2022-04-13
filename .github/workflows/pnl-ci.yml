@@ -35,9 +35,9 @@ jobs:
       matrix:
         python-version: ['3.8', '3.11', '3.12', '3.13']
         python-architecture: ['x64']
-        extra-args: ['']
         os: [ubuntu, macos, windows]
         version-restrict: ['']
+        extra-args: ["-m 'not llvm'", "-m llvm"]
         include:
           # code-coverage build on macos python 3.9
           - python-version: '3.9'
