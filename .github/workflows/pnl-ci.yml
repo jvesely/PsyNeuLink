@@ -86,7 +86,9 @@ jobs:
 
     - name: Test with pytest
       timeout-minutes: 180
-      run: pytest --junit-xml=tests_out.xml --verbosity=0 -n auto ${{ matrix.extra-args }}
+      run: |
+        pytest --junit-xml=tests_out.xml --verbosity=0 -n auto ${{ matrix.extra-args }}
+        pip show numpy
 
     - name: Upload test results
       uses: actions/upload-artifact@v3
