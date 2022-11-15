@@ -1,6 +1,7 @@
 import collections
 import logging
 import types
+import weakref
 
 logger = logging.getLogger(__name__)
 
@@ -17,9 +18,9 @@ class ConnectionInfo(types.SimpleNamespace):
     def __init__(self, compositions=None, active_context=None):
         if compositions is not None and compositions is not self.ALL:
             if isinstance(compositions, collections.abc.Iterable):
-                compositions = set(compositions)
+                compositions = weakref.WeakSet(compositions)
             else:
-                compositions = {compositions}
+                compositions = weakref.WeakSet({compositions})
 
         super().__init__(compositions=compositions, active_context=active_context)
 
@@ -30,13 +31,13 @@ class ConnectionInfo(types.SimpleNamespace):
             if composition is self.ALL:
                 self.compositions = composition
             else:
-                self.compositions = {composition}
+                self.compositions = weakref.WeakSet({composition})
         else:
             self.compositions.add(composition)
 
     def remove_composition(self, composition):
         if composition is self.ALL:
-            self.compositions = set()
+            self.compositions = weakref.WeakSet()
         else:
             try:
                 self.compositions.remove(composition)
