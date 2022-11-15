@@ -109,6 +109,7 @@ Class Reference
 """
 
 import warnings
+import weakref
 from collections.abc import Iterable
 
 from beartype import beartype
@@ -191,7 +192,7 @@ class CompositionInterfaceMechanism(ProcessingMechanism_Base):
 
         if default_variable is None and size is None:
             default_variable = self.class_defaults.variable
-        self.composition = composition
+        self.composition = weakref.proxy(composition)
         self.port_map = port_map
         self.connected_to_composition = False
         self.user_added_ports = {
