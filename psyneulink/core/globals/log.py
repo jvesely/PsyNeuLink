@@ -382,6 +382,7 @@ Class Reference
 """
 import enum
 import warnings
+import weakref
 
 from collections import OrderedDict, namedtuple
 from collections.abc import MutableMapping
@@ -696,7 +697,7 @@ class Log:
             - value that is a list of sequentially logged LogEntry items
         """
 
-        self.owner = owner
+        self.owner = weakref.proxy(owner)
         # self.entries = EntriesDict({})
         self.entries = EntriesDict(self)
 
