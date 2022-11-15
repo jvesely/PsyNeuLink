@@ -85,6 +85,7 @@ Class Reference
 import enum
 import functools
 import warnings
+import weakref
 
 from collections import defaultdict, namedtuple
 from queue import Queue
@@ -349,7 +350,7 @@ class Context:
                  rpc_pipeline:Queue=None):
 
         self.owner = owner
-        self.composition = composition
+        self.composition = weakref.proxy(composition) if composition is not None else None
         self.execution_phase = execution_phase
         self.source = source
         self.runmode = runmode
@@ -404,7 +405,7 @@ class Context:
                                                   'EMComposition_Proj','EMComposition',
                                                   'GRUComposition'}
         ):
-            self._composition = composition
+            self._composition = weakref.proxy(composition) if composition is not None else None
         else:
             raise ContextError("Assignment to context.composition for {self.owner.name} ({composition}) "
                                "must be a Composition (or \'None\').")
