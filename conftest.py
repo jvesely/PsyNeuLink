@@ -1,4 +1,5 @@
 import doctest
+import os
 import psyneulink
 import pytest
 import numpy as np
@@ -100,7 +101,13 @@ def pytest_runtest_call(item):
         torch.manual_seed(seed)
 
 
-def pytest_runtest_teardown(item):
+def pytest_runtest_teardown(item, nextitem):
+
+    pid = os.getpid()
+
+    with open("pytest-{}.trace".format(pid), "a") as f:
+        f.write("TRACE: {} -> {}\n".format(item, nextitem))
+
     for registry in primary_registries:
         # Clear Registry to have a stable reference for indexed suffixes of default names
         clear_registry(registry)

@@ -95,6 +95,14 @@ jobs:
       timeout-minutes: 180
       run: pytest --junit-xml=tests_out.xml --verbosity=0 -n auto ${{ matrix.extra-args }}
 
+    - name: Upload test traces
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-traces-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.python-architecture }}-${{ matrix.extra-args }}
+        path: pytest-*.trace
+        retention-days: 5
+      if: success() || failure()
+
     - name: Upload test results
       uses: actions/upload-artifact@v3
       with:
