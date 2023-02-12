@@ -1694,6 +1694,50 @@ class TestControlMechanisms:
             ):
                 np.testing.assert_allclose(expected, actual)
 
+    @pytest.mark.nested
+    @pytest.mark.composition
+    @pytest.mark.parametrize("mode, ocm_mode", pytest.helpers.get_comp_and_ocm_execution_modes())
+    def test_nested_control(self, mode, ocm_mode):
+
+        if mode != pnl.ExecutionMode.Python:
+            pytest.skip("Not implemented!")
+
+        P = pnl.ProcessingMechanism(name="P", function=pnl.Linear)
+        obj = pnl.ObjectiveMechanism(monitor=P)
+
+        inner_comp = pnl.Composition(name="inner_comp",
+                                     retain_old_simulation_data=True,
+                                     controller_mode=pnl.BEFORE)
+        inner_comp.add_node(P)
+
+        outer_comp = pnl.Composition(name="outer_comp",
+                                     retain_old_simulation_data=True,
+                                     controller_mode=pnl.BEFORE)
+        outer_comp.add_node(inner_comp)
+
+        outer_comp.add_controller(
+            pnl.OptimizationControlMechanism(
+                agent_rep=outer_comp,
+                objective_mechanism=obj,
+                control_signals=pnl.ControlSignal(
+                    modulates=(pnl.SLOPE, P),
+                    modulation=pnl.OVERRIDE,
+                    allocation_samples=[1.1, 2.2, 3.3, 4.4, 5.5],
+                ),
+                function=pnl.GridSearch(direction=pnl.MAXIMIZE)
+            )
+        )
+        outer_comp.controller.function.save_values = True
+        outer_comp.controller.comp_execution_mode = ocm_mode
+
+        ret = outer_comp.run(inputs={inner_comp: [2]}, execution_mode=mode)
+
+        assert np.allclose(ret, [[[11.0]]])
+
+        if mode == pnl.ExecutionMode.Python:
+            assert np.allclose(outer_comp.controller.function.saved_values, [2.2, 4.4, 6.6, 8.8, 11.0])
+
+
     @pytest.mark.state_features
     @pytest.mark.control
     def test_ocm_state_and_state_dict(self):
