@@ -9,27 +9,10 @@ from psyneulink.core.components.functions.nonstateful.fitfunctions import (
 )
 
 
-input_node_1 = pnl.ProcessingMechanism(size=1)
-input_node_2 = pnl.ProcessingMechanism(size=2)
-input_node_3 = pnl.ProcessingMechanism(size=3)
-output_node = pnl.ProcessingMechanism(size=2)
-model = pnl.Composition(
-    [{input_node_1, input_node_2, input_node_3}, output_node], name="model"
-)
-pec = pnl.ParameterEstimationComposition(
-    name="pec",
-    model=model,
-    parameters={("slope", output_node): np.linspace(1.0, 3.0, 3)},
-    outcome_variables=output_node,
-    objective_function=lambda x: np.sum(x),
-    optimization_function=PECOptimizationFunction(method='differential_evolution'),
-)
-
-
 run_input_test_args = [
     pytest.param(
         {
-            model: [
+            lambda pec: pec.model: [
                 [np.array([1.0]), np.array([2.0, 3.0, 4.0]), np.array([5.0, 6.0])],
                 [np.array([7.0]), np.array([8.0, 9.0, 10.0]), np.array([11.0, 12.0])],
                 [
@@ -49,7 +32,7 @@ run_input_test_args = [
     ),
     pytest.param(
         {
-            model: [
+            lambda pec: pec.model: [
                 [np.array([1.0]), np.array([2.0, 3.0, 4.0])],
                 [np.array([7.0]), np.array([8.0, 9.0, 10.0]), np.array([11.0, 12.0])],
                 [
@@ -71,19 +54,19 @@ run_input_test_args = [
     ),
     pytest.param(
         {
-            input_node_1: [
+            lambda pec: pec.model.get_nodes_by_role(pnl.NodeRole.INPUT)[0]: [
                 [np.array([1.0])],
                 [np.array([7.0])],
                 [np.array([13.0])],
                 [np.array([19.0])],
             ],
-            input_node_2: [
+            lambda pec: pec.model.get_nodes_by_role(pnl.NodeRole.INPUT)[1]: [
                 [np.array([2.0, 3.0, 4])],
                 [np.array([8.0, 9.0, 10.0])],
                 [np.array([14.0, 15.0, 16.0])],
                 [np.array([20.0, 21.0, 22.0])],
             ],
-            input_node_3: [
+            lambda pec: pec.model.get_nodes_by_role(pnl.NodeRole.INPUT)[2]: [
                 [np.array([5.0, 6.0])],
                 [np.array([11.0, 12.0])],
                 [np.array([17.0, 18.0])],
@@ -95,13 +78,13 @@ run_input_test_args = [
     ),
     pytest.param(
         {
-            input_node_1: [
+            lambda pec: pec.model.get_nodes_by_role(pnl.NodeRole.INPUT)[0]: [
                 [np.array([1.0])],
                 [np.array([7.0])],
                 [np.array([13.0])],
                 [np.array([19.0])],
             ],
-            input_node_2: [
+            lambda pec: pec.model.get_nodes_by_role(pnl.NodeRole.INPUT)[1]: [
                 [np.array([2.0, 3.0, 4])],
                 [np.array([8.0, 9.0, 10.0])],
                 [np.array([14.0, 15.0, 16.0])],
@@ -120,12 +103,28 @@ run_input_test_args = [
     run_input_test_args,
 )
 def test_pec_run_input_formats(inputs_dict, error_msg):
+    input_node_1 = pnl.ProcessingMechanism(size=1)
+    input_node_2 = pnl.ProcessingMechanism(size=2)
+    input_node_3 = pnl.ProcessingMechanism(size=3)
+    output_node = pnl.ProcessingMechanism(size=2)
+    model = pnl.Composition(
+        [{input_node_1, input_node_2, input_node_3}, output_node], name="model"
+    )
+    pec = pnl.ParameterEstimationComposition(
+        name="pec",
+        model=model,
+        parameters={("slope", output_node): np.linspace(1.0, 3.0, 3)},
+        outcome_variables=output_node,
+        objective_function=lambda x: np.sum(x),
+        optimization_function=PECOptimizationFunction(method='differential_evolution'),
+    )
+
     if error_msg:
         with pytest.raises(pnl.ParameterEstimationCompositionError) as error:
-            pec.run(inputs=inputs_dict)
+            pec.run(inputs={k(pec): v for k,v in inputs_dict.items()})
         assert error.value.args[0] == error_msg
     else:
-        pec.run(inputs=inputs_dict)
+        pec.run(inputs={k(pec): v for k,v in inputs_dict.items()})
 
 
 def test_parameter_optimization_ddm(func_mode):
