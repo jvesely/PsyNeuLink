@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Parameters &mdash; PsyNeuLink 0+untagged.10.gd7b4c53 documentation</title>
+  <title>Parameters &mdash; PsyNeuLink 0.9.0.0+1268.g5a1570d50 documentation</title>
   
 
   
@@ -99,7 +99,7 @@
               
               
                 <div class="version">
-                  0+untagged.10.gd7b4c53
+                  0.9.0.0+1268
                 </div>
               
             
@@ -223,6 +223,10 @@ class, and are used to validate compatibility between this instance and other Ps
 <p><code class="docutils literal notranslate"><span class="pre">t.defaults.noise</span></code> is shorthand for <code class="docutils literal notranslate"><span class="pre">t.parameters.noise.default_value</span></code>, and they both refer to the default
 <code class="docutils literal notranslate"><span class="pre">noise</span></code> value for <em>t</em></p>
 </div>
+<p>Default values are sometimes also used when the parameters value has not been specified; for example, a Component’s
+<code class="docutils literal notranslate"><span class="pre">defaults.variable</span></code> is used as the input to a <a class="reference internal" href="Mechanism.html"><span class="doc">Mechanism</span></a> if its <a class="reference internal" href="Mechanism.html#psyneulink.core.components.mechanisms.mechanism.Mechanism_Base.execute" title="psyneulink.core.components.mechanisms.mechanism.Mechanism_Base.execute"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">execute</span></code></a> method is called
+without any input specified, and similarly it is used for the <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.NodeRole.INPUT" title="psyneulink.core.compositions.composition.NodeRole.INPUT"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">INPUT</span></code></a> <a class="reference internal" href="Composition.html#composition-nodes"><span class="std std-ref">Nodes</span></a> of
+a <a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a> which are not specified in the <strong>inputs</strong> argument of its <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.run" title="psyneulink.core.compositions.composition.Composition.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">run</span></code></a> method.</p>
 </section>
 <section id="statefulness-of-parameters">
 <span id="parameter-statefulness"></span><h2>Statefulness of Parameters<a class="headerlink" href="#statefulness-of-parameters" title="Permalink to this headline">¶</a></h2>
@@ -273,7 +277,10 @@ errors like those encountered in parallel programming.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">B</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
     <span class="k">class</span> <span class="nc">Parameters</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">Parameters</span><span class="p">):</span>
         <span class="n">p</span> <span class="o">=</span> <span class="mf">1.0</span>
-        <span class="n">q</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">modulable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul>
@@ -282,12 +289,21 @@ errors like those encountered in parallel programming.</p>
 <li><dl class="simple">
 <dt>each attribute on <em>B</em>.Parameters becomes a parameter (instance of the Parameter class)</dt><dd><ul class="simple">
 <li><p>as with <em>p</em>, specifying only a value uses default values for the attributes of the Parameter</p></li>
-<li><p>as with <em>q</em>, specifying an explicit instance of the Parameter class allows you to modify the <a class="reference internal" href="#parameter-attributes-table"><span class="std std-ref">Parameter attributes</span></a></p></li>
+<li><p>as with <em>q</em>, specifying an explicit instance of the Parameter class allows you to modify the
+<a class="reference internal" href="#parameter-attributes-table"><span class="std std-ref">Parameter attributes</span></a></p></li>
 </ul>
 </dd>
 </dl>
 </li>
-<li><p>if you want assignments to parameter <em>p</em> to be validated, add a method _validate_p(value), that returns None if value is a valid assignment, or an error string if value is not a valid assignment</p></li>
+<li><p>default values for the parameters can be specified in the Parameters class body, or in the
+arguments for <em>B</em>.__init__. If both are specified and the values differ, an exception will be raised</p></li>
+<li><dl class="simple">
+<dt>if you want assignments to parameter <em>p</em> to be validated, add a method _validate_p(value),   that returns None if value is a valid assignment, or an error string if value is not a valid assignment</dt><dd><ul class="simple">
+<li><p>NOTE: a validation method for <em>p</em> may reference other parameters         only if they are listed in <em>p</em>’s         <a class="reference internal" href="#psyneulink.core.globals.parameters.Parameter.dependencies" title="psyneulink.core.globals.parameters.Parameter.dependencies"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">dependencies</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</li>
 <li><dl>
 <dt>if you want all values set to <em>p</em> to be parsed beforehand, add a method _parse_p(value) that returns the parsed value</dt><dd><ul>
 <li><p>for example, convert to a numpy array or float</p>
@@ -298,6 +314,7 @@ errors like those encountered in parallel programming.</p>
 </div>
 </div></blockquote>
 </li>
+<li><p>NOTE: parsers may not reference other parameters</p></li>
 </ul>
 </dd>
 </dl>
@@ -357,10 +374,10 @@ shared via getter and  with those of their target <a class="reference internal" 
 guarantee that their target will exist, given a specific
 Component. For example, it is acceptable that
 <a class="reference internal" href="TransferMechanism.html#psyneulink.core.components.mechanisms.processing.transfermechanism.TransferMechanism.integration_rate" title="psyneulink.core.components.mechanisms.processing.transfermechanism.TransferMechanism.integration_rate"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">TransferMechanism.integration_rate</span></code></a> is a <a class="reference internal" href="#psyneulink.core.globals.parameters.FunctionParameter" title="psyneulink.core.globals.parameters.FunctionParameter"><code class="xref any py py-class docutils literal notranslate"><span class="pre">FunctionParameter</span></code></a>
-for the <a class="reference internal" href="TransferFunctions.html#psyneulink.core.components.functions.transferfunctions.Exponential.rate" title="psyneulink.core.components.functions.transferfunctions.Exponential.rate"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">rate</span></code></a> parameter of its
+for the <a class="reference internal" href="IntegratorFunctions.html#psyneulink.core.components.functions.stateful.integratorfunctions.SimpleIntegrator.rate" title="psyneulink.core.components.functions.stateful.integratorfunctions.SimpleIntegrator.rate"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">rate</span></code></a> parameter of its
 <a class="reference internal" href="TransferMechanism.html#psyneulink.core.components.mechanisms.processing.transfermechanism.TransferMechanism.integrator_function" title="psyneulink.core.components.mechanisms.processing.transfermechanism.TransferMechanism.integrator_function"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">integrator_function</span></code></a>,
 because all <a class="reference internal" href="TransferMechanism.html"><span class="doc">TransferMechanism</span></a>s have an integrator
-function, and all integrator functions have a <a class="reference internal" href="TransferFunctions.html#psyneulink.core.components.functions.transferfunctions.Exponential.rate" title="psyneulink.core.components.functions.transferfunctions.Exponential.rate"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">rate</span></code></a> parameter.
+function, and all integrator functions have a <a class="reference internal" href="IntegratorFunctions.html#psyneulink.core.components.functions.stateful.integratorfunctions.SimpleIntegrator.rate" title="psyneulink.core.components.functions.stateful.integratorfunctions.SimpleIntegrator.rate"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">rate</span></code></a> parameter.
 It is also acceptable that
 <a class="reference internal" href="ControlSignal.html#psyneulink.core.components.ports.modulatorysignals.controlsignal.ControlSignal.intensity_cost_function" title="psyneulink.core.components.ports.modulatorysignals.controlsignal.ControlSignal.intensity_cost_function"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">ControlSignal.intensity_cost_function</span></code></a> is a <a class="reference internal" href="#psyneulink.core.globals.parameters.FunctionParameter" title="psyneulink.core.globals.parameters.FunctionParameter"><code class="xref any py py-class docutils literal notranslate"><span class="pre">FunctionParameter</span></code></a>
 corresponding to its function’s
@@ -572,7 +589,7 @@ get or set the default value of the associated <code class="xref py py-class doc
 
 <dl class="py class">
 <dt class="sig sig-object py" id="psyneulink.core.globals.parameters.Parameter">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psyneulink.core.globals.parameters.</span></span><span class="sig-name descname"><span class="pre">Parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateful</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modulable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">structural</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modulation_combination_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pnl_internal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aliases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">getter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loggable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">LogCondition.OFF</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delivery_condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">LogCondition.OFF</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_max_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_min_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fallback_default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retain_old_simulation_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constructor_argument</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parse_spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependencies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initializer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_owner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_inherited</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_inherited_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_user_specified</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.globals.parameters.Parameter" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psyneulink.core.globals.parameters.</span></span><span class="sig-name descname"><span class="pre">Parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateful</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modulable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">structural</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modulation_combination_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pnl_internal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aliases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">getter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loggable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">LogCondition.OFF</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delivery_condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">LogCondition.OFF</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_max_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_min_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fallback_default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retain_old_simulation_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constructor_argument</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parse_spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependencies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initializer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdf_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">specify_none</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_owner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_inherited</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_inherited_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_user_specified</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.globals.parameters.Parameter" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py attribute">
 <dt class="sig sig-object py" id="psyneulink.core.globals.parameters.Parameter.default_value">
 <span class="sig-name descname"><span class="pre">default_value</span></span><a class="headerlink" href="#psyneulink.core.globals.parameters.Parameter.default_value" title="Permalink to this definition">¶</a></dt>
@@ -928,10 +945,34 @@ instantiated before that of this Parameter</p>
 <dt class="sig sig-object py" id="psyneulink.core.globals.parameters.Parameter.initializer">
 <span class="sig-name descname"><span class="pre">initializer</span></span><a class="headerlink" href="#psyneulink.core.globals.parameters.Parameter.initializer" title="Permalink to this definition">¶</a></dt>
 <dd><p>the name of another Parameter that serves as this
-Parameter’s <code class="xref any docutils literal notranslate"><span class="pre">initializer</span></code></p>
+Parameter’s <a class="reference internal" href="StatefulFunction.html#psyneulink.core.components.functions.stateful.statefulfunction.StatefulFunction.initializers" title="psyneulink.core.components.functions.stateful.statefulfunction.StatefulFunction.initializers"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">initializer</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Default</dt>
 <dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psyneulink.core.globals.parameters.Parameter.port">
+<span class="sig-name descname"><span class="pre">port</span></span><a class="headerlink" href="#psyneulink.core.globals.parameters.Parameter.port" title="Permalink to this definition">¶</a></dt>
+<dd><p>stores a reference to the ParameterPort that modulates this
+Parameter, if applicable</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psyneulink.core.globals.parameters.Parameter.specify_none">
+<span class="sig-name descname"><span class="pre">specify_none</span></span><a class="headerlink" href="#psyneulink.core.globals.parameters.Parameter.specify_none" title="Permalink to this definition">¶</a></dt>
+<dd><p>if True, a user-specified value of None for this Parameter
+will set the _user_specified flag to True</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>False</p>
 </dd>
 </dl>
 </dd></dl>
@@ -976,10 +1017,10 @@ Composition, uses <strong>context</strong>.default_execution_id</p></li>
 1 means the value this Parameter had just before
 its current value. An index of 2 means the value
 before that</p></li>
-<li><p><strong>range_start</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Inclusive. The index of the oldest history value to
+<li><p><strong>range_start</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Inclusive. The index of the oldest history value to
 return. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the range begins at the oldest
 value stored in history</p></li>
-<li><p><strong>range_end</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Inclusive. The index of the newest history value to
+<li><p><strong>range_end</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Inclusive. The index of the newest history value to
 return. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the range ends at the newest
 value stored in history (does not include current
 value in <a class="reference internal" href="#psyneulink.core.globals.parameters.Parameter.values" title="psyneulink.core.globals.parameters.Parameter.values"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">Parameter.values</span></code></a>)</p></li>
@@ -1057,10 +1098,27 @@ refers to another <a class="reference internal" href="#psyneulink.core.globals.p
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psyneulink.core.globals.parameters.</span></span><span class="sig-name descname"><span class="pre">ParametersBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">owner</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.globals.parameters.ParametersBase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base class for inner <a class="reference internal" href="#"><span class="doc">Parameters</span></a> classes on Components (see <code class="xref any docutils literal notranslate"><span class="pre">Component.Parameters</span></code> for example)</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="psyneulink.core.globals.parameters.ParametersBase._get_prefixed_method">
-<span class="sig-name descname"><span class="pre">_get_prefixed_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modulable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.globals.parameters.ParametersBase._get_prefixed_method" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the parsing or validation method for the Parameter named
-<strong>parameter_name</strong> or for any modulable Parameter</p>
+<dt class="sig sig-object py" id="psyneulink.core.globals.parameters.ParametersBase._get_parse_method">
+<span class="sig-name descname"><span class="pre">_get_parse_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.globals.parameters.ParametersBase._get_parse_method" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the parsing method for the <strong>parameter</strong> or for any Parameter
+attribute (ex: ‘modulable’) if it exists, or None if it does
+not</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psyneulink.core.globals.parameters.ParametersBase._get_validate_method">
+<span class="sig-name descname"><span class="pre">_get_validate_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.globals.parameters.ParametersBase._get_validate_method" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the validation method for the <strong>parameter</strong> or for any
+Parameter attribute (ex: ‘modulable’) if it exists, or None
+if it does not</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -1219,10 +1277,10 @@ Composition, uses <strong>context</strong>.default_execution_id</p></li>
 1 means the value this Parameter had just before
 its current value. An index of 2 means the value
 before that</p></li>
-<li><p><strong>range_start</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Inclusive. The index of the oldest history value to
+<li><p><strong>range_start</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Inclusive. The index of the oldest history value to
 return. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the range begins at the oldest
 value stored in history</p></li>
-<li><p><strong>range_end</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Inclusive. The index of the newest history value to
+<li><p><strong>range_end</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Inclusive. The index of the newest history value to
 return. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the range ends at the newest
 value stored in history (does not include current
 value in <a class="reference internal" href="#psyneulink.core.globals.parameters.Parameter.values" title="psyneulink.core.globals.parameters.Parameter.values"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">Parameter.values</span></code></a>)</p></li>

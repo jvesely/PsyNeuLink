@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Compilation &mdash; PsyNeuLink 0+untagged.10.gd7b4c53 documentation</title>
+  <title>Compilation &mdash; PsyNeuLink 0.9.0.0+1268.g5a1570d50 documentation</title>
   
 
   
@@ -99,7 +99,7 @@
               
               
                 <div class="version">
-                  0+untagged.10.gd7b4c53
+                  0.9.0.0+1268
                 </div>
               
             
@@ -201,10 +201,14 @@
 <h1>Compilation<a class="headerlink" href="#compilation" title="Permalink to this headline">¶</a></h1>
 <p>PsyNeulink includes a runtime compiler to improve performance of executed models.
 This section describes the overview of the compiler design and its use.
-The performance improvements varies, but it has been observed to be between one and three orders of magnitude depending on the model.</p>
+The performance improvements varies, but it has been observed to be between
+one and three orders of magnitude depending on the model.
+See <a class="reference external" href="http://www.cs.yale.edu/homes/abhishek/jvesely-cgo22.pdf">Vesely et al. (2022)</a>
+for additional information about the approach taken to compilation, and
+<a class="reference internal" href="Composition.html#composition-compilation"><span class="std std-ref">Compilation</span></a> for it use in executing a <a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a>.</p>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>The PsyNeuLink runtime compiler works in several steps when invoked via <a class="reference internal" href="Scheduler.html#psyneulink.core.scheduling.scheduler.Scheduler.run" title="psyneulink.core.scheduling.scheduler.Scheduler.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">run</span></code></a> or <a class="reference internal" href="Mechanism.html#psyneulink.core.components.mechanisms.mechanism.Mechanism_Base.execute" title="psyneulink.core.components.mechanisms.mechanism.Mechanism_Base.execute"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">execute</span></code></a>:
+<p>The PsyNeuLink runtime compiler works in several steps when invoked via <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.run" title="psyneulink.core.compositions.composition.Composition.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">run</span></code></a> or <a class="reference internal" href="AutodiffComposition.html#psyneulink.library.compositions.autodiffcomposition.AutodiffComposition.execute" title="psyneulink.library.compositions.autodiffcomposition.AutodiffComposition.execute"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">execute</span></code></a>:
 <em>Compilation</em>:</p>
 <blockquote>
 <div><ol class="arabic simple">
@@ -229,11 +233,11 @@ The performance improvements varies, but it has been observed to be between one 
 <p>Compiled form of a model can be invoked by passing one of the following values to the <code class="xref any docutils literal notranslate"><span class="pre">bin_execute</span></code> parameter of <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.run" title="psyneulink.core.compositions.composition.Composition.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">Composition.run</span></code></a>, or <code class="xref any docutils literal notranslate"><span class="pre">Composition.exec</span></code>:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><code class="xref any docutils literal notranslate"><span class="pre">ExecutionMode.Python</span></code>: Normal python execution</p></li>
-<li><p><code class="xref any docutils literal notranslate"><span class="pre">ExecutionMode.LLVM</span></code>: Compile and execute individual nodes. The scheduling loop still runs in Python. If any of the nodes fails to compile, an error is raised. <em>NOTE:</em> Schedules that require access to node data will not work correctly.</p></li>
-<li><p><code class="xref any docutils literal notranslate"><span class="pre">ExecutionMode.LLVMExec</span></code>: Execution of <code class="xref any docutils literal notranslate"><span class="pre">Composition.exec</span></code> is replaced by a compiled equivalent. If the <a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a> fails to compile, an error is raised.</p></li>
-<li><p><code class="xref any docutils literal notranslate"><span class="pre">ExecutionMode.LLVMRun</span></code>: Execution of <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.run" title="psyneulink.core.compositions.composition.Composition.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">Composition.run</span></code></a> is replaced by a compiled equivalent. If the <a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a> fails to compile, an error is raised.</p></li>
-<li><p><code class="xref any docutils literal notranslate"><span class="pre">ExecutionMode.Auto</span></code>: This option attempts all three above mentioned granularities, and gracefully falls back to lower granularity. Warnings are raised in place of errors. This is the recommended way to invoke compiled execution as the final fallback is the Python baseline.</p></li>
+<li><p><a class="reference internal" href="LLVM.html#psyneulink.core.llvm.__init__.ExecutionMode.Python" title="psyneulink.core.llvm.__init__.ExecutionMode.Python"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">ExecutionMode.Python</span></code></a>: Normal python execution</p></li>
+<li><p><a class="reference internal" href="LLVM.html#psyneulink.core.llvm.__init__.ExecutionMode.LLVM" title="psyneulink.core.llvm.__init__.ExecutionMode.LLVM"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">ExecutionMode.LLVM</span></code></a>: Compile and execute individual nodes. The scheduling loop still runs in Python. If any of the nodes fails to compile, an error is raised. <em>NOTE:</em> Schedules that require access to node data will not work correctly.</p></li>
+<li><p><a class="reference internal" href="LLVM.html#psyneulink.core.llvm.__init__.ExecutionMode.LLVMExec" title="psyneulink.core.llvm.__init__.ExecutionMode.LLVMExec"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">ExecutionMode.LLVMExec</span></code></a>: Execution of <code class="xref any docutils literal notranslate"><span class="pre">Composition.exec</span></code> is replaced by a compiled equivalent. If the <a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a> fails to compile, an error is raised.</p></li>
+<li><p><a class="reference internal" href="LLVM.html#psyneulink.core.llvm.__init__.ExecutionMode.LLVMRun" title="psyneulink.core.llvm.__init__.ExecutionMode.LLVMRun"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">ExecutionMode.LLVMRun</span></code></a>: Execution of <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.run" title="psyneulink.core.compositions.composition.Composition.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">Composition.run</span></code></a> is replaced by a compiled equivalent. If the <a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a> fails to compile, an error is raised.</p></li>
+<li><p><a class="reference internal" href="LLVM.html#psyneulink.core.llvm.__init__.ExecutionMode.Auto" title="psyneulink.core.llvm.__init__.ExecutionMode.Auto"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">ExecutionMode.Auto</span></code></a>: This option attempts all three above mentioned granularities, and gracefully falls back to lower granularity. Warnings are raised in place of errors. This is the recommended way to invoke compiled execution as the final fallback is the Python baseline.</p></li>
 </ul>
 </div></blockquote>
 <p>Note that data other than <a class="reference internal" href="Composition.html#psyneulink.core.compositions.composition.Composition.run" title="psyneulink.core.compositions.composition.Composition.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">Composition.run</span></code></a> outputs are not synchronized between Python and compiled execution.</p>

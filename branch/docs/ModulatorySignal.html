@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>ModulatorySignal &mdash; PsyNeuLink 0+untagged.10.gd7b4c53 documentation</title>
+  <title>ModulatorySignal &mdash; PsyNeuLink 0.9.0.0+1268.g5a1570d50 documentation</title>
   
 
   
@@ -99,7 +99,7 @@
               
               
                 <div class="version">
-                  0+untagged.10.gd7b4c53
+                  0.9.0.0+1268
                 </div>
               
             
@@ -399,20 +399,19 @@ parameter</p></td>
 <td><p><a class="reference internal" href="LearningSignal.html"><span class="doc">LearningSignal</span></a> (green)</p></td>
 <td><p><em>ADDITIVE</em></p></td>
 <td><p>MappingProjection <a class="reference internal" href="ParameterPort.html"><span class="doc">ParameterPort</span></a></p></td>
-<td><p><code class="xref any docutils literal notranslate"><span class="pre">AccumulatorIntegrator</span></code>
-(<code class="xref any docutils literal notranslate"><span class="pre">increment</span></code>)</p></td>
+<td><p><a class="reference internal" href="IntegratorFunctions.html#psyneulink.core.components.functions.stateful.integratorfunctions.AccumulatorIntegrator" title="psyneulink.core.components.functions.stateful.integratorfunctions.AccumulatorIntegrator"><code class="xref any py py-class docutils literal notranslate"><span class="pre">AccumulatorIntegrator</span></code></a>
+(<a class="reference internal" href="IntegratorFunctions.html#psyneulink.core.components.functions.stateful.integratorfunctions.AccumulatorIntegrator.increment" title="psyneulink.core.components.functions.stateful.integratorfunctions.AccumulatorIntegrator.increment"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">increment</span></code></a>)</p></td>
 </tr>
 </tbody>
 </table>
 <p>It is important to emphasize that, although the purpose of a ModulatorySignal is to modify the functioning of a
 <a class="reference internal" href="Mechanism.html"><span class="doc">Mechanism</span></a> or a <a class="reference internal" href="MappingProjection.html"><span class="doc">MappingProjection</span></a>, it does this indirectly by modifying a Port that determines the input
-or output of a Mechanism, or the parameters of a Mechanism or Projection’s <a class="reference internal" href="GatingSignal.html#psyneulink.core.components.ports.modulatorysignals.gatingsignal.GatingSignal.function" title="psyneulink.core.components.ports.modulatorysignals.gatingsignal.GatingSignal.function"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">function</span></code></a>, rather than directly modifying
+or output of a Mechanism, or the parameters of a Mechanism or Projection’s <a class="reference internal" href="ControlSignal.html#psyneulink.core.components.ports.modulatorysignals.controlsignal.ControlSignal.function" title="psyneulink.core.components.ports.modulatorysignals.controlsignal.ControlSignal.function"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">function</span></code></a>, rather than directly modifying
 the function of the Mechanism or Projection itself.  This is shown in the following figure, and described in greater
 detail under <a class="reference internal" href="#modulatorysignal-implementation"><span class="std std-ref">Implementation of Modulation</span></a>.</p>
 <p id="modulatorysignal-anatomy-figure"><strong>Anatomy of Modulation</strong></p>
 <figure class="align-default" id="id5">
-<a class="reference internal image-reference" href="_images/Modulation_Anatomy_fig.svg"><img alt="Modulation" src="_images/Modulation_Anatomy_fig.svg" /></a>
-<figcaption>
+<img alt="Modulation" src="_images/Modulation_Anatomy_fig.svg" /><figcaption>
 <p><span class="caption-text"><strong>Three types of Modulatory Components and the Ports they modulate</strong>. The default <a class="reference internal" href="#modulatorysignal-types"><span class="std std-ref">type of modulation</span></a> for each type of ModulatorySignal, and the default Function and modulated parameter of
 its recipient Port are listed in the <a class="reference internal" href="#modulatorysignal-table"><span class="std std-ref">table</span></a> above. Note that the <a class="reference internal" href="ControlMechanism.html"><span class="doc">ControlMechanism</span></a>
 and <a class="reference internal" href="ControlSignal.html"><span class="doc">ControlSignal</span></a> are shown in the figure modulating the <a class="reference internal" href="ParameterPort.html"><span class="doc">ParameterPort</span></a> of a Mechanism;
@@ -472,8 +471,7 @@ generating those values, by modifying a parameter of that Port’s <a class="ref
 in the figure below:</p>
 <p id="modulatorysignal-detail-figure"><strong>Detailed View of Modulation</strong></p>
 <figure class="align-default" id="id6">
-<a class="reference internal image-reference" href="_images/Modulation_Detail_fig.svg"><img alt="Modulation_Detail" src="_images/Modulation_Detail_fig.svg" /></a>
-<figcaption>
+<img alt="Modulation_Detail" src="_images/Modulation_Detail_fig.svg" /><figcaption>
 <p><span class="caption-text">A ModulatorySignal modulates the <a class="reference internal" href="Port.html#psyneulink.core.components.ports.port.Port_Base.value" title="psyneulink.core.components.ports.port.Port_Base.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> of a Port either by modifying a parameter of the
 Port’s <a class="reference internal" href="Port.html#psyneulink.core.components.ports.port.Port_Base.function" title="psyneulink.core.components.ports.port.Port_Base.function"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">function</span></code></a>, or assigining the <a class="reference internal" href="Port.html#psyneulink.core.components.ports.port.Port_Base.value" title="psyneulink.core.components.ports.port.Port_Base.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> of the Port directly.
 This is determined by the ModulatorySignal’s <a class="reference internal" href="#psyneulink.core.components.ports.modulatorysignals.modulatorysignal.ModulatorySignal.modulation" title="psyneulink.core.components.ports.modulatorysignals.modulatorysignal.ModulatorySignal.modulation"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">modulation</span></code></a> attribute.  That can be
@@ -657,7 +655,7 @@ Call _instantiate_projection_from_port to assign ModulatoryProjections to .effer
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="psyneulink.core.components.ports.modulatorysignals.modulatorysignal.ModulatorySignalError">
-<em class="property"><span class="pre">exception</span> </em><span class="sig-prename descclassname"><span class="pre">psyneulink.core.components.ports.modulatorysignals.modulatorysignal.</span></span><span class="sig-name descname"><span class="pre">ModulatorySignalError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.ports.modulatorysignals.modulatorysignal.ModulatorySignalError" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><span class="sig-prename descclassname"><span class="pre">psyneulink.core.components.ports.modulatorysignals.modulatorysignal.</span></span><span class="sig-name descname"><span class="pre">ModulatorySignalError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.ports.modulatorysignals.modulatorysignal.ModulatorySignalError" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </section>

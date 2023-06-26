@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Conflict Monitoring and Cognitive Control (Botvinick et al., 2001) &mdash; PsyNeuLink 0+untagged.10.gd7b4c53 documentation</title>
+  <title>Conflict Monitoring and Cognitive Control (Botvinick et al., 2001) &mdash; PsyNeuLink 0.9.0.0+1268.g5a1570d50 documentation</title>
   
 
   
@@ -32,7 +32,9 @@
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="LVOC Model of Stroop XOR Task (Bustamante et al. 2017)" href="BustamanteStroopXORLVOCModel.html" />
+    <link rel="prev" title="Stroop GRAIN model (Cohen &amp; Huston, 1994)" href="Cohen_HustonModel.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -99,7 +101,7 @@
               
               
                 <div class="version">
-                  0+untagged.10.gd7b4c53
+                  0.9.0.0+1268
                 </div>
               
             
@@ -126,12 +128,12 @@
               
             
             
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to PsyNeuLink </a></li>
 <li class="toctree-l1"><a class="reference internal" href="BasicsAndPrimer.html">Basics and Primer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="QuickReference.html">Quick Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Core.html">Core</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Library.html">Library</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="Library.html">Library</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ContributorsGuide.html">Contributors Guide</a></li>
 </ul>
 
@@ -173,6 +175,10 @@
         </a> &gt;
       </li>
 
+        
+          <li><a href="Library.html">Library</a> &gt;</li>
+        
+          <li><a href="Models.html">Models</a> &gt;</li>
         
       <li>Conflict Monitoring and Cognitive Control (Botvinick et al., 2001)</li>
     
@@ -262,9 +268,9 @@ elements.</p>
 <h2>Execution<a class="headerlink" href="#execution" title="Permalink to this headline">¶</a></h2>
 <p>All units are set to zero at the beginning of the simulation. Each simulation run starts with a settling
 period of 500 time steps. Then the stimulus is presented for 1000 time steps and is presented by setting the input
-units to 1.0 for a given trial. Conflict is computed on the <a class="reference internal" href="ObjectiveMechanism.html#psyneulink.core.components.mechanisms.processing.objectivemechanism.ObjectiveMechanism.output_port" title="psyneulink.core.components.mechanisms.processing.objectivemechanism.ObjectiveMechanism.output_port"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">output_port</span></code></a> of the <em>RESPONSE LAYER</em>. The figure plots
+units to 1.0 for a given trial. Conflict is computed on the <a class="reference internal" href="ComparatorMechanism.html#psyneulink.library.components.mechanisms.processing.objective.comparatormechanism.ComparatorMechanism.output_port" title="psyneulink.library.components.mechanisms.processing.objective.comparatormechanism.ComparatorMechanism.output_port"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">output_port</span></code></a> of the <em>RESPONSE LAYER</em>. The figure plots
 conflict over one trial for each of the three conditions.
-The <a class="reference internal" href="Log.html#module-psyneulink.core.globals.log" title="psyneulink.core.globals.log"><code class="xref any py py-mod docutils literal notranslate"><span class="pre">log</span></code></a> function is used to record the output values of <em>RESPONSE LAYER</em>. These values are used to produce
+The <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.log" title="psyneulink.core.components.component.Component.log"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">log</span></code></a> function is used to record the output values of <em>RESPONSE LAYER</em>. These values are used to produce
 the plot of the Figure.</p>
 </section>
 <section id="please-note">
@@ -281,6 +287,15 @@ conflict monitoring simulations.</p>
              
             </div>
             <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="BustamanteStroopXORLVOCModel.html" class="btn btn-neutral float-right" title="LVOC Model of Stroop XOR Task (Bustamante et al. 2017)" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
+      
+      
+        <a href="Cohen_HustonModel.html" class="btn btn-neutral" title="Stroop GRAIN model (Cohen &amp; Huston, 1994)" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
+      
+    </div>
   
 
   
