@@ -3351,7 +3351,8 @@ class OptimizationControlMechanism(ControlMechanism):
         evaluate_f = ctx.import_llvm_function(self, tags=tags - {"alloc_range"})
 
         args = [*evaluate_f.type.pointee.args[:2],
-                ctx.int32_ty, ctx.int32_ty,
+                ctx.int32_ty, # start
+                ctx.int32_ty, # stop
                 *evaluate_f.type.pointee.args[3:]]
         builder = ctx.create_llvm_function(args, self, str(self) + "_evaluate_range")
         llvm_func = builder.function
@@ -3378,11 +3379,17 @@ class OptimizationControlMechanism(ControlMechanism):
         allocation = builder.alloca(evaluate_f.args[2].type.pointee, name="allocation")
         with pnlvm.helpers.for_loop(builder, start, stop, stop.type(1), "alloc_loop") as (b, idx):
 
+            # "evaluate_type_objective" stores one result, the value of
+            # the objective mechanism, per iteration.
             if "evaluate_type_objective" in tags:
                 out_idx = idx
+
+            # "evaluate_type_all_results" stores up to "num_trials_per_estimate"
+            # results, values of output_CIM/output_ports, per iteration.
             elif "evaluate_type_all_results" in tags:
                 num_trials_per_estimate = builder.load(num_trials_per_estimate_ptr)
                 out_idx = builder.mul(idx, builder.trunc(num_trials_per_estimate, idx.type))
+
             else:
                 assert False, "Evaluation type not detected in tags, or unknown: {}".format(tags)
 
@@ -3396,12 +3403,18 @@ class OptimizationControlMechanism(ControlMechanism):
 
     def _gen_llvm_evaluate_function(self, *, ctx:pnlvm.LLVMBuilderContext, tags=frozenset()):
         assert "evaluate" in tags
-        args = [ctx.get_param_struct_type(self.agent_rep).as_pointer(),
-                ctx.get_state_struct_type(self.agent_rep).as_pointer(),
+
+        # The controller (self) is might not be a node of agent_rep,
+        # even if agent_rep is a composition. We still need to duplicate
+        # structures of self.composition because the control allocation
+        # gets applied there.
+
+        args = [ctx.get_param_struct_type(self.composition).as_pointer(),
+                ctx.get_state_struct_type(self.composition).as_pointer(),
                 self._get_evaluate_alloc_struct_type(ctx).as_pointer(),
                 self._get_evaluate_output_struct_type(ctx, tags=tags).as_pointer(),
                 ctx.get_input_struct_type(self.agent_rep).as_pointer(),
-                ctx.get_data_struct_type(self.agent_rep).as_pointer(),
+                ctx.get_data_struct_type(self.composition).as_pointer(),
                 ctx.int32_ty.as_pointer()]
 
         builder = ctx.create_llvm_function(args, self, str(self) + "_evaluate")
@@ -3413,43 +3426,38 @@ class OptimizationControlMechanism(ControlMechanism):
 
         if "const_params" in debug_env:
             comp_params = builder.alloca(comp_params.type.pointee, name="const_params_loc")
-            const_params = comp_params.type.pointee(self.agent_rep._get_param_initializer(None))
+            const_params = comp_params.type.pointee(self.composition._get_param_initializer(None))
             builder.store(const_params, comp_params)
 
         # Create a simulation copy of composition state
         comp_state = builder.alloca(base_comp_state.type.pointee, name="state_copy")
         if "const_state" in debug_env:
-            const_state = self.agent_rep._get_state_initializer(None)
+            const_state = self.composition._get_state_initializer(None)
             builder.store(comp_state.type.pointee(const_state), comp_state)
+
         else:
             builder = pnlvm.helpers.memcpy(builder, comp_state, base_comp_state)
 
         # Create a simulation copy of composition data
         comp_data = builder.alloca(base_comp_data.type.pointee, name="data_copy")
         if "const_data" in debug_env:
-            const_data = self.agent_rep._get_data_initializer(None)
+            const_data = self.composition._get_data_initializer(None)
             builder.store(comp_data.type.pointee(const_data), comp_data)
+
         else:
             builder = pnlvm.helpers.memcpy(builder, comp_data, base_comp_data)
 
-        # Evaluate is called on composition controller
-        assert self.composition.controller is self
-        assert self.composition is self.agent_rep
-        nodes_states = pnlvm.helpers.get_state_ptr(builder, self.composition,
-                                                   comp_state, "nodes")
-        nodes_params = pnlvm.helpers.get_param_ptr(builder, self.composition,
-                                                   comp_params, "nodes")
+        nodes_states = pnlvm.helpers.get_state_ptr(builder, self.composition, comp_state, "nodes")
+        nodes_params = pnlvm.helpers.get_param_ptr(builder, self.composition, comp_params, "nodes")
 
         controller_idx = self.composition._get_node_index(self)
-        controller_state = builder.gep(nodes_states, [ctx.int32_ty(0),
-                                                      ctx.int32_ty(controller_idx)])
-        controller_params = builder.gep(nodes_params, [ctx.int32_ty(0),
-                                                       ctx.int32_ty(controller_idx)])
+        controller_state = builder.gep(nodes_states, [ctx.int32_ty(0), ctx.int32_ty(controller_idx)])
+        controller_params = builder.gep(nodes_params, [ctx.int32_ty(0), ctx.int32_ty(controller_idx)])
 
-        # Apply allocation sample to simulation data
+        # Apply allocation sample to simulation data, by executing output ports
+        # on the allocation_sample vector
         assert len(self.output_ports) == len(allocation_sample.type.pointee)
-        controller_out = builder.gep(comp_data, [ctx.int32_ty(0), ctx.int32_ty(0),
-                                                 ctx.int32_ty(controller_idx)])
+        controller_out = builder.gep(comp_data, [ctx.int32_ty(0), ctx.int32_ty(0), ctx.int32_ty(controller_idx)])
         all_op_params, all_op_states = ctx.get_param_or_state_ptr(builder,
                                                                   self,
                                                                   "output_ports",
@@ -3477,6 +3485,10 @@ class OptimizationControlMechanism(ControlMechanism):
         agent_tags = {"run", "simulation"}
         if "evaluate_type_all_results" in tags:
             agent_tags.add("simulation_results")
+
+        # Evaluate is called on composition controller
+        assert self.composition.controller is self
+        assert self.composition is self.agent_rep
         sim_f = ctx.import_llvm_function(self.agent_rep, tags=frozenset(agent_tags))
 
         if "const_input" in debug_env:
@@ -3484,6 +3496,7 @@ class OptimizationControlMechanism(ControlMechanism):
             if not debug_env["const_input"]:
                 input_init = [[os.defaults.variable.tolist()] for os in self.agent_rep.input_CIM.input_ports]
                 print("Setting default input: ", input_init)
+
             else:
                 input_init = ast.literal_eval(debug_env["const_input"])
                 print("Setting user input in evaluate: ", input_init)
@@ -3514,8 +3527,10 @@ class OptimizationControlMechanism(ControlMechanism):
         # Simulations don't store output unless we run parameter fitting
         if 'evaluate_type_objective' in tags:
             comp_output = sim_f.args[4].type(None)
+
         elif 'evaluate_type_all_results' in tags:
             comp_output = arg_out
+
         else:
             assert False, "Evaluation type not detected in tags, or unknown: {}".format(tags)
 
@@ -3528,11 +3543,11 @@ class OptimizationControlMechanism(ControlMechanism):
                 "objective_mechanism on OptimizationControlMechanism cannot be None in 'evaluate_type_objective'"
 
             obj_idx = self.agent_rep._get_node_index(self.objective_mechanism)
+
             # Mechanisms' results are stored in the first substructure
-            objective_op_ptr = builder.gep(comp_data, [ctx.int32_ty(0),
-                                                       ctx.int32_ty(0),
-                                                       ctx.int32_ty(obj_idx)])
-            # Objective mech output shape should be 1 single element 2d array
+            objective_op_ptr = builder.gep(comp_data, [ctx.int32_ty(0), ctx.int32_ty(0), ctx.int32_ty(obj_idx)])
+
+            # Objective mechanism's output shape should be 1 single element 2d array
             objective_val_ptr = builder.gep(objective_op_ptr,
                                             [ctx.int32_ty(0), ctx.int32_ty(0), ctx.int32_ty(0)],
                                             "obj_val_ptr")
@@ -3540,8 +3555,12 @@ class OptimizationControlMechanism(ControlMechanism):
             # Apply total cost to objective value
             net_outcome_f = ctx.import_llvm_function(self, tags=tags.union({"net_outcome"}))
             builder.call(net_outcome_f, [controller_params, controller_state, objective_val_ptr, arg_out])
+
         elif "evaluate_type_all_results" in tags:
+            # "evaluate_type_all_results" stores trial outputs directly and
+            # doesn't need result extraction
             pass
+
         else:
             assert False, "Evaluation type not detected in tags, or unknown: {}".format(tags)
 
@@ -3552,16 +3571,18 @@ class OptimizationControlMechanism(ControlMechanism):
     def _gen_llvm_function(self, *, ctx:pnlvm.LLVMBuilderContext, tags:frozenset):
         if "net_outcome" in tags:
             return self._gen_llvm_net_outcome_function(ctx=ctx, tags=tags)
+
         if "evaluate" in tags and "alloc_range" in tags:
             return self._gen_llvm_evaluate_alloc_range_function(ctx=ctx, tags=tags)
+
         if "evaluate" in tags:
             return self._gen_llvm_evaluate_function(ctx=ctx, tags=tags)
 
         is_comp = not isinstance(self.agent_rep, Function)
         if is_comp:
-            extra_args = [ctx.get_param_struct_type(self.agent_rep).as_pointer(),
-                          ctx.get_state_struct_type(self.agent_rep).as_pointer(),
-                          ctx.get_data_struct_type(self.agent_rep).as_pointer()]
+            extra_args = [ctx.get_param_struct_type(self.composition).as_pointer(),
+                          ctx.get_state_struct_type(self.composition).as_pointer(),
+                          ctx.get_data_struct_type(self.composition).as_pointer()]
         else:
             extra_args = []
 
