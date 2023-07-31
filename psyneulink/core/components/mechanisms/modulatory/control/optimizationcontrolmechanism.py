@@ -3394,18 +3394,12 @@ class OptimizationControlMechanism(ControlMechanism):
 
     def _gen_llvm_evaluate_function(self, *, ctx:pnlvm.LLVMBuilderContext, tags=frozenset()):
         assert "evaluate" in tags
-
-        # The controller (self) is might not be a node of agent_rep,
-        # even if agent_rep is a composition. We still need to duplicate
-        # structures of self.composition because the control allocation
-        # gets applied there.
-
-        args = [ctx.get_param_struct_type(self.composition).as_pointer(),
-                ctx.get_state_struct_type(self.composition).as_pointer(),
+        args = [ctx.get_param_struct_type(self.agent_rep).as_pointer(),
+                ctx.get_state_struct_type(self.agent_rep).as_pointer(),
                 self._get_evaluate_alloc_struct_type(ctx).as_pointer(),
                 self._get_evaluate_output_struct_type(ctx, tags=tags).as_pointer(),
                 ctx.get_input_struct_type(self.agent_rep).as_pointer(),
-                ctx.get_data_struct_type(self.composition).as_pointer(),
+                ctx.get_data_struct_type(self.agent_rep).as_pointer(),
                 ctx.int32_ty.as_pointer()]
 
         builder = ctx.create_llvm_function(args, self, str(self) + "_evaluate")
@@ -3417,13 +3411,13 @@ class OptimizationControlMechanism(ControlMechanism):
 
         if "const_params" in debug_env:
             comp_params = builder.alloca(comp_params.type.pointee, name="const_params_loc")
-            const_params = comp_params.type.pointee(self.composition._get_param_initializer(None))
+            const_params = comp_params.type.pointee(self.agent_rep._get_param_initializer(None))
             builder.store(const_params, comp_params)
 
         # Create a simulation copy of composition state
         comp_state = builder.alloca(base_comp_state.type.pointee, name="state_copy")
         if "const_state" in debug_env:
-            const_state = self.composition._get_state_initializer(None)
+            const_state = self.agent_rep._get_state_initializer(None)
             builder.store(comp_state.type.pointee(const_state), comp_state)
         else:
             builder = pnlvm.helpers.memcpy(builder, comp_state, base_comp_state)
@@ -3431,7 +3425,7 @@ class OptimizationControlMechanism(ControlMechanism):
         # Create a simulation copy of composition data
         comp_data = builder.alloca(base_comp_data.type.pointee, name="data_copy")
         if "const_data" in debug_env:
-            const_data = self.composition._get_data_initializer(None)
+            const_data = self.agent_rep._get_data_initializer(None)
             builder.store(comp_data.type.pointee(const_data), comp_data)
         else:
             builder = pnlvm.helpers.memcpy(builder, comp_data, base_comp_data)
@@ -3563,9 +3557,9 @@ class OptimizationControlMechanism(ControlMechanism):
 
         is_comp = not isinstance(self.agent_rep, Function)
         if is_comp:
-            extra_args = [ctx.get_param_struct_type(self.composition).as_pointer(),
-                          ctx.get_state_struct_type(self.composition).as_pointer(),
-                          ctx.get_data_struct_type(self.composition).as_pointer()]
+            extra_args = [ctx.get_param_struct_type(self.agent_rep).as_pointer(),
+                          ctx.get_state_struct_type(self.agent_rep).as_pointer(),
+                          ctx.get_data_struct_type(self.agent_rep).as_pointer()]
         else:
             extra_args = []
 
