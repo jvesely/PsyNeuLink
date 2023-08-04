@@ -1699,15 +1699,13 @@ class TestControlMechanisms:
     @pytest.mark.parametrize("mode, ocm_mode", pytest.helpers.get_comp_and_ocm_execution_modes())
     def test_nested_control(self, mode, ocm_mode):
 
-        if mode != pnl.ExecutionMode.Python:
-            pytest.skip("Not implemented!")
+#        if mode != pnl.ExecutionMode.Python:
+#            pytest.skip("Not implemented!")
 
         P = pnl.ProcessingMechanism(name="P", function=pnl.Linear)
         obj = pnl.ObjectiveMechanism(monitor=P)
 
-        inner_comp = pnl.Composition(name="inner_comp",
-                                     retain_old_simulation_data=True,
-                                     controller_mode=pnl.BEFORE)
+        inner_comp = pnl.Composition(name="inner_comp")
         inner_comp.add_node(P)
 
         outer_comp = pnl.Composition(name="outer_comp",
