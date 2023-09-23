@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Composition &mdash; PsyNeuLink 0.9.1.1+1440.g9aa16a1dc documentation</title>
+  <title>Composition &mdash; PsyNeuLink 0.9.1.1+1439.g151028d3a documentation</title>
   
 
   
@@ -99,7 +99,7 @@
               
               
                 <div class="version">
-                  0.9.1.1+1440
+                  0.9.1.1+1439
                 </div>
               
             
@@ -600,7 +600,9 @@ receive the <a class="reference internal" href="#composition-execution-inputs"><
 roles from being assigned by default, using the <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.exclude_node_roles" title="psyneulink.core.compositions.composition.Composition.exclude_node_roles"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">exclude_node_roles</span></code></a> method.  The
 description of each <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole" title="psyneulink.core.compositions.composition.NodeRole"><code class="xref any py py-class docutils literal notranslate"><span class="pre">NodeRole</span></code></a> indicates whether it is modifiable using these methods.  All of the roles assigned
 to a particular Node can be listed using the <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.get_roles_by_node" title="psyneulink.core.compositions.composition.Composition.get_roles_by_node"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">get_roles_by_node</span></code></a> method, and all of the
-nodes assigned a particular role can be listed using the <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.get_nodes_by_role" title="psyneulink.core.compositions.composition.Composition.get_nodes_by_role"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">get_nodes_by_role</span></code></a> method.</p>
+nodes assigned a particular role can be listed using the <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.get_nodes_by_role" title="psyneulink.core.compositions.composition.Composition.get_nodes_by_role"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">get_nodes_by_role</span></code></a> method.
+The <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.get_required_roles_by_node" title="psyneulink.core.compositions.composition.Composition.get_required_roles_by_node"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">get_required_roles_by_node</span></code></a> method lists the <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole" title="psyneulink.core.compositions.composition.NodeRole"><code class="xref any py py-class docutils literal notranslate"><span class="pre">NodeRoles</span></code></a> that have been assigned to a Node using the
+<a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.require_node_roles" title="psyneulink.core.compositions.composition.Composition.require_node_roles"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">require_node_roles</span></code></a> method.</p>
 </section>
 <section id="nested-compositions">
 <span id="composition-nested"></span><h3><em>Nested Compositions</em><a class="headerlink" href="#nested-compositions" title="Permalink to this headline">¶</a></h3>
@@ -622,14 +624,14 @@ from Nodes in a nested Composition that are not <a class="reference internal" hr
 <ul id="composition-probes">
 <li><p><em>Probes</em> – Nodes that are not <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole.OUTPUT" title="psyneulink.core.compositions.composition.NodeRole.OUTPUT"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">OUTPUT</span></code></a> of a nested Composition, but project to ones in an
 outer Composition, are assigned <a class="reference internal" href="#id27" title="psyneulink.core.compositions.composition.NodeRole.PROBE"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">PROBE</span></code></a> in addition to their other <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole" title="psyneulink.core.compositions.composition.NodeRole"><code class="xref any py py-class docutils literal notranslate"><span class="pre">roles</span></code></a> in the
-nested Composition.  The only difference between <a class="reference internal" href="#id27" title="psyneulink.core.compositions.composition.NodeRole.PROBE"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">PROBE</span></code></a> and <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole.OUTPUT" title="psyneulink.core.compositions.composition.NodeRole.OUTPUT"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">OUTPUT</span></code></a> Nodes
+nested Composition. The only difference between <a class="reference internal" href="#id27" title="psyneulink.core.compositions.composition.NodeRole.PROBE"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">PROBE</span></code></a> and <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole.OUTPUT" title="psyneulink.core.compositions.composition.NodeRole.OUTPUT"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">OUTPUT</span></code></a> Nodes
 is whether their output is included in the <a class="reference internal" href="#id21" title="psyneulink.core.compositions.composition.Composition.output_values"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">output_values</span></code></a> and <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.results" title="psyneulink.core.compositions.composition.Composition.results"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">results</span></code></a> attributes of the <em>outermost</em> Composition to which they project; this is determined by the
 <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.include_probes_in_output" title="psyneulink.core.compositions.composition.Composition.include_probes_in_output"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">include_probes_in_output</span></code></a> attribute of the latter. If
 <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.include_probes_in_output" title="psyneulink.core.compositions.composition.Composition.include_probes_in_output"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">include_probes_in_output</span></code></a> is False (the default), then the output of any
 <a class="reference internal" href="#id27" title="psyneulink.core.compositions.composition.NodeRole.PROBE"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">PROBE</span></code></a> Nodes are <em>not</em> included in the <a class="reference internal" href="#id21" title="psyneulink.core.compositions.composition.Composition.output_values"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">output_values</span></code></a> or <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.results" title="psyneulink.core.compositions.composition.Composition.results"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">results</span></code></a> for the outermost Composition to which they project (although they <em>are</em> still included
 in those attributes of the nested Compositions; see note below). In this respect, they can be thought of as
 “probing” - that is, providing access to “latent variables” of – the nested Composition to which they belong –
-the values of which that are not otherwise reported as part of the outermost Composition’s output or results. If
+the values of which are not otherwise reported as part of the outermost Composition’s output or results. If
 <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.include_probes_in_output" title="psyneulink.core.compositions.composition.Composition.include_probes_in_output"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">include_probes_in_output</span></code></a> is True, then any <a class="reference internal" href="#id27" title="psyneulink.core.compositions.composition.NodeRole.PROBE"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">PROBE</span></code></a> Nodes
 of any nested Compositions are treated the same as <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole.OUTPUT" title="psyneulink.core.compositions.composition.NodeRole.OUTPUT"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">OUTPUT</span></code></a> Nodes: their outputs are included in
 the <a class="reference internal" href="#id21" title="psyneulink.core.compositions.composition.Composition.output_values"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">output_values</span></code></a> and <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.results" title="psyneulink.core.compositions.composition.Composition.results"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">results</span></code></a> of the outermost Composition.
@@ -658,6 +660,14 @@ for nested Compositions is ignored, and the attribute is automatically set to Tr
 nested within them (see <a class="reference internal" href="#composition-projections-to-cims"><span class="std std-ref">below</span></a>).</p>
 </div>
 </div></blockquote>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A Node can be both a <a class="reference internal" href="#id27" title="psyneulink.core.compositions.composition.NodeRole.PROBE"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">PROBE</span></code></a> and an <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole.OUTPUT" title="psyneulink.core.compositions.composition.NodeRole.OUTPUT"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">OUTPUT</span></code></a> Node of a nested Composition,
+if it has some <a class="reference internal" href="Mechanism.html#psyneulink.core.components.mechanisms.mechanism.Mechanism_Base.output_ports" title="psyneulink.core.components.mechanisms.mechanism.Mechanism_Base.output_ports"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">output_ports</span></code></a> that project only to Nodes in the outer
+Composition (those are treated the same was as Projections from an <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole.OUTPUT" title="psyneulink.core.compositions.composition.NodeRole.OUTPUT"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">OUTPUT</span></code></a> Node),
+as well as other(s) that project to Nodes both within the nested Composition and to the outer Composition
+(those are treated in the same way as <a class="reference internal" href="#id27" title="psyneulink.core.compositions.composition.NodeRole.PROBE"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">PROBE</span></code></a> Nodes).</p>
 </div>
 </div></blockquote>
 </li>
@@ -1171,8 +1181,9 @@ or <a class="reference internal" href="Keywords.html#psyneulink.core.globals.key
 exploiting the acceleration of optimized implementations of learning. This can be achieved by executing the <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.learn" title="psyneulink.core.compositions.composition.Composition.learn"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">learn</span></code></a> method in one of two modes (specified using its <strong>execution_mode</strong> argument):  using direct
 compilation (<strong>execution_mode</strong> = <a class="reference internal" href="LLVM.html#psyneulink.core.llvm.__init__.ExecutionMode.LLVMRun" title="psyneulink.core.llvm.__init__.ExecutionMode.LLVMRun"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">ExecutionMode.LLVMRun</span></code></a>); or by automatically translating the model to <a class="reference external" href="https://pytorch.org">PyTorch</a> for training (<strong>execution_mode</strong> = <a class="reference internal" href="LLVM.html#psyneulink.core.llvm.__init__.ExecutionMode.PyTorch" title="psyneulink.core.llvm.__init__.ExecutionMode.PyTorch"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">ExecutionMode.PyTorch</span></code></a>). The advantage of these modes is
 that they can provide up to three orders of magnitude speed-up in training a model. However, there are restrictions
-on the kinds of Compositions that be implemented in this way.  The features of the different ways to implement and
-execute learning are outlined in the following table, and described in more detail in <a class="reference internal" href="AutodiffComposition.html"><span class="doc">AutodiffComposition</span></a>.</p>
+on the kinds of Compositions that be implemented in this way. Use of the <a class="reference internal" href="LLVM.html#psyneulink.core.llvm.__init__.ExecutionMode.PyTorch" title="psyneulink.core.llvm.__init__.ExecutionMode.PyTorch"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">PyTorch</span></code></a> mode also supports learning of
+<a class="reference internal" href="#composition-nested"><span class="std std-ref">nested Compositions</span></a> (see <a class="reference internal" href="AutodiffComposition.html#autodiffcomposition-pytorch"><span class="std std-ref">PyTorch mode</span></a>. The features of the different ways to
+implement and execute learning are outlined in the table below, and described in more detail in <a class="reference internal" href="AutodiffComposition.html"><span class="doc">AutodiffComposition</span></a>.</p>
 <p>The <a class="reference internal" href="AutodiffComposition.html#psyneulink.library.compositions.autodiffcomposition.AutodiffComposition.learning_rate" title="psyneulink.library.compositions.autodiffcomposition.AutodiffComposition.learning_rate"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">learning_rate</span></code></a> for an AutodiffComposition can be specified in its constructor
 (which assigns it as the default) or in its <a class="reference internal" href="AutodiffComposition.html#psyneulink.library.compositions.autodiffcomposition.AutodiffComposition.learn" title="psyneulink.library.compositions.autodiffcomposition.AutodiffComposition.learn"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">learn</span></code></a> method, in which case it applies to
 that execution only.</p>
@@ -1199,63 +1210,6 @@ method of an <a class="reference internal" href="AutodiffComposition.html"><span
 </section>
 <section id="comparison-of-learning-modes">
 <span id="composition-compilation-table"></span><h3><em>Comparison of Learning Modes</em><a class="headerlink" href="#comparison-of-learning-modes" title="Permalink to this headline">¶</a></h3>
-<table class="colwidths-given docutils align-default">
-<colgroup>
-<col style="width: 5%" />
-<col style="width: 32%" />
-<col style="width: 31%" />
-<col style="width: 31%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"></th>
-<th class="head"><p><strong>Composition</strong></p></th>
-<th class="head" colspan="2"><p><strong>AutodiffComposition</strong></p></th>
-</tr>
-<tr class="row-even"><th class="head"></th>
-<th class="head"><p><em>Python</em></p></th>
-<th class="head"><p><em>Direct Compilation</em></p></th>
-<th class="head"><p><em>PyTorch</em></p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-odd"><td><p>execution_mode=</p></td>
-<td><p><a class="reference internal" href="LLVM.html#psyneulink.core.llvm.__init__.ExecutionMode.Python" title="psyneulink.core.llvm.__init__.ExecutionMode.Python"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">ExecutionMode.Python</span></code></a></p></td>
-<td><p><a class="reference internal" href="LLVM.html#psyneulink.core.llvm.__init__.ExecutionMode.LLVMRun" title="psyneulink.core.llvm.__init__.ExecutionMode.LLVMRun"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">ExecutionMode.LLVMRun</span></code></a></p></td>
-<td><p><a class="reference internal" href="LLVM.html#psyneulink.core.llvm.__init__.ExecutionMode.LLVMRun" title="psyneulink.core.llvm.__init__.ExecutionMode.LLVMRun"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">ExecutionMode.LLVMRun</span></code></a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.learn" title="psyneulink.core.compositions.composition.Composition.learn"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">learn()</span></code></a></p>
-<p><a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.run" title="psyneulink.core.compositions.composition.Composition.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a></p>
-</td>
-<td><p>Python interpreted</p>
-<p>Python interpreted</p>
-</td>
-<td><p>LLVM compiled</p>
-<p>LLVM compiled</p>
-</td>
-<td><p>PyTorch compiled</p>
-<p>Python interpreted</p>
-</td>
-</tr>
-<tr class="row-odd"><td><p><em>Speed:</em></p></td>
-<td><p>slow</p></td>
-<td><p>fastest</p></td>
-<td><p>fast</p></td>
-</tr>
-<tr class="row-even"><td><p><em>Supports:</em></p></td>
-<td><p><a class="reference internal" href="LearningFunctions.html#psyneulink.core.components.functions.learningfunctions.BackPropagation" title="psyneulink.core.components.functions.learningfunctions.BackPropagation"><code class="xref any py py-class docutils literal notranslate"><span class="pre">BackPropagation</span></code></a></p>
-<p><a class="reference internal" href="LearningFunctions.html#psyneulink.core.components.functions.learningfunctions.Reinforcement" title="psyneulink.core.components.functions.learningfunctions.Reinforcement"><code class="xref any py py-class docutils literal notranslate"><span class="pre">Reinforcement</span></code></a> learning</p>
-<p><a class="reference internal" href="#composition-learning-unsupervised"><span class="std std-ref">Unspervised learning</span></a></p>
-<p><a class="reference internal" href="ModulatorySignal.html#modulatorysignal-modulation"><span class="std std-ref">Modulation</span></a></p>
-<p>Inspection</p>
-</td>
-<td><p>Backpropagation</p></td>
-<td><p>Backpropagation</p>
-<p>RNN, inclduing LSTM</p>
-<p>Unsupervised learning</p>
-</td>
-</tr>
-</tbody>
-</table>
 </section>
 <section id="learning-using-userdefinedfunctions">
 <span id="composition-learning-udf"></span><h3><em>Learning Using UserDefinedFunctions</em><a class="headerlink" href="#learning-using-userdefinedfunctions" title="Permalink to this headline">¶</a></h3>
@@ -1665,9 +1619,9 @@ feedback (see <a class="reference internal" href="#composition-feedback-designat
 </div>
 </div></blockquote>
 <p id="composition-cycle-synchronous-execution"><strong>Synchronous execution</strong>. Cycles are “flattened” for execution, meaning that all of the Nodes within a cycle are
-executed in the same <a class="reference internal" href="Time.html#psyneulink.core.scheduling.time.TimeScale.TIME_STEP" title="psyneulink.core.scheduling.time.TimeScale.TIME_STEP"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">TIME_STEP</span></code></a>). The input that each Node in a cycle receives from those that
+executed in the same <a class="reference internal" href="Time.html#psyneulink.core.scheduling.time.TimeScale.TIME_STEP" title="psyneulink.core.scheduling.time.TimeScale.TIME_STEP"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">TIME_STEP</span></code></a>. The input that each Node in a cycle receives from those that
 project to it from within the cycle is the <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.value" title="psyneulink.core.components.component.Component.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> of those Nodes when the cycle was last executed
-in the same <a class="reference internal" href="#composition-execution-context"><span class="std std-ref">execution context</span></a>;  this ensures not only that the execute in synchrony,
+in the same <a class="reference internal" href="#composition-execution-context"><span class="std std-ref">execution context</span></a>;  this ensures not only that they execute in synchrony,
 but that the inputs received from any Nodes within the cycle are synchronized (i.e., from the same earlier <a class="reference internal" href="Time.html#psyneulink.core.scheduling.time.TimeScale.TIME_STEP" title="psyneulink.core.scheduling.time.TimeScale.TIME_STEP"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">TIME_STEP</span></code></a> of execution). However, this presents a problem for the first execution of the cycle since, by
 definition, none of the Nodes have a value from a previous execution.  In that case, each sender passes the value to
 which it has been initialized which, by default, is its <a class="reference internal" href="Parameters.html#parameter-defaults"><span class="std std-ref">default value</span></a>.  However, this can be
@@ -1679,7 +1633,7 @@ overridden, as described below.</p>
 they receive the <em>current</em> value of any Nodes that project to them from <em>outisde</em> the cycle, and pass their
 current value (i.e., the ones computed in the current execution of the cycle) to any Nodes to which they project
 outside of the cycle.  The former means that any Nodes within the cycle that receive such input are “a step
-ahead” of those within the cycle and also, unless the use a <a class="reference internal" href="StatefulFunction.html"><span class="doc">StatefulFunction</span></a>, others within the cycle will
+ahead” of those within the cycle and also, unless they use a <a class="reference internal" href="StatefulFunction.html"><span class="doc">StatefulFunction</span></a>, others within the cycle will
 not see the effects of that input within or across <a class="reference internal" href="Time.html#psyneulink.core.scheduling.time.TimeScale.TRIAL" title="psyneulink.core.scheduling.time.TimeScale.TRIAL"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">TRIALS</span></code></a>.</p>
 </div>
 </div></blockquote>
@@ -1708,25 +1662,28 @@ or <a class="reference internal" href="#psyneulink.core.compositions.composition
 </section>
 <section id="feedback-and-sequential-execution">
 <span id="composition-feedback"></span><h5><em>Feedback and Sequential Execution</em><a class="headerlink" href="#feedback-and-sequential-execution" title="Permalink to this headline">¶</a></h5>
-<p id="composition-feedback-designation"><strong>Feedback designation</strong>. If any Projections in a loop are <a class="reference internal" href="#composition-feedback-designation"><span class="std std-ref">designated as feedback</span></a>
-they are used to break the <a class="reference internal" href="#composition-cycle-structure"><span class="std std-ref">cycle</span></a> of execution that would otherwise be formed, and the
-Nodes are executed sequentially as described <a class="reference internal" href="#composition-feedback-sequential-execution"><span class="std std-ref">below</span></a>.  Each Node that sends
-a feedback Projection is assigned the <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole" title="psyneulink.core.compositions.composition.NodeRole"><code class="xref any py py-class docutils literal notranslate"><span class="pre">NodeRole</span></code></a> <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole.FEEDBACK_SENDER" title="psyneulink.core.compositions.composition.NodeRole.FEEDBACK_SENDER"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">FEEDBACK_SENDER</span></code></a>, and the receiver is assigned the <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole" title="psyneulink.core.compositions.composition.NodeRole"><code class="xref any py py-class docutils literal notranslate"><span class="pre">NodeRole</span></code></a>
-<a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole.FEEDBACK_RECEIVER" title="psyneulink.core.compositions.composition.NodeRole.FEEDBACK_RECEIVER"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">FEEDBACK_RECEIVER</span></code></a>.  By default, <a class="reference internal" href="MappingProjection.html"><span class="doc">MappingProjections</span></a> are not specified as feedback, and
+<p id="composition-feedback-designation"><strong>Feedback designation</strong>. If any Projections in a loop are designated as <strong>feedback</strong> they are used to break the
+<a class="reference internal" href="#composition-cycle-structure"><span class="std std-ref">cycle</span></a> of execution that would otherwise be formed, and the Nodes are executed
+sequentially as described <a class="reference internal" href="#composition-feedback-sequential-execution"><span class="std std-ref">below</span></a>. Each Node that sends a feedback
+Projection is assigned the <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole" title="psyneulink.core.compositions.composition.NodeRole"><code class="xref any py py-class docutils literal notranslate"><span class="pre">NodeRole</span></code></a> <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole.FEEDBACK_SENDER" title="psyneulink.core.compositions.composition.NodeRole.FEEDBACK_SENDER"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">FEEDBACK_SENDER</span></code></a>, and the receiver is assigned the <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole" title="psyneulink.core.compositions.composition.NodeRole"><code class="xref any py py-class docutils literal notranslate"><span class="pre">NodeRole</span></code></a>
+<a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole.FEEDBACK_RECEIVER" title="psyneulink.core.compositions.composition.NodeRole.FEEDBACK_RECEIVER"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">FEEDBACK_RECEIVER</span></code></a>. By default, <a class="reference internal" href="MappingProjection.html"><span class="doc">MappingProjections</span></a> are not specified as feedback, and
 therefore loops containing only MappingProjections are left as <a class="reference internal" href="#composition-cycle-structure"><span class="std std-ref">cycles</span></a>. In
 contrast, <a class="reference internal" href="ModulatoryProjection.html"><span class="doc">ModulatoryProjections</span></a> <em>are</em> designated as feedback by default, and therefore any
 loops containing one or more ModulatoryProjections are broken, with the Mechanism that is <a class="reference internal" href="ModulatorySignal.html#modulatorysignal-modulation"><span class="std std-ref">modulated</span></a> designated as the <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole.FEEDBACK_RECEIVER" title="psyneulink.core.compositions.composition.NodeRole.FEEDBACK_RECEIVER"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">FEEDBACK_RECEIVER</span></code></a> and the <a class="reference internal" href="ModulatoryMechanism.html"><span class="doc">ModulatoryMechanism</span></a> that projects to
 it designated as the <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole.FEEDBACK_SENDER" title="psyneulink.core.compositions.composition.NodeRole.FEEDBACK_SENDER"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">FEEDBACK_SENDER</span></code></a>. However, either of these default behaviors can be overidden, by specifying the
-feedback status of a Projection explicitly, either in a tuple with the Projection where it is <a class="reference internal" href="Pathway.html#pathway-specification"><span class="std std-ref">specified in a Pathway</span></a> or in the Composition’s <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.add_projections" title="psyneulink.core.compositions.composition.Composition.add_projections"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">add_projections</span></code></a> method, or by using
-the <strong>feedback</strong> argument of the Composition’s <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.add_projection" title="psyneulink.core.compositions.composition.Composition.add_projection"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">add_projection</span></code></a> method. Specifying True
-or the keyword <em>FEEDBACK</em> forces its assignment as a <em>feedback</em> Projection, whereas False precludes it from being
-assigned as a feedback Projection (e.g., a <a class="reference internal" href="ControlProjection.html"><span class="doc">ControlProjection</span></a> that otherwise forms a cycle will no longer do so).</p>
+feedback status of a Projection explicitly: in a tuple with the Projection specification (e.g. where it is <a class="reference internal" href="Pathway.html#pathway-specification"><span class="std std-ref">specified
+in a Pathway</span></a> or in the <a class="reference internal" href="ControlMechanism.html#controlmechanism-monitor-for-control"><span class="std std-ref">monitor_for_control</span></a> argument
+of a <a class="reference internal" href="ControlMechanism.html"><span class="doc">ControlMechanism</span></a>); in the Composition’s <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.add_projections" title="psyneulink.core.compositions.composition.Composition.add_projections"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">add_projections</span></code></a> method; by using the
+<strong>feedback</strong> argument of the Composition’s <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.add_projection" title="psyneulink.core.compositions.composition.Composition.add_projection"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">add_projection</span></code></a> method; or in the constructor
+of the <a class="reference internal" href="Projection.html"><span class="doc">Projection</span></a> itself using its <strong>feedback</strong> argument. Specifying True or the keyword <em>FEEDBACK</em> forces its
+assignment as a <em>feedback</em> Projection, whereas False precludes it from being assigned as a feedback Projection
+(e.g., a <a class="reference internal" href="ControlProjection.html"><span class="doc">ControlProjection</span></a> that otherwise forms a cycle will no longer do so).</p>
 <blockquote>
 <div><div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Designating a Projection as <strong>feeedback</strong> that is <em>not</em> in a loop is allowed, but will issue a warning and
 can produce unexpected results.  Designating more than one Projection as <strong>feedback</strong> within a loop is also
-permitted, by can also lead to complex and unexpected results.  In both cases, the <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole.FEEDBACK_RECEIVER" title="psyneulink.core.compositions.composition.NodeRole.FEEDBACK_RECEIVER"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">FEEDBACK_RECEIVER</span></code></a> for any
+permitted, but can also lead to complex and unexpected results.  In both cases, the <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole.FEEDBACK_RECEIVER" title="psyneulink.core.compositions.composition.NodeRole.FEEDBACK_RECEIVER"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">FEEDBACK_RECEIVER</span></code></a> for any
 Projection designated as <strong>feedback</strong> will receive a value from the Projection that is based either on the
 <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole.FEEDBACK_SENDER" title="psyneulink.core.compositions.composition.NodeRole.FEEDBACK_SENDER"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">FEEDBACK_SENDER</span></code></a>'s initial_value (the first time it is executed) or its previous <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.value" title="psyneulink.core.components.component.Component.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">value</span></code></a>
 (in subsequent executions), rather than its most recently computed <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.value" title="psyneulink.core.components.component.Component.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> whether or not it
@@ -1744,7 +1701,7 @@ Node after it was last executed in the same <a class="reference internal" href="
 and its <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole.FEEDBACK_RECEIVER" title="psyneulink.core.compositions.composition.NodeRole.FEEDBACK_RECEIVER"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">FEEDBACK_RECEIVER</span></code></a>s  in <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.feedback_senders" title="psyneulink.core.compositions.composition.Composition.feedback_senders"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">feedback_senders</span></code></a>.  These can also be listed using
 the Composition’s <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.get_nodes_by_role" title="psyneulink.core.compositions.composition.Composition.get_nodes_by_role"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">get_nodes_by_role</span></code></a> method.  The feedback Projections of a Composition
 are listed in its <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.feedback_projections" title="psyneulink.core.compositions.composition.Composition.feedback_projections"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">feedback_projections</span></code></a>  attribute, and the feedback status of a
-Projection in a Composition is returned by its <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.get_feedback_status" title="psyneulink.core.compositions.composition.Composition.get_feedback_status"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">get_feedback_status</span></code></a> method.</p>
+Projection can be ascertained using the Composition’s <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.get_feedback_status" title="psyneulink.core.compositions.composition.Composition.get_feedback_status"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">get_feedback_status</span></code></a> method.</p>
 </section>
 </section>
 <section id="execution-contexts">
@@ -1821,9 +1778,9 @@ or in arguments to its <a class="reference internal" href="#psyneulink.core.comp
 <div><ul>
 <li><p><a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.reset" title="psyneulink.core.compositions.composition.Composition.reset"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">reset</span></code></a> – this is a method of the Composition that calls the <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.reset" title="psyneulink.core.components.component.Component.reset"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">reset</span></code></a> method
 of Nodes in the Composition that have a <a class="reference internal" href="StatefulFunction.html"><span class="doc">StatefulFunction</span></a>, each of which resets the <a class="reference internal" href="Component.html#component-stateful-parameters"><span class="std std-ref">stateful parameters</span></a> of those Functions.
-of its <a class="reference internal" href="StatefulFunction.html"><span class="doc">StatefulFunction</span></a>. If it is called  without any arguments, it calls the <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.reset" title="psyneulink.core.components.component.Component.reset"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">reset</span></code></a>
+If it is called  without any arguments, it calls the <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.reset" title="psyneulink.core.components.component.Component.reset"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">reset</span></code></a>
 method for every <a class="reference internal" href="#composition-nodes"><span class="std std-ref">Node</span></a> in the Composition that has a <a class="reference internal" href="StatefulFunction.html"><span class="doc">StatefulFunction</span></a>.
-It can also be called with a dictionary that specifies a subsset of Nodes to reset (see format descdribed for
+It can also be called with a dictionary that specifies a subsset of Nodes to reset (see format described for
 <strong>reset_stateful_functions_when</strong> below).</p></li>
 <li><p><strong>reset_stateful_functions_when</strong> and <strong>reset_stateful_functions_to</strong> – these are arguments of the Composition’s
 <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.run" title="psyneulink.core.compositions.composition.Composition.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">run</span></code></a>  and <a class="reference internal" href="#psyneulink.core.compositions.composition.Composition.learn" title="psyneulink.core.compositions.composition.Composition.learn"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">learn</span></code></a> methods, that can be used to specify the <a class="reference internal" href="Condition.html"><span class="doc">Conditions</span></a> under which the <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.reset" title="psyneulink.core.components.component.Component.reset"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">reset</span></code></a> method of all or a particular subset of Nodes are called
@@ -3649,6 +3606,23 @@ method.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="psyneulink.core.compositions.composition.Composition.get_required_roles_by_node">
+<span class="sig-name descname"><span class="pre">get_required_roles_by_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.compositions.composition.Composition.get_required_roles_by_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole" title="psyneulink.core.compositions.composition.NodeRole"><code class="xref any py py-class docutils literal notranslate"><span class="pre">NodeRoles</span></code></a> that have been user-assigned to a specified <strong>node</strong>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node</strong> (<a class="reference internal" href="#composition-nodes"><span class="std std-ref">Node</span></a>) – <a class="reference internal" href="#composition-nodes"><span class="std std-ref">Node</span></a> for which assigned <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole" title="psyneulink.core.compositions.composition.NodeRole"><code class="xref any py py-class docutils literal notranslate"><span class="pre">NodeRoles</span></code></a> are desired.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole" title="psyneulink.core.compositions.composition.NodeRole"><code class="xref any py py-class docutils literal notranslate"><span class="pre">NodeRoles</span></code></a> assigned to <strong>node</strong>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="Mechanism.html"><span class="doc">Mechanisms</span></a> and/or <a class="reference internal" href="#"><span class="doc">Compositions</span></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="psyneulink.core.compositions.composition.Composition.get_roles_by_node">
 <span class="sig-name descname"><span class="pre">get_roles_by_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.compositions.composition.Composition.get_roles_by_node" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a list of <a class="reference internal" href="#psyneulink.core.compositions.composition.NodeRole" title="psyneulink.core.compositions.composition.NodeRole"><code class="xref any py py-class docutils literal notranslate"><span class="pre">NodeRoles</span></code></a> assigned to <strong>node</strong>.</p>
@@ -4009,7 +3983,7 @@ of how duplicates are determined and handled.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="psyneulink.core.compositions.composition.Composition.add_projection">
-<span class="sig-name descname"><span class="pre">add_projection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">projection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sender</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receiver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feedback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_projection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_duplicates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.compositions.composition.Composition.add_projection" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">add_projection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">projection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sender</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receiver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feedback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_learning_projection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_duplicates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.compositions.composition.Composition.add_projection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add <strong>projection</strong> to the Composition.</p>
 <p>If <strong>projection</strong> is not specified, and one does not already exist between <strong>sender</strong> and <strong>receiver</strong>
 create a default <a class="reference internal" href="MappingProjection.html"><span class="doc">MappingProjection</span></a> between them, using <strong>default_projection_matrix</strong> if specified
@@ -4437,13 +4411,11 @@ see <a class="reference internal" href="MappingProjection.html#mappingprojection
 <dt class="sig sig-object py" id="psyneulink.core.compositions.composition.Composition._create_learning_projection">
 <span class="sig-name descname"><span class="pre">_create_learning_projection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learning_mechanism</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learned_projection</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.compositions.composition.Composition._create_learning_projection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct LearningProjections from LearningMechanisms to learned_projections in a learning pathway</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="psyneulink.core.compositions.composition.Composition.infer_backpropagation_learning_pathways">
-<span class="sig-name descname"><span class="pre">infer_backpropagation_learning_pathways</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.compositions.composition.Composition.infer_backpropagation_learning_pathways" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convenience method that automatically creates backpropapagation learning pathways for every
-Input Node –&gt; Output Node pathway</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="LearningProjection.html#psyneulink.core.components.projections.modulatory.learningprojection.LearningProjection" title="psyneulink.core.components.projections.modulatory.learningprojection.LearningProjection"><code class="xref py py-class docutils literal notranslate"><span class="pre">LearningProjection</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -4582,7 +4554,7 @@ an array with the results of each run is also returned.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="psyneulink.core.compositions.composition.Composition._infer_target_nodes">
-<span class="sig-name descname"><span class="pre">_infer_target_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">targets</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.compositions.composition.Composition._infer_target_nodes" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">_infer_target_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">targets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_mode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.compositions.composition.Composition._infer_target_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maps targets onto target mechanisms (as needed by learning)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -4596,7 +4568,7 @@ an array with the results of each run is also returned.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="psyneulink.core.compositions.composition.Composition._parse_learning_spec">
-<span class="sig-name descname"><span class="pre">_parse_learning_spec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.compositions.composition.Composition._parse_learning_spec" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">_parse_learning_spec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_mode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.compositions.composition.Composition._parse_learning_spec" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts learning inputs and targets to a standardized form</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -4709,7 +4681,7 @@ If the input is specified without an outer list (i.e. Composition.run(inputs = [
 
 <dl class="py method">
 <dt class="sig sig-object py" id="psyneulink.core.compositions.composition.Composition._parse_input_dict">
-<span class="sig-name descname"><span class="pre">_parse_input_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.compositions.composition.Composition._parse_input_dict" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">_parse_input_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.compositions.composition.Composition._parse_input_dict" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Validate and parse a dict provided as input to a Composition into a standardized form to be used throughout</dt><dd><p>its execution</p>
 </dd>
