@@ -54,12 +54,6 @@ class ObjectiveFunction(Function_Base):
             Attributes
             ----------
 
-                metric
-                    see `metric <ObjectiveFunction.metric>`
-
-                    :default value: None
-                    :type:
-
                 normalize
                     see `normalize <ObjectiveFunction.normalize>`
 
@@ -67,7 +61,6 @@ class ObjectiveFunction(Function_Base):
                     :type: ``bool``
         """
         normalize = Parameter(False, stateful=False)
-        metric = Parameter(None, stateful=False)
 
 
 class Stability(ObjectiveFunction):
