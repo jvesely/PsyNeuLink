@@ -49,19 +49,6 @@ class ObjectiveFunction(Function_Base):
 
     componentType = OBJECTIVE_FUNCTION_TYPE
 
-    class Parameters(Function_Base.Parameters):
-        """
-            Attributes
-            ----------
-
-                normalize
-                    see `normalize <ObjectiveFunction.normalize>`
-
-                    :default value: False
-                    :type: ``bool``
-        """
-        normalize = Parameter(False, stateful=False)
-
 
 class Stability(ObjectiveFunction):
     """
@@ -772,9 +759,16 @@ class Distance(ObjectiveFunction):
 
                     :default value: `DIFFERENCE`
                     :type: ``str``
+
+                normalize
+                    see `normalize <ObjectiveFunction.normalize>`
+
+                    :default value: False
+                    :type: ``bool``
         """
         variable = Parameter(np.array([[0], [0]]), read_only=True, pnl_internal=True, constructor_argument='default_variable')
         metric = Parameter(DIFFERENCE, stateful=False)
+        normalize = Parameter(False, stateful=False)
 
     @check_user_specified
     @beartype
