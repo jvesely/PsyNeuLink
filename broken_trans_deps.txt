@@ -30,9 +30,10 @@ cattrs != 23.1.1; python_version < '3.8'
 # https://github.com/python-attrs/cattrs/issues/453
 cattrs != 23.2.1, != 23.2.2
 
-# beartype 0.17.1 is broken on older releases of python3.9
+# beartype 0.17.1 is broken on older releases of python3.9 and on pypy3
 # https://github.com/beartype/beartype/issues/324
 beartype != 0.17.1; python_version == '3.9'
+beartype != 0.17.*, != 0.18.*, != 0.19.* ; platform_python_implementation == 'PyPy'
 
 # coverage 7.6.5 is broken
 # https://github.com/nedbat/coveragepy/issues/1891
