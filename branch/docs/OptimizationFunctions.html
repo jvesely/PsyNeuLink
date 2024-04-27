@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>OptimizationFunctions &mdash; PsyNeuLink 0+untagged.202.gdb0a53c documentation</title>
+  <title>OptimizationFunctions &mdash; PsyNeuLink 0+untagged.203.g990bc47 documentation</title>
   
 
   
@@ -99,7 +99,7 @@
               
               
                 <div class="version">
-                  0+untagged.202.gdb0a53c
+                  0+untagged.203.g990bc47
                 </div>
               
             
@@ -283,7 +283,7 @@ relevant argument(s) as <code class="xref any docutils literal notranslate"><spa
 required by some subclasses but not others (e.g., search_space needed by <a class="reference internal" href="#psyneulink.core.components.functions.optimizationfunctions.GridSearch" title="psyneulink.core.components.functions.optimizationfunctions.GridSearch"><code class="xref any py py-class docutils literal notranslate"><span class="pre">GridSearch</span></code></a> but not
 <a class="reference internal" href="#psyneulink.core.components.functions.optimizationfunctions.GradientOptimization" title="psyneulink.core.components.functions.optimizationfunctions.GradientOptimization"><code class="xref any py py-class docutils literal notranslate"><span class="pre">GradientOptimization</span></code></a>) so that subclasses can be used interchangeably by OptimizationControlMechanism.</p></li>
 <li><p>Subclasses with attributes that depend on one of the OptimizationFunction’s parameters should implement the
-<a class="reference internal" href="#psyneulink.core.components.functions.optimizationfunctions.OptimizationFunction.reset" title="psyneulink.core.components.functions.optimizationfunctions.OptimizationFunction.reset"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">reset</span></code></a> method, that calls super().reset(<a href="#id1"><span class="problematic" id="id2">*</span></a>args) and then
+<a class="reference internal" href="#psyneulink.core.components.functions.optimizationfunctions.OptimizationFunction.reset" title="psyneulink.core.components.functions.optimizationfunctions.OptimizationFunction.reset"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">reset</span></code></a> method, that calls <code class="docutils literal notranslate"><span class="pre">super().reset(*args)</span></code> and then
 reassigns the values of the dependent attributes accordingly.  If an argument is not needed for the subclass,
 <code class="xref any docutils literal notranslate"><span class="pre">NotImplemented</span></code> should be passed as the argument’s value in the call to super (i.e.,
 the OptimizationFunction’s
@@ -578,7 +578,7 @@ Return arrays with all samples evaluated, and array with all values of those sam
 <dl class="py method">
 <dt class="sig sig-object py" id="psyneulink.core.components.functions.optimizationfunctions.OptimizationFunction.reset_grid">
 <span class="sig-name descname"><span class="pre">reset_grid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.functions.optimizationfunctions.OptimizationFunction.reset_grid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reset iterators in <a href="#id3"><span class="problematic" id="id4">`</span></a>search_space &lt;GridSearch.search_space&gt;</p>
+<dd><p>Reset iterators in <a href="#id1"><span class="problematic" id="id2">`</span></a>search_space &lt;GridSearch.search_space&gt;</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1108,7 +1108,7 @@ It is called only if the parameter_validation attribute is <code class="xref any
 <dl class="py method">
 <dt class="sig sig-object py" id="psyneulink.core.components.functions.optimizationfunctions.GridSearch.reset">
 <span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.functions.optimizationfunctions.GridSearch.reset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Assign size of <a href="#id5"><span class="problematic" id="id6">`</span></a>search_space &lt;GridSearch.search_space&gt;</p>
+<dd><p>Assign size of <a href="#id3"><span class="problematic" id="id4">`</span></a>search_space &lt;GridSearch.search_space&gt;</p>
 </dd></dl>
 
 <dl class="py method">
