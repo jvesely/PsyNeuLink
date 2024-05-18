@@ -4098,7 +4098,6 @@ class Composition(Composition_Base, metaclass=ComponentsMeta):
         self.controller_mode = controller_mode
         self.controller_time_scale = controller_time_scale
         self.controller_condition = controller_condition
-        self.controller_condition.owner = self.controller
         # This is set at runtime and may be used by the controller to assign its
         #     `num_trials_per_estimate <OptimizationControlMechanism.num_trials_per_estimate>` attribute.
         self.num_trials = None
