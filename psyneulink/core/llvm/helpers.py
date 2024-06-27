@@ -255,7 +255,7 @@ def create_sample(builder, allocation, search_space, idx):
             dim_start = builder.extract_value(iter_val, 0)
             dim_step = builder.extract_value(iter_val, 1)
             dim_size = builder.extract_value(iter_val, 2)
-            dim_idx = builder.urem(idx, dim_size)
+            dim_idx = builder.urem(idx, builder.trunc(dim_size, idx.type))
             val = builder.uitofp(dim_idx, dim_step.type)
             val = builder.fmul(val, dim_step)
             val = builder.fadd(val, dim_start)
@@ -268,7 +268,7 @@ def create_sample(builder, allocation, search_space, idx):
         else:
             assert False, "Unknown dimension type: {}".format(dim_ptr.type)
 
-        idx = builder.udiv(idx, dim_size)
+        idx = builder.udiv(idx, builder.trunc(dim_size, idx.type))
 
         builder.store(val, slot_ptr)
 

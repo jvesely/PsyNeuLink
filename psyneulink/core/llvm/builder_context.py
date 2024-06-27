@@ -16,6 +16,8 @@ import inspect
 from llvmlite import ir
 import numpy as np
 import os
+from packaging import version
+import platform
 import re
 import time
 import weakref
@@ -547,8 +549,15 @@ class LLVMBuilderContext:
         elif isinstance(t, SampleIterator):
             if isinstance(t.generator, list):
                 return ir.ArrayType(self.float_ty, len(t.generator))
+
+            # This is only needed for Python <3.12
+            assert self.float_ty.intrinsic_name in {"f32", "f64"}, "{}".format(self.float_ty.intrinsic_name)
+            int_type = ir.IntType(64) if self.float_ty.intrinsic_name == "f64" and version.parse(platform.python_version()) < version.parse('3.12.0') else self.int32_ty
+
             # Generic iterator is {start, increment, count}
-            return ir.LiteralStructType((self.float_ty, self.float_ty, self.int32_ty))
+            # Use int the same size as float to preserve 8B size alignment
+            return ir.LiteralStructType((self.float_ty, self.float_ty, int_type))
+
         assert False, "Don't know how to convert {}".format(type(t))
 
 
