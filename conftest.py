@@ -203,15 +203,18 @@ def cuda_param(val):
     return pytest.param(val, marks=[pytest.mark.llvm, pytest.mark.cuda])
 
 @pytest.helpers.register
-def get_func_execution(func, func_mode):
+def get_func_execution(func, func_mode, execution_id=None):
     if func_mode == 'LLVM':
-        return pnlvm.execution.FuncExecution(func).execute
+        return pnlvm.execution.FuncExecution(func, execution_ids=[execution_id]).execute
 
     elif func_mode == 'PTX':
-        return pnlvm.execution.FuncExecution(func).cuda_execute
+        return pnlvm.execution.FuncExecution(func, execution_ids=[execution_id]).cuda_execute
 
     elif func_mode == 'Python':
-        return func.function
+        def func_wrapper(x):
+            return func.execute(x, context=execution_id)
+
+        return func_wrapper
     else:
         assert False, "Unknown function mode: {}".format(func_mode)
 
