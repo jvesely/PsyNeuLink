@@ -465,7 +465,8 @@ class LLVMBuilderContext:
             elif p.name == 'matrix':   # Flatten matrix
                 val = np.asfarray(val).flatten()
             elif p.name == 'num_trials_per_estimate':  # Should always be int
-                val = np.int32(0) if val is None else np.int32(val)
+                dtype = np.int64 if self.float_ty.intrinsic_name == "f64" and version.parse(platform.python_version()) < version.parse('3.12.0') else np.int32
+                val = dtype(0) if val is None else dtype(val)
             elif np.ndim(val) == 0 and component._is_param_modulated(p):
                 val = [val]   # modulation adds array wrap
             return self.convert_python_struct_to_llvm_ir(val)
@@ -509,6 +510,11 @@ class LLVMBuilderContext:
 
     def convert_python_struct_to_llvm_ir(self, t):
         self._stats["types_converted"] += 1
+
+        # This is only needed for Python <3.12
+        assert self.float_ty.intrinsic_name in {"f32", "f64"}, "{}".format(self.float_ty.intrinsic_name)
+        int_type = ir.IntType(64) if self.float_ty.intrinsic_name == "f64" and version.parse(platform.python_version()) < version.parse('3.12.0') else self.int32_ty
+
         if t is None:
             return ir.LiteralStructType([])
         elif type(t) is list:
@@ -526,7 +532,7 @@ class LLVMBuilderContext:
         elif isinstance(t, enum.Enum):
             # FIXME: Consider enums of non-int type
             assert all(round(x.value) == x.value for x in type(t))
-            return self.int32_ty
+            return int_type
         elif isinstance(t, (int, float, np.floating)):
             return self.float_ty
         elif isinstance(t, np.integer):
@@ -545,14 +551,10 @@ class LLVMBuilderContext:
             assert isinstance(t.bit_generator, np.random.Philox)
             return pnlvm.builtins.get_philox_state_struct(self)
         elif isinstance(t, Time):
-            return ir.ArrayType(self.int32_ty, len(TimeScale))
+            return ir.ArrayType(int_type, len(TimeScale))
         elif isinstance(t, SampleIterator):
             if isinstance(t.generator, list):
                 return ir.ArrayType(self.float_ty, len(t.generator))
-
-            # This is only needed for Python <3.12
-            assert self.float_ty.intrinsic_name in {"f32", "f64"}, "{}".format(self.float_ty.intrinsic_name)
-            int_type = ir.IntType(64) if self.float_ty.intrinsic_name == "f64" and version.parse(platform.python_version()) < version.parse('3.12.0') else self.int32_ty
 
             # Generic iterator is {start, increment, count}
             # Use int the same size as float to preserve 8B size alignment
