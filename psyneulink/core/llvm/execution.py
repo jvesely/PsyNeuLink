@@ -287,8 +287,8 @@ class CUDAExecution(Execution):
 
     def cuda_execute(self, variable):
         # Create input argument
-        new_var = np.asfarray(variable, dtype=self._vi_dty)
-        data_in = jit_engine.pycuda.driver.In(new_var)
+        new_variable = np.asfarray(variable, dtype=self._bin_func.np_params[2])
+        data_in = jit_engine.pycuda.driver.In(new_variable)
 
         self._bin_func.cuda_call(self._cuda_param_struct,
                                  self._cuda_state_struct,
