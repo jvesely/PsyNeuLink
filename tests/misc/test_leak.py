@@ -1,5 +1,6 @@
 import gc
 import numpy as np
+import platform
 import pytest
 import weakref
 
@@ -9,6 +10,8 @@ import psyneulink as pnl
 show_graph_args = ["show_all", "show_node_structure", "show_cim", "show_learning", "show_types", "show_dimensions",
                    "show_projection_labels", "show_projections_not_in_composition"]
 
+# Disable in Pypy, the only variant that passes is just construction without execution or show graph.
+@pytest.mark.skipif(platform.python_implementation() == 'PyPy', reason="Pypy's GC does not clean up as good as Python's")
 @pytest.mark.composition
 @pytest.mark.parametrize("show_graph_args", [pytest.param(None, id="show_graph_disabled"),
                                              pytest.param({}, id="show_graph_default"),
