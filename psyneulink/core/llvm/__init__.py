@@ -14,6 +14,7 @@ import functools
 import gc
 import inspect
 import numpy as np
+import platform
 import time
 from math import ceil, log2
 from psyneulink._typing import Set
@@ -305,6 +306,9 @@ def cleanup(check_leaks:bool=False):
         if len(c) > 0:
             gc.collect()
 
+        if platform.python_implementation() == 'PyPy':
+            return
+
         assert len(c) == 0, list(c)
     else:
         LLVMBuilderContext.clear_global()
@@ -319,8 +323,10 @@ def cleanup(check_leaks:bool=False):
             c._compilation_data.execution.values.clear()
             c._compilation_data.execution.history.clear()
 
-        # The set of active executions should be empty
-        for e in CompExecution.active_executions:
-            assert any(inspect.isframe(r) for r in gc.get_referrers(e))
+        if platform.python_implementation() != 'PyPy':
+
+            # The set of active executions should be empty
+            for e in CompExecution.active_executions:
+                assert any(inspect.isframe(r) for r in gc.get_referrers(e))
 
         CompExecution.active_executions.clear()
