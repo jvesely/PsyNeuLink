@@ -275,7 +275,7 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
 
     # deprecated in Python3.8+
     def visit_Num(self, node):
-        return self.ctx.float_ty(node.n)
+        return self.ctx.float_ty(node.value)
 
     def visit_Tuple(self, node:ast.AST):
         elements = (self.visit(element) for element in node.elts)
