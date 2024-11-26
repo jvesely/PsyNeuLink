@@ -161,6 +161,11 @@ jobs:
           Windows*) wmic cpu get description,currentclockspeed,NumberOfCores,NumberOfEnabledCore,NumberOfLogicalProcessors; wmic memorychip get capacity,speed,status,manufacturer ;;
         esac
 
+    - name: Disable pdf file association
+      if: matrix.os == 'windows'
+      run: cmd /c assoc .pdf
+#      run: cmd /c assoc .pdf=" "
+
     - name: Test with pytest
       timeout-minutes: 180
       run: pytest --junit-xml=tests_out.xml --verbosity=0 -n logical --capture=sys -o console_output_style=count ${{ matrix.extra-args }}
