@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; PsyNeuLink 0.15.2.0+29.g06bff2b3e documentation</title>
+  <title>Index &mdash; PsyNeuLink 0.15.2.0+42.gcd06c82ae documentation</title>
   
 
   
@@ -98,7 +98,7 @@
               
               
                 <div class="version">
-                  0.15.2.0+29
+                  0.15.2.0+42
                 </div>
               
             
@@ -313,11 +313,11 @@
 </li>
       <li><a href="EMComposition.html#psyneulink.library.compositions.emcomposition.EMComposition._construct_field_weight_nodes">_construct_field_weight_nodes() (psyneulink.library.compositions.emcomposition.EMComposition method)</a>
 </li>
+      <li><a href="EMComposition.html#psyneulink.library.compositions.emcomposition.EMComposition._construct_input_nodes">_construct_input_nodes() (psyneulink.library.compositions.emcomposition.EMComposition method)</a>
+</li>
       <li><a href="EMComposition.html#psyneulink.library.compositions.emcomposition.EMComposition._construct_match_nodes">_construct_match_nodes() (psyneulink.library.compositions.emcomposition.EMComposition method)</a>
 </li>
       <li><a href="EMComposition.html#psyneulink.library.compositions.emcomposition.EMComposition._construct_pathways">_construct_pathways() (psyneulink.library.compositions.emcomposition.EMComposition method)</a>
-</li>
-      <li><a href="EMComposition.html#psyneulink.library.compositions.emcomposition.EMComposition._construct_query_input_nodes">_construct_query_input_nodes() (psyneulink.library.compositions.emcomposition.EMComposition method)</a>
 </li>
       <li><a href="EMComposition.html#psyneulink.library.compositions.emcomposition.EMComposition._construct_retrieved_nodes">_construct_retrieved_nodes() (psyneulink.library.compositions.emcomposition.EMComposition method)</a>
 </li>
@@ -326,8 +326,6 @@
       <li><a href="EMComposition.html#psyneulink.library.compositions.emcomposition.EMComposition._construct_softmax_node">_construct_softmax_node() (psyneulink.library.compositions.emcomposition.EMComposition method)</a>
 </li>
       <li><a href="EMComposition.html#psyneulink.library.compositions.emcomposition.EMComposition._construct_storage_node">_construct_storage_node() (psyneulink.library.compositions.emcomposition.EMComposition method)</a>
-</li>
-      <li><a href="EMComposition.html#psyneulink.library.compositions.emcomposition.EMComposition._construct_value_input_nodes">_construct_value_input_nodes() (psyneulink.library.compositions.emcomposition.EMComposition method)</a>
 </li>
       <li><a href="EMComposition.html#psyneulink.library.compositions.emcomposition.EMComposition._construct_weighted_match_nodes">_construct_weighted_match_nodes() (psyneulink.library.compositions.emcomposition.EMComposition method)</a>
 </li>
@@ -762,7 +760,11 @@
 </li>
       </ul></li>
       <li><a href="ControlMechanism.html#psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism._instantiate_objective_mechanism">_instantiate_objective_mechanism() (psyneulink.core.components.mechanisms.modulatory.control.controlmechanism.ControlMechanism method)</a>
+
+      <ul>
+        <li><a href="LCControlMechanism.html#psyneulink.library.components.mechanisms.modulatory.control.agt.lccontrolmechanism.LCControlMechanism._instantiate_objective_mechanism">(psyneulink.library.components.mechanisms.modulatory.control.agt.lccontrolmechanism.LCControlMechanism method)</a>
 </li>
+      </ul></li>
       <li><a href="Mechanism.html#psyneulink.core.components.mechanisms.mechanism.Mechanism_Base._instantiate_output_ports">_instantiate_output_ports() (psyneulink.core.components.mechanisms.mechanism.Mechanism_Base method)</a>
 
       <ul>
@@ -2367,6 +2369,10 @@
 </li>
       <li><a href="EMComposition.html#psyneulink.library.compositions.emcomposition.EMComposition.field_weights">field_weights (psyneulink.library.compositions.emcomposition.EMComposition attribute)</a>
 </li>
+      <li><a href="EMComposition.html#psyneulink.library.compositions.emcomposition.EMComposition.fields">fields (psyneulink.library.compositions.emcomposition.EMComposition attribute)</a>
+</li>
+      <li><a href="EMComposition.html#psyneulink.library.compositions.emcomposition.FieldType">FieldType (class in psyneulink.library.compositions.emcomposition)</a>
+</li>
       <li><a href="IntegratorFunctions.html#psyneulink.core.components.functions.stateful.integratorfunctions.FitzHughNagumoIntegrator">FitzHughNagumoIntegrator (class in psyneulink.core.components.functions.stateful.integratorfunctions)</a>
 </li>
       <li><a href="Context.html#psyneulink.core.globals.context.Context.flags">flags (psyneulink.core.globals.context.Context attribute)</a>
@@ -2713,6 +2719,8 @@
 </li>
       <li><a href="IntegratorFunctions.html#psyneulink.core.components.functions.stateful.integratorfunctions.FitzHughNagumoIntegrator.initial_w">initial_w (psyneulink.core.components.functions.stateful.integratorfunctions.FitzHughNagumoIntegrator attribute)</a>
 </li>
+      <li><a href="LCControlMechanism.html#psyneulink.library.components.mechanisms.modulatory.control.agt.lccontrolmechanism.LCControlMechanism.initial_w_FitzHughNagumo">initial_w_FitzHughNagumo (psyneulink.library.components.mechanisms.modulatory.control.agt.lccontrolmechanism.LCControlMechanism attribute)</a>
+</li>
       <li><a href="Log.html#psyneulink.core.globals.log.LogCondition.INITIALIZATION">INITIALIZATION (psyneulink.core.globals.log.LogCondition attribute)</a>
 </li>
       <li><a href="Component.html#psyneulink.core.components.component.Component.initialization_status">initialization_status (psyneulink.core.components.component.Component attribute)</a>
@@ -2778,8 +2786,6 @@
       <li><a href="Mechanism.html#psyneulink.core.components.mechanisms.mechanism.Mechanism_Base.input_labels_dict">input_labels_dict (psyneulink.core.components.mechanisms.mechanism.Mechanism_Base attribute)</a>
 </li>
       <li><a href="EMComposition.html#psyneulink.library.compositions.emcomposition.EMComposition.input_nodes">input_nodes (psyneulink.library.compositions.emcomposition.EMComposition attribute)</a>
-</li>
-      <li><a href="EMComposition.html#psyneulink.library.compositions.emcomposition.EMComposition.input_nodes_by_fields">input_nodes_by_fields (psyneulink.library.compositions.emcomposition.EMComposition attribute)</a>
 </li>
       <li><a href="Mechanism.html#psyneulink.core.components.mechanisms.mechanism.Mechanism_Base.input_port">input_port (psyneulink.core.components.mechanisms.mechanism.Mechanism_Base attribute)</a>
 
@@ -3910,6 +3916,8 @@
 
       <ul>
         <li><a href="AGTControlMechanism.html#psyneulink.library.components.mechanisms.modulatory.control.agt.agtcontrolmechanism.AGTControlMechanism.objective_mechanism">(psyneulink.library.components.mechanisms.modulatory.control.agt.agtcontrolmechanism.AGTControlMechanism attribute)</a>
+</li>
+        <li><a href="LCControlMechanism.html#psyneulink.library.components.mechanisms.modulatory.control.agt.lccontrolmechanism.LCControlMechanism.objective_mechanism">(psyneulink.library.components.mechanisms.modulatory.control.agt.lccontrolmechanism.LCControlMechanism attribute)</a>
 </li>
       </ul></li>
       <li><a href="ObjectiveFunctions.html#psyneulink.core.components.functions.objectivefunctions.ObjectiveFunction">ObjectiveFunction (class in psyneulink.core.components.functions.objectivefunctions)</a>
@@ -5153,6 +5161,8 @@
 </li>
       <li><a href="LLVM.html#psyneulink.core.llvm.__init__.ExecutionMode.PTXRun">PTXRun (psyneulink.core.llvm.__init__.ExecutionMode attribute)</a>
 </li>
+      <li><a href="EMComposition.html#psyneulink.library.compositions.emcomposition.EMComposition.purge_by_field_weights">purge_by_field_weights (psyneulink.library.compositions.emcomposition.EMComposition attribute)</a>
+</li>
       <li><a href="RegressionCFA.html#psyneulink.library.compositions.regressioncfa.PV">PV (class in psyneulink.library.compositions.regressioncfa)</a>
 </li>
       <li><a href="LLVM.html#psyneulink.core.llvm.__init__.ExecutionMode.Python">Python (psyneulink.core.llvm.__init__.ExecutionMode attribute)</a>
@@ -5175,6 +5185,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="EMComposition.html#psyneulink.library.compositions.emcomposition.EMComposition.query_and_value_input_nodes">query_and_value_input_nodes (psyneulink.library.compositions.emcomposition.EMComposition attribute)</a>
+</li>
       <li><a href="EMComposition.html#psyneulink.library.compositions.emcomposition.EMComposition.query_input_nodes">query_input_nodes (psyneulink.library.compositions.emcomposition.EMComposition attribute)</a>
 </li>
   </ul></td>
@@ -5882,6 +5894,8 @@
       <li><a href="ContrastiveHebbianMechanism.html#psyneulink.library.components.mechanisms.processing.transfer.contrastivehebbianmechanism.ContrastiveHebbianMechanism.target_activity">target_activity (psyneulink.library.components.mechanisms.processing.transfer.contrastivehebbianmechanism.ContrastiveHebbianMechanism attribute)</a>
 </li>
       <li><a href="ContrastiveHebbianMechanism.html#psyneulink.library.components.mechanisms.processing.transfer.contrastivehebbianmechanism.ContrastiveHebbianMechanism.target_end">target_end (psyneulink.library.components.mechanisms.processing.transfer.contrastivehebbianmechanism.ContrastiveHebbianMechanism attribute)</a>
+</li>
+      <li><a href="EMComposition.html#psyneulink.library.compositions.emcomposition.EMComposition.target_fields">target_fields (psyneulink.library.compositions.emcomposition.EMComposition attribute)</a>
 </li>
       <li><a href="ContrastiveHebbianMechanism.html#psyneulink.library.components.mechanisms.processing.transfer.contrastivehebbianmechanism.ContrastiveHebbianMechanism.target_size">target_size (psyneulink.library.components.mechanisms.processing.transfer.contrastivehebbianmechanism.ContrastiveHebbianMechanism attribute)</a>
 </li>
