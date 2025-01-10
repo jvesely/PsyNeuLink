@@ -3176,7 +3176,7 @@ class DriftOnASphereIntegrator(IntegratorFunction):  # -------------------------
         previous_value = self.parameters.previous_value._get(context)
 
         try:
-            variable = variable.flatten()
+            variable = variable.ravel()
             drift = variable if len(variable) == dimension - 1 else np.full(dimension - 1, variable)
 
         except ValueError:
