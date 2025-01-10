@@ -1744,7 +1744,7 @@ class Parameter(ParameterBase):
                         context=execution_id,
                         value=ndArray(
                             shape=list(value.shape),
-                            data=list(value.flatten())
+                            data=list(value.ravel())
                         )
                     )
                 )
