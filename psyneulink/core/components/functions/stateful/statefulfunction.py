@@ -542,7 +542,7 @@ class StatefulFunction(Function_Base): #  --------------------------------------
                 continue
 
             param = getattr(self.parameters, attr)
-            param.set(kwargs[attr], context, override=True)
+            param.set(kwargs[attr].copy(), context, override=True)
             value.append(param._get(context))
 
         self.parameters.value.set(value, context, override=True)
