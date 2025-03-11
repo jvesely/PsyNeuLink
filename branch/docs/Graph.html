@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>PathwayProjection &mdash; PsyNeuLink 0.16.0.0+34.gcbfc6f5b2 documentation</title>
+  <title>Graph &mdash; PsyNeuLink 0.16.0.0+34.gcbfc6f5b2 documentation</title>
   
 
   
@@ -174,7 +174,7 @@
       </li>
 
         
-      <li>PathwayProjection</li>
+      <li>Graph</li>
     
   </ul>
 
@@ -197,53 +197,64 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="psyneulink-article" class="psyneulink-article">
               
-  <section id="pathwayprojection">
-<h1>PathwayProjection<a class="headerlink" href="#pathwayprojection" title="Permalink to this headline">¶</a></h1>
-<div class="subclasses docutils container">
-<p><em>Subclasses</em></p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="MappingProjection.html">MappingProjection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="MaskedMappingProjection.html">MaskedMappingProjection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="AutoAssociativeProjection.html">AutoAssociativeProjection</a></li>
-</ul>
-</div>
-</div>
-<span class="target" id="module-psyneulink.core.components.projections.pathway.pathwayprojection"></span><section id="contents">
-<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div><ul class="simple">
-<li><p><a class="reference internal" href="#pathwayprojection-overview"><span class="std std-ref">Overview</span></a></p></li>
-<li><p><a class="reference internal" href="#pathwayprojection-creation"><span class="std std-ref">Creating a PathwayProjection</span></a></p></li>
-<li><p><a class="reference internal" href="#pathwayprojection-structure"><span class="std std-ref">Structure</span></a></p></li>
-<li><p><a class="reference internal" href="#pathwayprojection-execution"><span class="std std-ref">Execution</span></a></p></li>
-<li><p><a class="reference internal" href="#pathwayprojection-class-reference"><span class="std std-ref">Class Reference</span></a></p></li>
-</ul>
-</div></blockquote>
-</section>
-<section id="overview">
-<span id="pathwayprojection-overview"></span><h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>PathwayProjections allow information to be passed between mechanisms.  A PathwayProjection takes its input from the
-<a class="reference internal" href="OutputPort.html"><span class="doc">OutputPort</span></a> of one Mechanism (its <a class="reference internal" href="Projection.html#psyneulink.core.components.projections.projection.Projection_Base.sender" title="psyneulink.core.components.projections.projection.Projection_Base.sender"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">sender</span></code></a>), and does whatever conversion is needed to
-transmit that information to the <a class="reference internal" href="InputPort.html"><span class="doc">InputPort</span></a> of another Mechanism (its <a class="reference internal" href="Projection.html#psyneulink.core.components.projections.projection.Projection_Base.receiver" title="psyneulink.core.components.projections.projection.Projection_Base.receiver"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">receiver</span></code></a>).  The
-primary type of PathwayProjection is a <a class="reference internal" href="MappingProjection.html"><span class="doc">MappingProjection</span></a>.</p>
-</section>
-<section id="creating-a-pathwayprojection">
-<span id="pathwayprojection-creation"></span><h2>Creating a PathwayProjection<a class="headerlink" href="#creating-a-pathwayprojection" title="Permalink to this headline">¶</a></h2>
-<p>A PathwayProjection can is created in the same ways as a <a class="reference internal" href="Projection.html#projection-creation"><span class="std std-ref">Projection</span></a>.</p>
-</section>
-<section id="structure">
-<span id="pathwayprojection-structure"></span><h2>Structure<a class="headerlink" href="#structure" title="Permalink to this headline">¶</a></h2>
-<p>A PathwayProjection has the same structure as a <a class="reference internal" href="Projection.html#projection-structure"><span class="std std-ref">Projection</span></a>.</p>
-</section>
-<section id="execution">
-<span id="pathwayprojection-execution"></span><h2>Execution<a class="headerlink" href="#execution" title="Permalink to this headline">¶</a></h2>
-<p>A PathwayProjection executes in the same was as a <a class="reference internal" href="Projection.html#projection-execution"><span class="std std-ref">Projection</span></a>.</p>
-</section>
-<section id="class-reference">
-<span id="pathwayprojection-class-reference"></span><h2>Class Reference<a class="headerlink" href="#class-reference" title="Permalink to this headline">¶</a></h2>
-<p>See <a class="reference internal" href="Projection.html#projection-class-reference"><span class="std std-ref">Projection</span></a>.</p>
-</section>
+  <section id="module-psyneulink.core.globals.graph">
+<span id="graph"></span><h1>Graph<a class="headerlink" href="#module-psyneulink.core.globals.graph" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="psyneulink.core.globals.graph.EdgeType">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">psyneulink.core.globals.graph.</span></span><span class="sig-name descname"><span class="pre">EdgeType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.globals.graph.EdgeType" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="psyneulink.core.globals.graph.EdgeType.NON_FEEDBACK">
+<span class="sig-name descname"><span class="pre">NON_FEEDBACK</span></span><a class="headerlink" href="#psyneulink.core.globals.graph.EdgeType.NON_FEEDBACK" title="Permalink to this definition">¶</a></dt>
+<dd><p>A standard edge that if it exists in a cycle will only be flattened, not pruned</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psyneulink.core.globals.graph.EdgeType.FEEDBACK">
+<span class="sig-name descname"><span class="pre">FEEDBACK</span></span><a class="headerlink" href="#psyneulink.core.globals.graph.EdgeType.FEEDBACK" title="Permalink to this definition">¶</a></dt>
+<dd><p>A “feedbacK” edge that will be immediately pruned to create an acyclic graph</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psyneulink.core.globals.graph.EdgeType.FLEXIBLE">
+<span class="sig-name descname"><span class="pre">FLEXIBLE</span></span><a class="headerlink" href="#psyneulink.core.globals.graph.EdgeType.FLEXIBLE" title="Permalink to this definition">¶</a></dt>
+<dd><p>An edge that will be pruned only if it exists in a cycle</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psyneulink.core.globals.graph.EdgeType.from_any">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_any</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.globals.graph.EdgeType.from_any" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>an <a class="reference internal" href="#psyneulink.core.globals.graph.EdgeType" title="psyneulink.core.globals.graph.EdgeType"><code class="xref any py py-class docutils literal notranslate"><span class="pre">EdgeType</span></code></a> corresponding to <strong>value</strong> if it
+exists</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#psyneulink.core.globals.graph.EdgeType" title="psyneulink.core.globals.graph.EdgeType">EdgeType</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psyneulink.core.globals.graph.EdgeType.has">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">has</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.globals.graph.EdgeType.has" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if <strong>value</strong> corresponds to an <a class="reference internal" href="#psyneulink.core.globals.graph.EdgeType" title="psyneulink.core.globals.graph.EdgeType"><code class="xref any py py-class docutils literal notranslate"><span class="pre">EdgeType</span></code></a>, or
+False otherwise</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="psyneulink.core.globals.graph.GraphError">
+<em class="property"><span class="pre">exception</span> </em><span class="sig-prename descclassname"><span class="pre">psyneulink.core.globals.graph.</span></span><span class="sig-name descname"><span class="pre">GraphError</span></span><a class="headerlink" href="#psyneulink.core.globals.graph.GraphError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </section>
 
 
@@ -280,15 +291,7 @@ primary type of PathwayProjection is a <a class="reference internal" href="Mappi
           <div class="psyneulink-right-menu" id="psyneulink-right-menu">
             <div class="psyneulink-side-scroll" id="psyneulink-side-scroll-right">
               <ul>
-<li><a class="reference internal" href="#">PathwayProjection</a><ul>
-<li><a class="reference internal" href="#contents">Contents</a></li>
-<li><a class="reference internal" href="#overview">Overview</a></li>
-<li><a class="reference internal" href="#creating-a-pathwayprojection">Creating a PathwayProjection</a></li>
-<li><a class="reference internal" href="#structure">Structure</a></li>
-<li><a class="reference internal" href="#execution">Execution</a></li>
-<li><a class="reference internal" href="#class-reference">Class Reference</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#">Graph</a></li>
 </ul>
 
             </div>
