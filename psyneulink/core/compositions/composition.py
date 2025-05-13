@@ -11494,7 +11494,7 @@ class Composition(Composition_Base, metaclass=ComponentsMeta):
         COMMENT
 
         Returns
-        ---------
+        -------
 
         2d list of values of OUTPUT Nodes at end of last trial : list[list]
           each item in the list is the `output_values <Mechanism_Base.output_values>` for an `OUTPUT` `Node

@@ -183,7 +183,7 @@ COMMENT
 .. _AutodiffComposition_Exchange_With_Torch_Parameters:
 
 *Exchanging Parameters with Pytorch Modules*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The AutodiffComposition's `copy_torch_param_to_projection_matrix` and `copy_projection_matrix_to_torch_param` methods
 can be used to exchange weight matrices between the parameters of a PyTorch module and the `matrix
