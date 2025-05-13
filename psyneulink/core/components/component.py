@@ -2091,17 +2091,19 @@ class Component(MDFSerializable, metaclass=ComponentsMeta):
                         ):
         """Validate variable and/or param defaults in requested set and assign values to params in target set
 
-          Variable can be any type other than a dictionary (reserved for use as params)
-          request_set must contain a dict of params to be assigned to target_set
-          If assign_missing option is set, then any params defined for the class
-              but not included in the requested set are assigned values from the default_set;
-              if request_set is None, then all values in the target_set are assigned from the default_set
-          Class defaults can not be passed as target_set
-              IMPLEMENTATION NOTE:  for now, treating class defaults as hard coded;
-                                    could be changed in the future simply by commenting out code below
+        Variable can be any type other than a dictionary (reserved for use as params)
+        request_set must contain a dict of params to be assigned to target_set
 
-          If not context:  instantiates function and any ports specified in request set
-                           (if they have changed from the previous value(s))
+        If assign_missing option is set, then any params defined for the class
+            but not included in the requested set are assigned values from the default_set;
+            if request_set is None, then all values in the target_set are assigned from the default_set
+
+        Class defaults can not be passed as target_set
+            IMPLEMENTATION NOTE:  for now, treating class defaults as hard coded;
+                                  could be changed in the future simply by commenting out code below
+
+        If not context:  instantiates function and any ports specified in request set
+                         (if they have changed from the previous value(s))
 
         :param variable: (anything but a dict (variable) - value to assign as defaults.variable
         :param request_set: (dict) - params to be assigned
@@ -2179,12 +2181,9 @@ class Component(MDFSerializable, metaclass=ComponentsMeta):
         """
         Raises errors for illegal specifications of arguments to
         __init__:
-            - original Parameter name when Parameter has a
-              constructor_argument
-            - arguments that don't correspond to Parameters or other
-              arguments to __init__
-            - non-equal values of a Parameter and a corresponding
-              ParameterAlias
+        - original Parameter name when Parameter has a constructor_argument
+        - arguments that don't correspond to Parameters or other arguments to __init__
+        - non-equal values of a Parameter and a corresponding ParameterAlias
         """
         def create_illegal_argument_error(illegal_arg_strs):
             plural = 's' if len(illegal_arg_strs) > 1 else ''
@@ -3121,11 +3120,12 @@ class Component(MDFSerializable, metaclass=ComponentsMeta):
         #     if it is specified and is a type reference (rather than an instance),
         #     it instantiates the reference (using FUNCTION_PARAMS if present)
         #     and puts a reference to the instance in target_set[FUNCTION]
-        #
-        This checks for an execute method in function
+
+        This checks for an execute method in function.
         If a specification is not present or valid:
-            - it checks self.execute and, if present, kwExecute is assigned to it
-            - if self.execute is not present or valid, an exception is raised
+        - it checks self.execute and, if present, kwExecute is assigned to it
+        - if self.execute is not present or valid, an exception is raised
+
         When completed, there is guaranteed to be a valid method in self.function and/or self.execute;
             otherwise, an exception is raised
 

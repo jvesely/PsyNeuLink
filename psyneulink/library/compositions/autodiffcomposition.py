@@ -910,12 +910,15 @@ class AutodiffComposition(Composition):
     @handle_external_context()
     def infer_backpropagation_learning_pathways(self, execution_mode, context=None)->list:
         """Create backpropagation learning pathways for every Input Node --> Output Node pathway
+
         Flattens nested compositions:
           - only includes the Projections in outer Composition to/from the CIMs of the nested Composition
             (i.e., to input_CIMs and from output_CIMs) -- the ones that should be learned;
           - excludes Projections from/to CIMs in the nested Composition
             (from input_CIMs and to output_CIMs), as those should remain identity Projections;
+
           see `PytorchCompositionWrapper` for table of how Projections are handled and further details.
+
         Returns list of target nodes for each pathway
         """
 
@@ -1651,6 +1654,7 @@ class AutodiffComposition(Composition):
               **kwargs
               ) -> list:
         """Override to handle synch and retain args
+
         Note: defaults for synch and retain args are set to NotImplemented, so that the user can specify None if
               they want to locally override the default values for the AutodiffComposition (see docstrings for run()
               and parse_synch_and_retain_args() for additonal details).
@@ -2002,6 +2006,7 @@ class AutodiffComposition(Composition):
             context: Context = None,
             **kwargs):
         """Override to handle synch and retain args if run called directly from run() rather than learn()
+
         Note: defaults for synch and retain args are NotImplemented, so that the user can specify None if they want
               to locally override the default values for the AutodiffComposition (see parse_synch_and_retain_args()
               for details). This is distinct from the user assigning the Parameter default_values(s), which is done
@@ -2146,8 +2151,10 @@ class AutodiffComposition(Composition):
     @handle_external_context(fallback_most_recent=True)
     def load(self, path:PosixPath=None, directory:str=None, filename:str=None, context=None, weights_only:bool=False):
         """Loads all weight matrices for all MappingProjections in the AutodiffComposition from file
+
         Arguments
         ---------
+
         path: Path : default None
             Path for file in which `MappingProjection` `matrices <MappingProjection.matrix>` are stored.
             This must be a legal PosixPath object; if it is specified **directory** and **filename** are ignored.
@@ -2155,6 +2162,7 @@ class AutodiffComposition(Composition):
             directory where `MappingProjection` `matrices <MappingProjection.matrix>` are stored.
         filename: str : default ``<name of AutodiffComposition>_matrix_wts.pnl``
             name of file in which `MappingProjection` `matrices <MappingProjection.matrix>` are stored.
+
         .. note::
            Matrices must be stored in
            `PyTorch state_dict <https://pytorch.org/tutorials/beginner/saving_loading_models.html>`_ format.
