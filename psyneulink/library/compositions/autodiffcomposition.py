@@ -3852,8 +3852,10 @@ class AutodiffComposition(Composition):
     @handle_external_context(fallback_most_recent=True)
     def load(self, path:PosixPath=None, directory:str=None, filename:str=None, context=None, weights_only:bool=False):
         """Loads all weight matrices for all MappingProjections in the AutodiffComposition from file
+
         Arguments
         ---------
+
         path: Path : default None
             Path for file in which `MappingProjection` `matrices <MappingProjection.matrix>` are stored.
             This must be a legal PosixPath object; if it is specified **directory** and **filename** are ignored.
@@ -3861,6 +3863,7 @@ class AutodiffComposition(Composition):
             directory where `MappingProjection` `matrices <MappingProjection.matrix>` are stored.
         filename: str : default ``<name of AutodiffComposition>_matrix_wts.pnl``
             name of file in which `MappingProjection` `matrices <MappingProjection.matrix>` are stored.
+
         .. note::
            Matrices must be stored in
            `PyTorch state_dict <https://pytorch.org/tutorials/beginner/saving_loading_models.html>`_ format.
