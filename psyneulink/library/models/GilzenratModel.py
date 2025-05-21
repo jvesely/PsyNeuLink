@@ -276,5 +276,5 @@ if args.enable_plot:
 
     plt.show(block=not pnl._called_from_pytest)
 
-    task.show_graph()
+    #task.show_graph()
     print('\nPlots generated')
