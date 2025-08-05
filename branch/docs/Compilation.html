@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Compilation &mdash; PsyNeuLink 0.16.0.0+202.g96e29ea6b documentation</title>
+  <title>Compilation &mdash; PsyNeuLink 0.16.0.0+207.gae0736002 documentation</title>
   
 
   
@@ -99,7 +99,7 @@
               
               
                 <div class="version">
-                  0.16.0.0+202
+                  0.16.0.0+207
                 </div>
               
             
@@ -209,24 +209,16 @@ for additional information about the approach taken to compilation, and
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
 <p>The PsyNeuLink runtime compiler works in several steps when invoked via <a class="reference internal" href="AutodiffComposition.html#psyneulink.library.compositions.autodiffcomposition.AutodiffComposition.run" title="psyneulink.library.compositions.autodiffcomposition.AutodiffComposition.run"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">run</span></code></a> or <a class="reference internal" href="AutodiffComposition.html#psyneulink.library.compositions.autodiffcomposition.AutodiffComposition.PytorchMechanismWrapper.execute" title="psyneulink.library.compositions.autodiffcomposition.AutodiffComposition.PytorchMechanismWrapper.execute"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">execute</span></code></a>:
-<em>Compilation</em>:</p>
-<blockquote>
-<div><ol class="arabic simple">
-<li><p>The model is initialized. This is step is identical to non-compiled execution.</p></li>
-<li><p>Data structures (input/output/parameters) are flattened and converted to LLVM IR form.</p></li>
-<li><p>LLVM IR code is generated to match to semantics of individual components and the used scheduling rules.</p></li>
-<li><p>Host CPU compatible binary code is generated</p></li>
-<li><p>The resulting function is saved as <code class="xref any docutils literal notranslate"><span class="pre">ctypes</span></code> function and the parameter types are converted to <code class="xref any docutils literal notranslate"><span class="pre">ctypes</span></code> binary structures.</p></li>
-</ol>
-</div></blockquote>
-<dl class="simple">
-<dt><em>Execution</em>:</dt><dd><ol class="arabic simple">
-<li><p>parameter structures are populated with the data from <a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a> based on the provided <a class="reference internal" href="Context.html#psyneulink.core.globals.context.Context.execution_id" title="psyneulink.core.globals.context.Context.execution_id"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">execution_id</span></code></a>. These structures are preserved between invocations so executions with the same <a class="reference internal" href="Context.html#psyneulink.core.globals.context.Context.execution_id" title="psyneulink.core.globals.context.Context.execution_id"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">execution_id</span></code></a> will reuse the same binary structures.</p></li>
-<li><p><code class="xref any docutils literal notranslate"><span class="pre">ctype</span></code> function from step 5. is executed</p></li>
-<li><p>Results are extracted from the binary structures and converted to Python format.</p></li>
-</ol>
-</dd>
-</dl>
+<em>Compilation</em>:
+#. The model is initialized. This is step is identical to non-compiled execution.
+#. Data structures (input/output/parameters) are flattened and converted to LLVM IR form.
+#. LLVM IR code is generated to match to semantics of individual components and the used scheduling rules.
+#. Host CPU compatible binary code is generated
+#. The resulting function is saved as <code class="xref any docutils literal notranslate"><span class="pre">ctypes</span></code> function and the parameter types are converted to <code class="xref any docutils literal notranslate"><span class="pre">ctypes</span></code> binary structures.</p>
+<p><em>Execution</em>:
+#. parameter structures are populated with the data from <a class="reference internal" href="Composition.html"><span class="doc">Composition</span></a> based on the provided <a class="reference internal" href="Context.html#psyneulink.core.globals.context.Context.execution_id" title="psyneulink.core.globals.context.Context.execution_id"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">execution_id</span></code></a>. These structures are preserved between invocations so executions with the same <a class="reference internal" href="Context.html#psyneulink.core.globals.context.Context.execution_id" title="psyneulink.core.globals.context.Context.execution_id"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">execution_id</span></code></a> will reuse the same binary structures.
+#. <code class="xref any docutils literal notranslate"><span class="pre">ctype</span></code> function from step 5. is executed
+#. Results are extracted from the binary structures and converted to Python format.</p>
 </section>
 <section id="use">
 <h2>Use<a class="headerlink" href="#use" title="Link to this heading">¶</a></h2>
@@ -301,7 +293,7 @@ for additional information about the approach taken to compilation, and
        <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
          <script src="_static/jquery.js?v=5d32c60e"></script>
          <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-         <script src="_static/documentation_options.js?v=02b28f4c"></script>
+         <script src="_static/documentation_options.js?v=8b2d5e42"></script>
          <script src="_static/doctools.js?v=9bcbadda"></script>
          <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
      

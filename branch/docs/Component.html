@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Component &mdash; PsyNeuLink 0.16.0.0+202.g96e29ea6b documentation</title>
+  <title>Component &mdash; PsyNeuLink 0.16.0.0+207.gae0736002 documentation</title>
   
 
   
@@ -99,7 +99,7 @@
               
               
                 <div class="version">
-                  0.16.0.0+202
+                  0.16.0.0+207
                 </div>
               
             
@@ -830,11 +830,8 @@ when variable shape was manually specified</p>
 arguments.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><ul class="simple">
-<li><p><em>a default variable if possible</em></p></li>
-<li><p><em>None otherwise</em></p></li>
-</ul>
-</p>
+<dd class="field-odd"><p>a default variable if possible
+None otherwise</p>
 </dd>
 </dl>
 </dd></dl>
@@ -848,7 +845,7 @@ arguments.</p>
 <dd class="field-odd"><p><strong>input_shapes</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>Iterable</em><em>[</em><em>Union</em><em>[</em><em>int</em><em>, </em><em>tuple</em><em>]</em><em>]</em><em>]</em>)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.ndarray</p>
@@ -871,6 +868,11 @@ ComponentError is thrown if they are not compatible.</p>
 <span class="sig-name descname"><span class="pre">_get_allowed_arguments</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.component.Component._get_allowed_arguments" title="Link to this definition">¶</a></dt>
 <dd><p>Returns a set of argument names that can be passed into
 __init__, directly or through params dictionaries</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></span></p>
+</dd>
+</dl>
 <dl class="simple">
 <dt>Includes:</dt><dd><ul class="simple">
 <li><p>all Parameter constructor_argument names</p></li>
@@ -879,11 +881,6 @@ constructor_argument</p></li>
 <li><p>all ParameterAlias names</p></li>
 <li><p>all other explicitly specified named arguments in __init__</p></li>
 </ul>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -935,15 +932,12 @@ Cache params to reset in _runtime_params_reset</p>
 <dt class="sig sig-object py" id="psyneulink.core.components.component.Component._instantiate_defaults">
 <span class="sig-name descname"><span class="pre">_instantiate_defaults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assign_missing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.component.Component._instantiate_defaults" title="Link to this definition">¶</a></dt>
 <dd><p>Validate variable and/or param defaults in requested set and assign values to params in target set</p>
-<blockquote>
-<div><p>Variable can be any type other than a dictionary (reserved for use as params)
-request_set must contain a dict of params to be assigned to target_set
-If assign_missing option is set, then any params defined for the class</p>
-<blockquote>
-<div><p>but not included in the requested set are assigned values from the default_set;
-if request_set is None, then all values in the target_set are assigned from the default_set</p>
-</div></blockquote>
+<p>Variable can be any type other than a dictionary (reserved for use as params)
+request_set must contain a dict of params to be assigned to target_set</p>
 <dl class="simple">
+<dt>If assign_missing option is set, then any params defined for the class</dt><dd><p>but not included in the requested set are assigned values from the default_set;
+if request_set is None, then all values in the target_set are assigned from the default_set</p>
+</dd>
 <dt>Class defaults can not be passed as target_set</dt><dd><dl class="simple">
 <dt>IMPLEMENTATION NOTE:  for now, treating class defaults as hard coded;</dt><dd><p>could be changed in the future simply by commenting out code below</p>
 </dd>
@@ -952,7 +946,6 @@ if request_set is None, then all values in the target_set are assigned from the 
 <dt>If not context:  instantiates function and any ports specified in request set</dt><dd><p>(if they have changed from the previous value(s))</p>
 </dd>
 </dl>
-</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -973,17 +966,10 @@ if request_set is None, then all values in the target_set are assigned from the 
 <dt class="sig sig-object py" id="psyneulink.core.components.component.Component._validate_arguments">
 <span class="sig-name descname"><span class="pre">_validate_arguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter_values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.component.Component._validate_arguments" title="Link to this definition">¶</a></dt>
 <dd><p>Raises errors for illegal specifications of arguments to
-__init__:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>original Parameter name when Parameter has a
-constructor_argument</p></li>
-<li><p>arguments that don’t correspond to Parameters or other
-arguments to __init__</p></li>
-<li><p>non-equal values of a Parameter and a corresponding
-ParameterAlias</p></li>
-</ul>
-</div></blockquote>
+__init__:
+- original Parameter name when Parameter has a constructor_argument
+- arguments that don’t correspond to Parameters or other arguments to __init__
+- non-equal values of a Parameter and a corresponding ParameterAlias</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1142,16 +1128,11 @@ It is called only if the parameter_validation attribute is <code class="xref any
 # It also checks FUNCTION:
 #     if it is specified and is a type reference (rather than an instance),
 #     it instantiates the reference (using FUNCTION_PARAMS if present)
-#     and puts a reference to the instance in target_set[FUNCTION]
-#
-This checks for an execute method in function
-If a specification is not present or valid:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>it checks self.execute and, if present, kwExecute is assigned to it</p></li>
-<li><p>if self.execute is not present or valid, an exception is raised</p></li>
-</ul>
-</div></blockquote>
+#     and puts a reference to the instance in target_set[FUNCTION]</p>
+<p>This checks for an execute method in function.
+If a specification is not present or valid:
+- it checks self.execute and, if present, kwExecute is assigned to it
+- if self.execute is not present or valid, an exception is raised</p>
 <dl class="simple">
 <dt>When completed, there is guaranteed to be a valid method in self.function and/or self.execute;</dt><dd><p>otherwise, an exception is raised</p>
 </dd>
@@ -1383,11 +1364,6 @@ Parameters</p>
 <dd><p>Returns:
 Components that must have values in a given Context for
 this Component to execute in that Context</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<a class="reference internal" href="#psyneulink.core.components.component.Component" title="psyneulink.core.components.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a>]</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py property">
@@ -1551,7 +1527,7 @@ constructor string</p>
        <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
          <script src="_static/jquery.js?v=5d32c60e"></script>
          <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-         <script src="_static/documentation_options.js?v=02b28f4c"></script>
+         <script src="_static/documentation_options.js?v=8b2d5e42"></script>
          <script src="_static/doctools.js?v=9bcbadda"></script>
          <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
      
