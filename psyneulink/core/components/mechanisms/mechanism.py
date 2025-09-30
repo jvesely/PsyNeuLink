@@ -1111,6 +1111,7 @@ from psyneulink.core.globals.keywords import \
     NAME, OUTPUT, OUTPUT_LABELS_DICT, OUTPUT_PORT, OUTPUT_PORT_PARAMS, OUTPUT_PORTS, OWNER_EXECUTION_COUNT, OWNER_VALUE, \
     PARAMETER_PORT, PARAMETER_PORT_PARAMS, PARAMETER_PORTS, PROJECTIONS, REFERENCE_VALUE, RESULT, \
     TARGET_LABELS_DICT, VALUE, VARIABLE, WEIGHT, MODEL_SPEC_ID_MDF_VARIABLE, MODEL_SPEC_ID_INPUT_PORT_COMBINATION_FUNCTION
+from psyneulink.core.globals.keywords import output_port_spec_to_parameter_name
 from psyneulink.core.globals.parameters import (
     Parameter,
     ParameterNoValueError,
@@ -2890,6 +2891,34 @@ class Mechanism_Base(Mechanism):
 
         return port_param_dicts
 
+
+    def _canonicalize_port_variable_specification(self, variable_spec):
+        """
+        Convert variable spec to canonical form of [(param_name1, indices1), (param_name2, indices2), ...]
+
+        Returns None if the spec could not be parsed.
+        """
+
+        # There are several specification formats;
+        # 1.) Parameter name or a KEYWORD that translates to a Parameter name
+        translated_spec = output_port_spec_to_parameter_name.get(variable_spec, variable_spec)
+        if isinstance(translated_spec, str):
+            return [(translated_spec, [])]
+
+        # 2.) A tuple of parameter name with indices.
+        #     The indices might be callable (e.g. to make the index match a corresponding input port),
+        #     or Numpy numerals
+        translated_name = output_port_spec_to_parameter_name.get(variable_spec[0], variable_spec[0])
+        ids = [x() if callable(x) else getattr(x, 'value', x) for x in variable_spec[1:]]
+        if all(np.isscalar(x) for x in ids):
+            # The caller is responsible for checking if the translated name is
+            # a valid parameter name
+            return [(translated_name, ids)]
+
+        # The caller should check this
+        return None
+
+
     def _get_param_ids(self):
         if len(self._parameter_ports) == 0:
             return super()._get_param_ids()
@@ -3103,47 +3132,53 @@ class Mechanism_Base(Mechanism):
                                        mech_input)
         return params_out, builder
 
-    def _gen_llvm_output_port_parse_variable(self, ctx, builder,
-                                             mech_params, mech_state, value, port):
+
+    def _gen_llvm_output_port_parse_variable(self, ctx, builder, mech_params, mech_state, value, port):
+        """Create output port variable based on the variable specification."""
         port_spec = port._variable_spec
-        if port_spec == OWNER_VALUE:
-            return value
-        elif port_spec == OWNER_EXECUTION_COUNT:
-            # Convert execution count to (num_executions, TimeScale.LIFE)
-            # The difference in Python PNL is that the former counts across
-            # all contexts. This is not possible in compiled code, thus
-            # the two are identical.
+
+        # Convert "execution_count" to (num_executions, TimeScale.LIFE)
+        # The difference in Python PNL is that the former counts across
+        # all contexts. This is not possible in compiled code, thus
+        # the two are identical.
+        if port_spec == OWNER_EXECUTION_COUNT:
             port_spec = ("num_executions", TimeScale.LIFE)
 
-        try:
-            name = port_spec[0]
-            ids = (x() if callable(x) else getattr(x, 'value', x) for x in port_spec[1:])
-        except TypeError as e:
-            # TypeError means we can't index.
-            # Convert this to assertion failure below
-            data = None
-        else:
-            #TODO: support more spec options
-            if name == OWNER_VALUE:
-                data = value
-            elif name in self.llvm_state_ids:
-                data = ctx.get_param_or_state_ptr(builder, self, name, state_struct_ptr=mech_state)
+        canonical_port_spec = self._canonicalize_port_variable_specification(port_spec)
+        assert canonical_port_spec is not None, "Unsupported variable spec: {}".format(port_spec)
+
+        parsed = []
+        for spec in canonical_port_spec:
+            param_name, indices = spec
+
+            if param_name == VALUE:
+                base = value
+            elif param_name in self.llvm_state_ids:
+                base = ctx.get_param_or_state_ptr(builder, self, param_name, state_struct_ptr=mech_state)
             else:
-                data = None
+                assert False, "Unsupported variable spec Parameter: {}".format(param_name)
 
-        assert data is not None, "Unsupported OutputPort spec: {} ({})".format(port_spec, value.type)
+            indexed = builder.gep(base, [ctx.int32_ty(0), *(ctx.int32_ty(i) for i in indices)])
 
-        parsed = builder.gep(data, [ctx.int32_ty(0), *(ctx.int32_ty(i) for i in ids)])
-        # "num_executions" are kept as int64, we need to convert the value to float first
-        # port inputs are also expected to be 1d arrays
-        if name == "num_executions":
-            count = builder.load(parsed)
-            count_fp = builder.uitofp(count, ctx.float_ty)
-            parsed = builder.alloca(pnlvm.ir.ArrayType(count_fp.type, 1))
-            ptr = builder.gep(parsed, [ctx.int32_ty(0), ctx.int32_ty(0)])
-            builder.store(count_fp, ptr)
+            # Workaround:
+            # "num_executions" are kept as int64, we need to convert the value
+            # to float first port inputs are also expected to be 1d arrays
+            if param_name == "num_executions":
+                count = builder.load(indexed)
+                count_fp = builder.uitofp(count, ctx.float_ty)
+                indexed = builder.alloca(pnlvm.ir.ArrayType(count_fp.type, 1))
+                ptr = builder.gep(indexed, [ctx.int32_ty(0), ctx.int32_ty(0)])
+                builder.store(count_fp, ptr)
 
-        return parsed
+            parsed.append(indexed)
+
+        # No assembly is needed for a single value
+        if len(parsed) == 1:
+            return parsed[0]
+
+        # TODO: Add support for assembling combination specs
+        assert False, "Combinations of params not supported in variable spec: {}".format(canonical_port_spec)
+
 
     def _gen_llvm_output_ports(self, ctx, builder, value, mech_params, mech_state, mech_in, mech_out):
         def _get_output_port_value_ptr(b, i):
