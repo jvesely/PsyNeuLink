@@ -3027,8 +3027,7 @@ class Mechanism_Base(Mechanism):
 
         return builder
 
-    def _gen_llvm_input_ports(self, ctx, builder,
-                              mech_params, mech_state, mech_input):
+    def _gen_llvm_input_ports(self, ctx, builder, mech_params, mech_state, mech_input):
         # Allocate temporary storage. We rely on the fact that series
         # of InputPort results should match the main function input.
         ip_output_list = []
@@ -3036,7 +3035,7 @@ class Mechanism_Base(Mechanism):
             ip_function = ctx.import_llvm_function(port)
             ip_output_list.append(ip_function.args[3].type.pointee)
 
-        # Check if all elements are the same. Function input will be array type if yes.
+        # Check if all elements are the same. Function argument will be array type if yes.
         if len(set(ip_output_list)) == 1:
             ip_output_type = pnlvm.ir.ArrayType(ip_output_list[0], len(ip_output_list))
         else:
@@ -3044,48 +3043,64 @@ class Mechanism_Base(Mechanism):
 
         ip_output = builder.alloca(ip_output_type, name="input_ports_out")
 
-        def _get_output_ptr(b, i):
+        def _get_input_port_value_ptr(b, i):
             ptr = b.gep(ip_output, [ctx.int32_ty(0), ctx.int32_ty(i)])
             return b, ptr
 
-        def _get_input_data_ptr(b, i):
+        def _get_input_port_variable_ptr(b, i):
             ptr = builder.gep(mech_input, [ctx.int32_ty(0), ctx.int32_ty(i)])
             return b, ptr
 
-        builder = self._gen_llvm_ports(ctx, builder, self.input_ports, "input_ports",
-                                       _get_output_ptr, _get_input_data_ptr,
-                                       mech_params, mech_state, mech_input)
+        builder = self._gen_llvm_ports(ctx,
+                                       builder,
+                                       self.input_ports,
+                                       "input_ports",
+                                       _get_input_port_value_ptr,
+                                       _get_input_port_variable_ptr,
+                                       mech_params,
+                                       mech_state,
+                                       mech_input)
 
         return ip_output, builder
 
-    def _gen_llvm_param_ports_for_obj(self, obj, params_in, ctx, builder,
-                                      mech_params, mech_state, mech_input):
+    def _gen_llvm_param_ports_for_obj(self, obj, params_in, ctx, builder, mech_params, mech_state, mech_input):
+
         # This should be faster than 'obj._get_compilation_params'
         compilation_params = (getattr(obj.parameters, p_id, None) for p_id in obj.llvm_param_ids)
+
         # Filter out param ports without corresponding param for this function
         param_ports = [self._parameter_ports[param] for param in compilation_params if param in self._parameter_ports]
 
-        # Exit early if there's no modulation. It's difficult for compiler
+        # Return early using the base parameter location if there's no modulation.
+        # This is a manual optimization as it's difficult for compiler
         # to replace pointer arguments to functions with the source location.
         if len(param_ports) == 0:
             return params_in, builder
 
-        # Allocate a shadow structure to overload user supplied parameters
+        # Allocate a shadow structure to overload base parameters
         params_out = builder.alloca(params_in.type.pointee, name="modulated_parameters")
+
+        # Copy base values to the new structure
         if len(param_ports) != len(obj.llvm_param_ids):
             builder = pnlvm.helpers.memcpy(builder, params_out, params_in)
 
-        def _get_output_ptr(b, i):
+        def _get_modulated_param_output_ptr(b, i):
             ptr = ctx.get_param_or_state_ptr(b, obj, param_ports[i].source, param_struct_ptr=params_out)
             return b, ptr
 
-        def _get_input_data_ptr(b, i):
+        def _get_param_base_ptr(b, i):
             ptr = ctx.get_param_or_state_ptr(b, obj, param_ports[i].source, param_struct_ptr=params_in)
             return b, ptr
 
-        builder = self._gen_llvm_ports(ctx, builder, param_ports, "_parameter_ports",
-                                       _get_output_ptr, _get_input_data_ptr,
-                                       mech_params, mech_state, mech_input)
+        builder = self._gen_llvm_ports(ctx,
+                                       builder,
+                                       param_ports,
+                                       "_parameter_ports",
+                                       _get_modulated_param_output_ptr,
+                                       _get_param_base_ptr,
+                                       mech_params,
+                                       mech_state,
+                                       mech_input)
         return params_out, builder
 
     def _gen_llvm_output_port_parse_variable(self, ctx, builder,
@@ -3130,20 +3145,29 @@ class Mechanism_Base(Mechanism):
 
         return parsed
 
-    def _gen_llvm_output_ports(self, ctx, builder, value,
-                               mech_params, mech_state, mech_in, mech_out):
-        def _get_output_ptr(b, i):
+    def _gen_llvm_output_ports(self, ctx, builder, value, mech_params, mech_state, mech_in, mech_out):
+        def _get_output_port_value_ptr(b, i):
             ptr = b.gep(mech_out, [ctx.int32_ty(0), ctx.int32_ty(i)])
             return b, ptr
 
-        def _get_input_data_ptr(b, i):
-            ptr = self._gen_llvm_output_port_parse_variable(ctx, b,
-               mech_params, mech_state, value, self.output_ports[i])
+        def _get_output_port_variable_ptr(b, i):
+            ptr = self._gen_llvm_output_port_parse_variable(ctx,
+                                                            b,
+                                                            mech_params,
+                                                            mech_state,
+                                                            value,
+                                                            self.output_ports[i])
             return b, ptr
 
-        builder = self._gen_llvm_ports(ctx, builder, self.output_ports, "output_ports",
-                                       _get_output_ptr, _get_input_data_ptr,
-                                       mech_params, mech_state, mech_in)
+        builder = self._gen_llvm_ports(ctx,
+                                       builder,
+                                       self.output_ports,
+                                       "output_ports",
+                                       _get_output_port_value_ptr,
+                                       _get_output_port_variable_ptr,
+                                       mech_params,
+                                       mech_state,
+                                       mech_in)
         return builder
 
     def _gen_llvm_invoke_function(self, ctx, builder, function, f_params, f_state,
