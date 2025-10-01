@@ -1095,7 +1095,7 @@ from psyneulink.core.components.functions.function import FunctionOutputType
 from psyneulink.core.components.functions.nonstateful.transferfunctions import Linear
 from psyneulink.core.components.ports.inputport import DEFER_VARIABLE_SPEC_TO_MECH_MSG, InputPort
 from psyneulink.core.components.ports.modulatorysignals.modulatorysignal import _is_modulatory_spec
-from psyneulink.core.components.ports.outputport import OutputPort
+from psyneulink.core.components.ports.outputport import OutputPort, _canonicalize_port_variable_specification
 from psyneulink.core.components.ports.parameterport import ParameterPort
 from psyneulink.core.components.ports.port import \
     PORT_SPEC, _parse_port_spec, PORT_SPECIFIC_PARAMS, PROJECTION_SPECIFIC_PARAMS
@@ -1111,7 +1111,6 @@ from psyneulink.core.globals.keywords import \
     NAME, OUTPUT, OUTPUT_LABELS_DICT, OUTPUT_PORT, OUTPUT_PORT_PARAMS, OUTPUT_PORTS, OWNER_EXECUTION_COUNT, OWNER_VALUE, \
     PARAMETER_PORT, PARAMETER_PORT_PARAMS, PARAMETER_PORTS, PROJECTIONS, REFERENCE_VALUE, RESULT, \
     TARGET_LABELS_DICT, VALUE, VARIABLE, WEIGHT, MODEL_SPEC_ID_MDF_VARIABLE, MODEL_SPEC_ID_INPUT_PORT_COMBINATION_FUNCTION
-from psyneulink.core.globals.keywords import output_port_spec_to_parameter_name
 from psyneulink.core.globals.parameters import (
     Parameter,
     ParameterNoValueError,
@@ -2891,38 +2890,6 @@ class Mechanism_Base(Mechanism):
 
         return port_param_dicts
 
-
-    def _canonicalize_port_variable_specification(self, variable_spec):
-        """
-        Convert variable spec to canonical form of [(spec1, indices1), (spec2, indices2), ...]
-
-        Returns None if the spec could not be parsed.
-        """
-
-        # There are several specification formats;
-        # 1.) Special. passed through without change
-        if variable_spec is None or is_numeric(variable_spec) or isinstance(variable_spec, MechParamsDict):
-            return [(variable_spec, [])]
-
-        # 2.) Parameter name or a KEYWORD that translates to a Parameter name
-        translated_spec = output_port_spec_to_parameter_name.get(variable_spec, variable_spec)
-        if isinstance(translated_spec, str):
-            return [(translated_spec, [])]
-
-        # 3.) A tuple of parameter name with indices.
-        #     The indices might be callable (e.g. to make the index match a corresponding input port),
-        #     or Numpy numerals
-        translated_name = output_port_spec_to_parameter_name.get(variable_spec[0], variable_spec[0])
-        ids = [x() if callable(x) else getattr(x, 'value', x) for x in variable_spec[1:]]
-        if all(np.isscalar(x) for x in ids):
-            # The caller is responsible for checking if the translated name is
-            # a valid parameter name
-            return [(translated_name, ids)]
-
-        # The caller should check this
-        return None
-
-
     def _get_param_ids(self):
         if len(self._parameter_ports) == 0:
             return super()._get_param_ids()
@@ -3148,7 +3115,7 @@ class Mechanism_Base(Mechanism):
         if port_spec == OWNER_EXECUTION_COUNT:
             port_spec = ("num_executions", TimeScale.LIFE)
 
-        canonical_port_spec = self._canonicalize_port_variable_specification(port_spec)
+        canonical_port_spec = _canonicalize_port_variable_specification(port_spec)
         assert canonical_port_spec is not None, "Unsupported variable spec: {}".format(port_spec)
 
         parsed = []

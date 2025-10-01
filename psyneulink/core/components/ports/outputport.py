@@ -662,6 +662,37 @@ SEQUENTIAL = 'SEQUENTIAL'
 
 DEFAULT_VARIABLE_SPEC = (OWNER_VALUE, 0)
 
+def _canonicalize_port_variable_specification(variable_spec):
+    """
+    Convert variable spec to canonical form of [(spec1, indices1), (spec2, indices2), ...]
+
+    Returns None if the spec could not be parsed.
+    """
+    from psyneulink.core.components.mechanisms.mechanism import MechParamsDict
+
+    # There are several specification formats;
+    # 1.) Special. passed through without change
+    if variable_spec is None or is_numeric(variable_spec) or isinstance(variable_spec, MechParamsDict):
+        return [(variable_spec, [])]
+
+    # 2.) Parameter name or a KEYWORD that translates to a Parameter name
+    translated_spec = output_port_spec_to_parameter_name.get(variable_spec, variable_spec)
+    if isinstance(translated_spec, str):
+        return [(translated_spec, [])]
+
+    # 3.) A tuple of parameter name with indices.
+    #     The indices might be callable (e.g. to make the index match a corresponding input port),
+    #     or Numpy numerals
+    translated_name = output_port_spec_to_parameter_name.get(variable_spec[0], variable_spec[0])
+    ids = [x() if callable(x) else getattr(x, 'value', x) for x in variable_spec[1:]]
+    if all(np.isscalar(x) for x in ids):
+        # The caller is responsible for checking if the translated name is
+        # a valid parameter name
+        return [(translated_name, ids)]
+
+    # The caller should check this
+    return None
+
 
 def _parse_output_port_variable(variable_spec, owner, context=None, output_port_name=None):
     """Return variable for OutputPort based on VARIABLE entry of owner's params dict
@@ -716,7 +747,7 @@ def _parse_output_port_variable(variable_spec, owner, context=None, output_port_
 
     fct_variable = []
     for spec in variable_spec:
-        canonicalized_specs = owner._canonicalize_port_variable_specification(spec)
+        canonicalized_specs = _canonicalize_port_variable_specification(spec)
         if canonicalized_specs is None:
             raise OutputPortError(f"Can't canonicalize variable spec ({spec}) for "
                                    f"{output_port_name or OutputPort.__name__} of {owner.name}.")
