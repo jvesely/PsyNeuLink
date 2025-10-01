@@ -2894,18 +2894,22 @@ class Mechanism_Base(Mechanism):
 
     def _canonicalize_port_variable_specification(self, variable_spec):
         """
-        Convert variable spec to canonical form of [(param_name1, indices1), (param_name2, indices2), ...]
+        Convert variable spec to canonical form of [(spec1, indices1), (spec2, indices2), ...]
 
         Returns None if the spec could not be parsed.
         """
 
         # There are several specification formats;
-        # 1.) Parameter name or a KEYWORD that translates to a Parameter name
+        # 1.) Special. passed through without change
+        if variable_spec is None or is_numeric(variable_spec) or isinstance(variable_spec, MechParamsDict):
+            return [(variable_spec, [])]
+
+        # 2.) Parameter name or a KEYWORD that translates to a Parameter name
         translated_spec = output_port_spec_to_parameter_name.get(variable_spec, variable_spec)
         if isinstance(translated_spec, str):
             return [(translated_spec, [])]
 
-        # 2.) A tuple of parameter name with indices.
+        # 3.) A tuple of parameter name with indices.
         #     The indices might be callable (e.g. to make the index match a corresponding input port),
         #     or Numpy numerals
         translated_name = output_port_spec_to_parameter_name.get(variable_spec[0], variable_spec[0])
