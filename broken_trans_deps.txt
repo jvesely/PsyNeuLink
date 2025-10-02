@@ -37,3 +37,7 @@ coverage != 7.6.5
 # https://pypi.org/project/torch/2.3.0/#files
 # the last available version (2.2.2) doesn't work with Numpy2.0
 numpy < 2; platform_system == 'Darwin' and platform_machine == 'x86_64'
+
+# grpcio 1.75.1 includes files cythonized with cython that doesn't work with
+# pypy3.9
+grpcio < 1.75.1; platform_python_implementation == 'PyPy' and python_version == '3.9'
