@@ -1,5 +1,7 @@
+import contextlib
 import numpy as np
 import pytest
+import re
 
 import psyneulink as pnl
 
@@ -181,7 +183,9 @@ class TestInputPorts:
         )
         comp = Composition()
         comp.add_linear_processing_pathway(pathway=[input_mech, [[1],[-1]], ddm])
+
         result = comp.run(inputs={input_mech:[1,0]})
+
         np.testing.assert_allclose(ddm.output_ports[0].value, [1])
         np.testing.assert_allclose(ddm.output_ports[1].value, [1])
         np.testing.assert_allclose(ddm.value,
@@ -200,7 +204,9 @@ class TestInputPorts:
         )
         comp = Composition()
         comp.add_linear_processing_pathway(pathway=[input_mech, ddm])
+
         result = comp.run(inputs={input_mech:[1,0]})
+
         np.testing.assert_allclose(ddm.output_ports[0].value, [1,0])
         np.testing.assert_allclose(ddm.output_ports[1].value, [1,0])
         np.testing.assert_allclose(ddm.value,
@@ -211,7 +217,18 @@ class TestInputPorts:
 
 class TestOutputPorts:
 
-    def test_selected_input_array(self):
+    @pytest.mark.parametrize('variable, expected, context',
+        [pytest.param([1.0],
+                      [],
+                      pytest.raises(MechanismError,
+                                    match=re.escape("Shape ((1,)) of input ([1.]) does not match required shape ((1, 2)) for input to InputPort 'ARRAY' of DDM.")),
+                      id="negative"),
+         pytest.param([1.0, 0.0],
+                      [[1.00000000e+00], [1.19932930e+00], [9.99664650e-01], [3.35350130e-04], [1.19932930e+00],
+                       [2.48491374e-01], [1.48291009e+00], [1.19932930e+00], [2.48491374e-01], [1.48291009e+00]],
+                      contextlib.nullcontext(),
+                      id="postive")])
+    def test_selected_input_array(self, variable, expected, context):
         action_selection = DDM(
             input_format=ARRAY,
             function=DriftDiffusionAnalytical(
@@ -219,11 +236,12 @@ class TestOutputPorts:
             output_ports=[SELECTED_INPUT_ARRAY],
             name='DDM'
         )
-        with pytest.raises(MechanismError) as error:
-            action_selection.execute([1.0])
-        assert ("Shape ((1,)) of input ([1.]) does not match required shape ((1, 2)) "
-                "for input to InputPort 'ARRAY' of DDM.") in str(error.value)
-        action_selection.execute([1.0, 0.0])
+
+        result = []
+        with context:
+            result = action_selection.execute(variable)
+
+        np.testing.assert_allclose(result, expected)
 
     def test_decision_outcome_integrator(self):
         ddm = DDM(
@@ -231,8 +249,12 @@ class TestOutputPorts:
             output_ports=[DECISION_OUTCOME],
             name='DDM'
         )
-        assert np.allclose(ddm.execute([10.0]), [[0.5], [1]]) and ddm.output_ports[0].value == [1.0]
-        assert np.allclose(ddm.execute([-10.0]), [[-0.5], [2]]) and ddm.output_ports[0].value == [0.0]
+
+        assert np.allclose(ddm.execute([10.0]), [[0.5], [1]])
+        assert ddm.output_ports[0].value == [1.0]
+
+        assert np.allclose(ddm.execute([-10.0]), [[-0.5], [2]])
+        assert ddm.output_ports[0].value == [0.0]
 
     def test_decision_outcome_analytical(self):
         ddm = DDM(
@@ -240,8 +262,10 @@ class TestOutputPorts:
             output_ports=[DECISION_OUTCOME],
             name='DDM'
         )
+
         ddm.execute([10.0])
         assert ddm.output_ports[0].value == [1.0]
+
         ddm.execute([-10.0])
         assert ddm.output_ports[0].value == [0.0]
 
