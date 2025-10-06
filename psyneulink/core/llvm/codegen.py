@@ -377,11 +377,14 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
         elements = list(self.visit(element) for element in node.elts)
 
         self._update_debug_metadata(self.builder, node)
-        element_values = [self.get_rval(e) for e in elements]
 
+        element_values = [self.get_rval(e) for e in elements]
         element_types = [element.type for element in element_values]
-        assert all(e_type == element_types[0] for e_type in element_types), f"Unable to convert {node} into a list! (Elements differ in type!)"
-        result = ir.ArrayType(element_types[0], len(element_types))(ir.Undefined)
+
+        if all(e_type == element_types[0] for e_type in element_types):
+            result = ir.ArrayType(element_types[0], len(element_types))(ir.Undefined)
+        else:
+            result = ir.LiteralStructType(element_types)(ir.Undefined)
 
         for i, val in enumerate(element_values):
             result = self.builder.insert_value(result, val, i)

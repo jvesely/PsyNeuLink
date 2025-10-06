@@ -337,8 +337,12 @@ def swap(variable, param1, param2):
     return variable
 
 
-def indexLit(variable, param1, param2):
+def indexBinOp(variable, param1, param2):
     return [1,2,3,4][variable[0] + 2]
+
+
+def indexLit(variable, param1, param2):
+    return [[1,5],2,3,4][2]
 
 
 @pytest.mark.parametrize("func,var,expected", [
@@ -353,7 +357,8 @@ def indexLit(variable, param1, param2):
     (branchOnVarFloat, [float("NaN")], [1.0]),
     (branchOnVarFloat, [float("-NaN")], [1.0]),
     (swap, [-1, 3], [3, -1]),
-    (indexLit, [0], [3]),
+    (indexLit, [1,2,3,4], [3]),
+    (indexBinOp, [1], [4]),
 ])
 @pytest.mark.benchmark(group="Function UDF")
 def test_user_def_func_branching(func, var, expected, func_mode, benchmark):
