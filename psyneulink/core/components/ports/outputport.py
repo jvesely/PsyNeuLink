@@ -676,8 +676,8 @@ def _canonicalize_port_variable_specification(variable_spec):
         return [(variable_spec, [])]
 
     # 2.) Parameter name or a KEYWORD that translates to a Parameter name
-    translated_spec = output_port_spec_to_parameter_name.get(variable_spec, variable_spec)
-    if isinstance(translated_spec, str):
+    if isinstance(variable_spec, str):
+        translated_spec = output_port_spec_to_parameter_name.get(variable_spec, variable_spec)
         return [(translated_spec, [])]
 
     # 3.) A tuple of parameter name with indices.
@@ -685,13 +685,17 @@ def _canonicalize_port_variable_specification(variable_spec):
     #     or Numpy numerals
     translated_name = output_port_spec_to_parameter_name.get(variable_spec[0], variable_spec[0])
     ids = [x() if callable(x) else getattr(x, 'value', x) for x in variable_spec[1:]]
-    if all(np.isscalar(x) for x in ids):
+    if all(is_numeric(x) for x in ids):
         # The caller is responsible for checking if the translated name is
         # a valid parameter name
         return [(translated_name, ids)]
 
-    # The caller should check this
-    return None
+    # 4.) A list of specs
+    specs = []
+    for vs in variable_spec:
+        specs.extend(_canonicalize_port_variable_specification(vs))
+
+    return specs
 
 
 def _parse_output_port_variable(variable_spec, owner, context=None, output_port_name=None):

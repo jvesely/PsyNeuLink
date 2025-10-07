@@ -3147,8 +3147,22 @@ class Mechanism_Base(Mechanism):
         if len(parsed) == 1:
             return parsed[0]
 
-        # TODO: Add support for assembling combination specs
-        assert False, "Combinations of params not supported in variable spec: {}".format(canonical_port_spec)
+        types = tuple(val.type.pointee for val in parsed)
+
+        if all(t == types[0] for t in types):
+            aggregate_type = pnlvm.ir.ArrayType(types[0], len(types))
+        else:
+            aggregate_type = pnlvm.ir.LiteralStructType(types)
+
+        print(aggregate_type)
+
+        aggregate_storage = builder.alloca(aggregate_type)
+        for idx, location in enumerate(parsed):
+            out_ptr = builder.gep(aggregate_storage, [ctx.int32_ty(0), ctx.int32_ty(idx)])
+            data = builder.load(location)
+            builder.store(data, out_ptr)
+
+        return aggregate_storage
 
 
     def _gen_llvm_output_ports(self, ctx, builder, value, mech_params, mech_state, mech_in, mech_out):
