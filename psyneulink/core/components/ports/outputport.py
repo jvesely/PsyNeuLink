@@ -671,16 +671,28 @@ def _canonicalize_port_variable_specification(variable_spec):
     from psyneulink.core.components.mechanisms.mechanism import MechParamsDict
 
     # There are several specification formats;
-    # 1.) Special. passed through without change
+    # 1.) List of specifications
+    if isinstance(variable_spec, list):
+        specs = []
+        for vs in variable_spec:
+            canonical_spec = _canonicalize_port_variable_specification(vs)
+            if canonical_spec is None:
+                return None
+
+            specs.extend(_canonicalize_port_variable_specification(vs))
+
+        return specs
+
+    # 2.) Special. passed through without change
     if variable_spec is None or is_numeric(variable_spec) or isinstance(variable_spec, MechParamsDict):
         return [(variable_spec, [])]
 
-    # 2.) Parameter name or a KEYWORD that translates to a Parameter name
+    # 3.) Parameter name or a KEYWORD that translates to a Parameter name
     if isinstance(variable_spec, str):
         translated_spec = output_port_spec_to_parameter_name.get(variable_spec, variable_spec)
         return [(translated_spec, [])]
 
-    # 3.) A tuple of parameter name with indices.
+    # 4.) A tuple of parameter name with indices.
     #     The indices might be callable (e.g. to make the index match a corresponding input port),
     #     or Numpy numerals
     translated_name = output_port_spec_to_parameter_name.get(variable_spec[0], variable_spec[0])
@@ -690,12 +702,7 @@ def _canonicalize_port_variable_specification(variable_spec):
         # a valid parameter name
         return [(translated_name, ids)]
 
-    # 4.) A list of specs
-    specs = []
-    for vs in variable_spec:
-        specs.extend(_canonicalize_port_variable_specification(vs))
-
-    return specs
+    return None
 
 
 def _parse_output_port_variable(variable_spec, owner, context=None, output_port_name=None):
@@ -746,18 +753,12 @@ def _parse_output_port_variable(variable_spec, owner, context=None, output_port_
 
         return value
 
-    if not isinstance(variable_spec, list):
-        variable_spec = [variable_spec]
+    canonical_spec = _canonicalize_port_variable_specification(variable_spec)
+    if canonical_spec is None:
+        raise OutputPortError(f"Can not canonicalize variable spec ({variable_spec}) for "
+                              f"{output_port_name or OutputPort.__name__} of {owner.name}.")
 
-    fct_variable = []
-    for spec in variable_spec:
-        canonicalized_specs = _canonicalize_port_variable_specification(spec)
-        if canonicalized_specs is None:
-            raise OutputPortError(f"Can't canonicalize variable spec ({spec}) for "
-                                   f"{output_port_name or OutputPort.__name__} of {owner.name}.")
-
-        assert len(canonicalized_specs) == 1
-        fct_variable.append(evaluate_variable_spec(canonicalized_specs[0]))
+    fct_variable = [evaluate_variable_spec(spec) for spec in canonical_spec]
 
     if len(fct_variable) == 1:
         fct_variable = fct_variable[0]
