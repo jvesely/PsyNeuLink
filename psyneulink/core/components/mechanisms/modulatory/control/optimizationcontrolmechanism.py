@@ -1839,7 +1839,7 @@ class OptimizationControlMechanism(ControlMechanism):
         function = function or GridSearch
 
         if initial_seed is None:
-            initial_seed = np.random.randint(0, 2**31-1)
+            initial_seed = np.random.randint(0, 2**31 - 1)
 
         # Internal counter used to generate seeds for simulations
         self._seed_counter = initial_seed
