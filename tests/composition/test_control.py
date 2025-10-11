@@ -3669,7 +3669,7 @@ class TestModelBasedOptimizationControlMechanisms_Execution:
                                                                     [np.array([1.]), np.array([1.52673967])],
                                                                     [np.array([1.]), np.array([1.52673967])],
                                                                     [np.array([1.]), np.array([3.24637662])],
-                                                                    [np.array([1.]), np.array([3.24637662])],
+                                                                    [np.array([-1.]), np.array([3.24637662])],
                                                                     [np.array([1.]), np.array([2.12805516])],
                                                                     [np.array([1.]), np.array([2.12805516])],
                                                                     [np.array([1.]), np.array([1.52673967])],
