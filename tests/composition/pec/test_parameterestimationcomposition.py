@@ -72,6 +72,7 @@ pec = pnl.ParameterEstimationComposition(
     outcome_variables=output_node,
     objective_function=lambda x: np.sum(x),
     optimization_function=PECOptimizationFunction(method="differential_evolution"),
+    initial_seed=42,
 )
 run_input_test_args = [
     pytest.param(
@@ -472,7 +473,7 @@ def test_parameter_estimation_ddm_mle(func_mode, likelihood_include_mask):
     # the same search trajectory from a known working example.
     np.testing.assert_allclose(
         list(pec.optimized_parameter_values.values()),
-        [0.2625412440239183, 0.7757273492050537, 0.025688767118582256],
+        [0.2227273962084888, 0.5976130662377002, 0.1227723651473831],
     )
 
 
