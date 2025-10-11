@@ -3794,10 +3794,7 @@ class OptimizationControlMechanism(ControlMechanism):
         num_estimates = self.parameters.num_estimates._get(context)
         num_estimates = try_extract_0d_array_item(num_estimates)
 
-        # if pnlvm.LLVMBuilderContext.default_float_ty == pnlvm.ir.FloatType():
-        #     return self._seed_rng.integers(0, 2**24 - 1, size=num_estimates).tolist()
-        # else:
-        #     return self._seed_rng.integers(0, 2**31 - 1, size=num_estimates).tolist()
+
 
         seeds = [self._seed_counter + i for i in range(num_estimates)]
 
