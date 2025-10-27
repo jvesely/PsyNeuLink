@@ -1342,7 +1342,9 @@ class AutodiffComposition(Composition):
         # Execute PytorchCompositionWrapper to get value of all OUTPUT nodes for current trial
         curr_tensors_for_outputs = pytorch_rep.forward(inputs=curr_tensors_for_inputs, optimization_num=None,
                                                        synch_with_pnl_options=synch_with_pnl_options,
-                                                       full_sequence_mode=self.full_sequence_mode, context=context)
+                                                       full_sequence_mode=self.full_sequence_mode,
+                                                       sequence_lengths=None if not hasattr(pytorch_rep, '_batch_seq_lengths') else pytorch_rep._batch_seq_lengths,
+                                                       context=context)
 
         # Get value of OUTPUT nodes that are being trained (i.e., for which there are TARGET nodes)
         curr_tensors_for_trained_outputs = {k:v for k,v in curr_tensors_for_outputs.items()
@@ -1899,14 +1901,14 @@ class AutodiffComposition(Composition):
                                    f"that includes nested AutodiffComposition(s).")
 
         if execution_mode is not pnlvm.ExecutionMode.Python:
-            self._assign_execution_ids(context)
-            context.composition = self
-            context.source = ContextFlags.COMPOSITION
-
-            if execution_mode is pnlvm.ExecutionMode.PyTorch and not torch_available:
-                raise AutodiffCompositionError(f"'{self.name}.learn()' has been called with ExecutionMode.Pytorch, "
-                                               f"but Pytorch module ('torch') is not installed. "
-                                               f"Please install it with `pip install torch` or `pip3 install torch`")
+            # self._assign_execution_ids(context)
+            # context.composition = self
+            # context.source = ContextFlags.COMPOSITION
+            #
+            # if execution_mode is pnlvm.ExecutionMode.PyTorch and not torch_available:
+            #     raise AutodiffCompositionError(f"'{self.name}.learn()' has been called with ExecutionMode.Pytorch, "
+            #                                    f"but Pytorch module ('torch') is not installed. "
+            #                                    f"Please install it with `pip install torch` or `pip3 install torch`")
 
             if scheduler is None:
                 scheduler = self.scheduler
@@ -1929,9 +1931,9 @@ class AutodiffComposition(Composition):
                            content='trial_start',
                            context=context)
 
-                    self._build_pytorch_representation(optimizer_params=optimizer_params,
-                                                       learning_rate=self.parameters.learning_rate.get(context),
-                                                       context=context, base_context=base_context)
+                    # self._build_pytorch_representation(optimizer_params=optimizer_params,
+                    #                                    learning_rate=self.parameters.learning_rate.get(context),
+                    #                                    context=context, base_context=base_context)
                     trained_output_values, all_output_values = \
                                                     self.autodiff_forward(inputs=autodiff_inputs,
                                                                           targets=autodiff_targets,
@@ -1984,6 +1986,7 @@ class AutodiffComposition(Composition):
 
     @handle_external_context(fallback_default=True)
     def run(self, *args,
+            execution_mode: pnlvm.ExecutionMode = pnlvm.ExecutionMode.Python,
             synch_projection_matrices_with_torch: SynchRetainArg = NotImplemented,
             synch_node_variables_with_torch: SynchRetainArg = NotImplemented,
             synch_node_values_with_torch: SynchRetainArg = NotImplemented,
@@ -2029,10 +2032,25 @@ class AutodiffComposition(Composition):
             kwargs[SYNCH_WITH_PNL_OPTIONS] = synch_with_pnl_options
             kwargs[RETAIN_IN_PNL_OPTIONS] = retain_in_pnl_options
 
-        # Run AutodiffComposition
-        results = super(AutodiffComposition, self).run(*args, context=context, **kwargs)
+        if execution_mode != pnlvm.ExecutionMode.Python:
+            self._assign_execution_ids(context)
+            context.composition = self
+            context.source = ContextFlags.COMPOSITION
 
-        if EXECUTION_MODE in kwargs and kwargs[EXECUTION_MODE] is pnlvm.ExecutionMode.PyTorch:
+            if execution_mode is pnlvm.ExecutionMode.PyTorch and not torch_available:
+                raise AutodiffCompositionError(f"'{self.name}.learn()' has been called with ExecutionMode.Pytorch, "
+                                               f"but Pytorch module ('torch') is not installed. "
+                                               f"Please install it with `pip install torch` or `pip3 install torch`")
+
+            self._build_pytorch_representation(optimizer_params=kwargs.get('optimizer_params', None),
+                                               learning_rate=self.parameters.learning_rate.get(context),
+                                               context=context,
+                                               base_context=Context(execution_id=None))
+
+        # Run AutodiffComposition
+        results = super(AutodiffComposition, self).run(*args, execution_mode=execution_mode, context=context, **kwargs)
+
+        if execution_mode == pnlvm.ExecutionMode.PyTorch:
             # Synchronize specified outcomes at end of run
             pytorch_rep = self.parameters.pytorch_representation.get(context)
             if pytorch_rep:
