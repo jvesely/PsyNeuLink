@@ -1914,47 +1914,47 @@ class AutodiffComposition(Composition):
                 scheduler = self.scheduler
 
             # TBI: How are we supposed to use base_context and statefulness here?
+            if ContextFlags.LEARNING_MODE in context.runmode:
+                autodiff_inputs = self._get_autodiff_inputs_values(inputs)
+                autodiff_targets = self._get_autodiff_targets_values(inputs)
 
-            autodiff_inputs = self._get_autodiff_inputs_values(inputs)
-            autodiff_targets = self._get_autodiff_targets_values(inputs)
+                # Begin reporting of learning TRIAL:
+                report(self,
+                       LEARN_REPORT,
+                       # EXECUTE_REPORT,
+                       report_num=report_num,
+                       scheduler=scheduler,
+                       content='trial_start',
+                       context=context)
 
-            # Begin reporting of learning TRIAL:
-            report(self,
-                   LEARN_REPORT,
-                   # EXECUTE_REPORT,
-                   report_num=report_num,
-                   scheduler=scheduler,
-                   content='trial_start',
-                   context=context)
+                # self._build_pytorch_representation(optimizer_params=optimizer_params,
+                #                                    learning_rate=self.parameters.learning_rate.get(context),
+                #                                    context=context, base_context=base_context)
+                trained_output_values, all_output_values = \
+                                                self.autodiff_forward(inputs=autodiff_inputs,
+                                                                      targets=autodiff_targets,
+                                                                      synch_with_pnl_options=synch_with_pnl_options,
+                                                                      retain_in_pnl_options=retain_in_pnl_options,
+                                                                      execution_mode=execution_mode,
+                                                                      scheduler=scheduler,
+                                                                      context=context)
+                execution_phase = context.execution_phase
+                context.execution_phase = ContextFlags.PROCESSING
+                context.execution_phase = execution_phase
 
-            # self._build_pytorch_representation(optimizer_params=optimizer_params,
-            #                                    learning_rate=self.parameters.learning_rate.get(context),
-            #                                    context=context, base_context=base_context)
-            trained_output_values, all_output_values = \
-                                            self.autodiff_forward(inputs=autodiff_inputs,
-                                                                  targets=autodiff_targets,
-                                                                  synch_with_pnl_options=synch_with_pnl_options,
-                                                                  retain_in_pnl_options=retain_in_pnl_options,
-                                                                  execution_mode=execution_mode,
-                                                                  scheduler=scheduler,
-                                                                  context=context)
-            execution_phase = context.execution_phase
-            context.execution_phase = ContextFlags.PROCESSING
-            context.execution_phase = execution_phase
+                # Complete TRIAL Panel for output report, and report progress
+                report(self,
+                       # [LEARN_REPORT],
+                       [EXECUTE_REPORT, PROGRESS_REPORT],
+                       report_num=report_num,
+                       scheduler=scheduler,
+                       content='trial_end',
+                       context=context)
 
-            # Complete TRIAL Panel for output report, and report progress
-            report(self,
-                   # [LEARN_REPORT],
-                   [EXECUTE_REPORT, PROGRESS_REPORT],
-                   report_num=report_num,
-                   scheduler=scheduler,
-                   content='trial_end',
-                   context=context)
+                scheduler.get_clock(context)._increment_time(TimeScale.TRIAL)
 
-            scheduler.get_clock(context)._increment_time(TimeScale.TRIAL)
-
-            self.most_recent_context = context
-            return all_output_values
+                self.most_recent_context = context
+                return all_output_values
 
 
         # Call Composition execute in Python mode
