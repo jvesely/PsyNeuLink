@@ -1913,57 +1913,49 @@ class AutodiffComposition(Composition):
             if scheduler is None:
                 scheduler = self.scheduler
 
-            if ContextFlags.LEARNING_MODE in context.runmode:
-                # In LEARNING_MODE, so check that at least one enable_learning is True (potentially in nested Comp)
-                if self._is_learning(context) or any(comp._is_learning(context)
-                                                     for comp in self._get_nested_compositions()):
-                    # TBI: How are we supposed to use base_context and statefulness here?
+            # TBI: How are we supposed to use base_context and statefulness here?
 
-                    autodiff_inputs = self._get_autodiff_inputs_values(inputs)
-                    autodiff_targets = self._get_autodiff_targets_values(inputs)
+            autodiff_inputs = self._get_autodiff_inputs_values(inputs)
+            autodiff_targets = self._get_autodiff_targets_values(inputs)
 
-                    # Begin reporting of learning TRIAL:
-                    report(self,
-                           LEARN_REPORT,
-                           # EXECUTE_REPORT,
-                           report_num=report_num,
-                           scheduler=scheduler,
-                           content='trial_start',
-                           context=context)
+            # Begin reporting of learning TRIAL:
+            report(self,
+                   LEARN_REPORT,
+                   # EXECUTE_REPORT,
+                   report_num=report_num,
+                   scheduler=scheduler,
+                   content='trial_start',
+                   context=context)
 
-                    # self._build_pytorch_representation(optimizer_params=optimizer_params,
-                    #                                    learning_rate=self.parameters.learning_rate.get(context),
-                    #                                    context=context, base_context=base_context)
-                    trained_output_values, all_output_values = \
-                                                    self.autodiff_forward(inputs=autodiff_inputs,
-                                                                          targets=autodiff_targets,
-                                                                          synch_with_pnl_options=synch_with_pnl_options,
-                                                                          retain_in_pnl_options=retain_in_pnl_options,
-                                                                          execution_mode=execution_mode,
-                                                                          scheduler=scheduler,
-                                                                          context=context)
-                    execution_phase = context.execution_phase
-                    context.execution_phase = ContextFlags.PROCESSING
-                    context.execution_phase = execution_phase
+            # self._build_pytorch_representation(optimizer_params=optimizer_params,
+            #                                    learning_rate=self.parameters.learning_rate.get(context),
+            #                                    context=context, base_context=base_context)
+            trained_output_values, all_output_values = \
+                                            self.autodiff_forward(inputs=autodiff_inputs,
+                                                                  targets=autodiff_targets,
+                                                                  synch_with_pnl_options=synch_with_pnl_options,
+                                                                  retain_in_pnl_options=retain_in_pnl_options,
+                                                                  execution_mode=execution_mode,
+                                                                  scheduler=scheduler,
+                                                                  context=context)
+            execution_phase = context.execution_phase
+            context.execution_phase = ContextFlags.PROCESSING
+            context.execution_phase = execution_phase
 
-                    # Complete TRIAL Panel for output report, and report progress
-                    report(self,
-                           # [LEARN_REPORT],
-                           [EXECUTE_REPORT, PROGRESS_REPORT],
-                           report_num=report_num,
-                           scheduler=scheduler,
-                           content='trial_end',
-                           context=context)
+            # Complete TRIAL Panel for output report, and report progress
+            report(self,
+                   # [LEARN_REPORT],
+                   [EXECUTE_REPORT, PROGRESS_REPORT],
+                   report_num=report_num,
+                   scheduler=scheduler,
+                   content='trial_end',
+                   context=context)
 
-                    scheduler.get_clock(context)._increment_time(TimeScale.TRIAL)
+            scheduler.get_clock(context)._increment_time(TimeScale.TRIAL)
 
-                    self.most_recent_context = context
-                    return all_output_values
-                else:
-                    raise AutodiffCompositionError(f"The learn() method of '{self.name}' was called, but its "
-                                                   f"'enable_learning' Parameter (and the ones for any Compositions "
-                                                   f"nested within) it are set to 'False'. Either set at least one to "
-                                                   f"'True', or use {self.name}.run().")
+            self.most_recent_context = context
+            return all_output_values
+
 
         # Call Composition execute in Python mode
         return super(AutodiffComposition, self).execute(inputs=inputs,
@@ -2031,6 +2023,15 @@ class AutodiffComposition(Composition):
             )
             kwargs[SYNCH_WITH_PNL_OPTIONS] = synch_with_pnl_options
             kwargs[RETAIN_IN_PNL_OPTIONS] = retain_in_pnl_options
+
+        # In LEARNING_MODE, so check that at least one enable_learning is True (potentially in nested Comp)
+        if ContextFlags.LEARNING_MODE in context.runmode and not (self._is_learning(context) or
+                                                                  any(comp._is_learning(context)
+                                                                      for comp in self._get_nested_compositions())):
+            raise AutodiffCompositionError(f"The learn() method of '{self.name}' was called, but its "
+                                           f"'enable_learning' Parameter (and the ones for any Compositions "
+                                           f"nested within) it are set to 'False'. Either set at least one to "
+                                           f"'True', or use {self.name}.run().")
 
         if execution_mode != pnlvm.ExecutionMode.Python:
             self._assign_execution_ids(context)
