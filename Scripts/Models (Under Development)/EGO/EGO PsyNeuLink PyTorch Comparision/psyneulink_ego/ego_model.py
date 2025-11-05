@@ -1,52 +1,50 @@
 from psyneulink import *
-from psyneulink._typing import Union
-
-from ys_test.params import params_ego
-
-if is_numeric_scalar(params_ego['softmax_temperature']):  # translate to gain of softmax retrieval function
-    retrieval_softmax_gain = 1 / params_ego['softmax_temperature']
-else:  # pass along ADAPTIVE or CONTROL spec
-    retrieval_softmax_gain = params_ego['softmax_temperature']
 
 
 def construct_model(
+        config,
         memory_capacity,
-        model_name: str = params_ego['name'],
-
-        # Input layer:
-        state_input_name: str = params_ego['state_input_layer_name'],
-        state_size: int = params_ego['state_d'],
-
-        # Previous state
-        previous_state_name: str = params_ego['previous_state_layer_name'],
-
-        # Context representation (learned):
-        context_name: str = params_ego['context_layer_name'],
-        context_size: Union[float, int] = params_ego['context_d'],
-        integration_rate: float = params_ego['integration_rate'],
-
-        # EM:
-        em_name: str = params_ego['em_name'],
-        retrieval_softmax_gain=retrieval_softmax_gain,
-        retrieval_softmax_threshold=params_ego['softmax_threshold'],
-        state_retrieval_weight: Union[float, int] = params_ego['state_weight'],
-        previous_state_retrieval_weight: Union[float, int] = params_ego['previous_state_weight'],
-        context_retrieval_weight: Union[float, int] = params_ego['context_weight'],
-        normalize_field_weights=params_ego['normalize_field_weights'],
-        concatenate_queries=params_ego['concatenate_queries'],
-        enable_learning=params_ego['enable_learning'],
-
-        memory_init=params_ego['memory_init'],
-
-        # Output:
-        prediction_layer_name: str = params_ego['prediction_layer_name'],
-
-        # Learning
-        loss_spec=params_ego['loss_spec'],
-        learning_rate=params_ego['learning_rate'],
-        device=params_ego['device']
 
 ) -> Composition:
+    model_name: str = config['name']
+
+    # Input layer:
+    state_input_name: str = config['state_input_layer_name']
+    state_size: int = config['state_d']
+
+    # Previous state
+    previous_state_name: str = config['previous_state_layer_name']
+
+    # Context representation (learned):
+    context_name = config['context_layer_name']
+    context_size = config['context_d']
+    integration_rate = config['integration_rate']
+
+    # EM:
+    em_name = config['em_name']
+    retrieval_softmax_threshold = config['softmax_threshold']
+    state_retrieval_weight = config['state_weight']
+    previous_state_retrieval_weight = config['previous_state_weight']
+    context_retrieval_weight = config['context_weight']
+    normalize_field_weights = config['normalize_field_weights']
+    concatenate_queries = config['concatenate_queries']
+    enable_learning = config['enable_learning']
+
+    memory_init = config['memory_init']
+
+    # Output:
+    prediction_layer_name = config['prediction_layer_name']
+
+    # Learning
+    loss_spec = config['loss_spec']
+    learning_rate = config['learning_rate']
+    device = config['device']
+
+    if is_numeric_scalar(config['softmax_temperature']):  # translate to gain of softmax retrieval function
+        retrieval_softmax_gain = 1 / config['softmax_temperature']
+    else:
+        retrieval_softmax_gain = config['softmax_temperature']
+
     assert 0 <= integration_rate <= 1, \
         f"integrator_retrieval_weight must be a number from 0 to 1"
 
@@ -147,22 +145,45 @@ def construct_model(
                                               receiver=learning_components[0],
                                               learnable=False))
 
+    EGO_comp.scheduler.add_condition(em, BeforeNodes(previous_state_layer, context_layer))
+
     return EGO_comp, context_layer, state_input_layer, em
 
 
-def run_model(model, inputs):
+def run_model(model,
+              # context_layer,
+              # state_input_layer,
+              # em,
+              trials,
+              config,
+              # learning=True,
+              ):
     for t in trials:
-        model.learn(inputs={params_ego['state_input_layer_name']: [t]},
-                    learning_rate=params_ego['learning_rate'],
-                    execution_mode=params_ego['execution_mode'],
-                    optimizations_per_minibatch=params_ego['num_optimization_steps'],
+        model.learn(inputs={config['state_input_layer_name']: [t]},
+                    learning_rate=config['learning_rate'],
+                    execution_mode=config['execution_mode'],
+                    optimizations_per_minibatch=config['num_optimization_steps'],
                     minibatch_size=1,
-                    )
-    return model.results[:, 2]
+        #             execute_in_additional_optimizations=
+        #             {model.nodes["EM"]:("storage_prob", 0),
+        # model.nodes["PREDICTION"]:None,
+        # model.nodes["EM"].nodes["PREVIOUS STATE [RETRIEVED]"]:None,
+        # model.nodes["EM"].nodes["CONTEXT [RETRIEVED]"]:None}
+        # call_before_minibatch=hi(model, context_layer, state_input_layer, em)
+        )
+        # model.learn(inputs={params_ego['state_input_layer_name']: trials},
+        #             learning_rate=params_ego['learning_rate'],
+        #             execution_mode=params_ego['execution_mode'],
+        #             synch_projection_matrices_with_torch=params_ego['synch_weights'],
+        #             synch_node_values_with_torch=params_ego['synch_values'],
+        #             synch_results_with_torch=params_ego['synch_results'],
+        #             minibatch_size=1,
+        #             )
+        # memory = em.memory
+        return model.results[:, 2]
 
-
-if __name__ == '__main__':
-    inputs = [[1, 0, 0, 0, 0], [0, 1, 0, 1, 0]]
-    model, _, _, _ = construct_model(memory_capacity=5, state_size=5, context_size=5)
-    results = run_model(model, inputs)
-    print(results)
+    if __name__ == '__main__':
+        trials = [[1, 0, 0, 0, 0], [0, 1, 0, 1, 0]]
+        model, _, _, _ = construct_model(memory_capacity=5, state_size=5, context_size=5)
+        results = run_model(model, trials)
+        print(results)
