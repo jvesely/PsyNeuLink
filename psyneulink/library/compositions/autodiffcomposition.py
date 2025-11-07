@@ -2033,7 +2033,7 @@ class AutodiffComposition(Composition):
                                            f"nested within) it are set to 'False'. Either set at least one to "
                                            f"'True', or use {self.name}.run().")
 
-        if execution_mode != pnlvm.ExecutionMode.Python:
+        if execution_mode != pnlvm.ExecutionMode.Python and ContextFlags.LEARNING_MODE in context.runmode:
             self._assign_execution_ids(context)
             context.composition = self
             context.source = ContextFlags.COMPOSITION
