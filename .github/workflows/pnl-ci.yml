@@ -128,7 +128,7 @@ jobs:
         restore-keys: ${{ runner.os }}-python-${{ matrix.python-version }}-pip-wheels-${{ hashFiles('requirements.txt', 'dev_requirements.txt') }}
 
     - name: Drop PyTorch requirement
-      if: ${{ matrix.torch == 'notorch' }}
+      if: ${{ matrix.torch == 'notorchXYZ' }}
       shell: bash
       run: |
         # macos/bsd sed requires backup suffix argument to -i
