@@ -41,8 +41,9 @@ jobs:
         extra-args: ['']
         os: [ubuntu, macos, windows]
         version-restrict: ['']
+        torch: ['']
         include:
-          # code-coverage build on macos python 3.9
+          # code-coverage run on macos python 3.9
           - python-version: '3.9'
             os: macos
             extra-args: '--cov=psyneulink'
@@ -67,6 +68,11 @@ jobs:
             # The latter works around a crash in pytest when collecting tests:
             # https://github.com/ionelmc/pytest-benchmark/issues/243
             extra-args: '-m benchmark --benchmark-enable --benchmark-only --benchmark-min-rounds=2 --benchmark-max-time=0.001 --benchmark-warmup=off -n0 --dist=no'
+          # run without pytorch on windows python 3.10
+          - python-version: '3.10'
+            os: windows
+            torch: 'notorch'
+
 
           # add python 3.8 with deps restricted to min supported package versions
           - python-version: '3.8'
@@ -120,6 +126,14 @@ jobs:
         path: ${{ steps.pip_cache.outputs.pip_cache_dir }}/wheels
         key: ${{ runner.os }}-python-${{ matrix.python-version }}-pip-wheels-${{ hashFiles('requirements.txt', 'dev_requirements.txt') }}-${{ github.sha }}
         restore-keys: ${{ runner.os }}-python-${{ matrix.python-version }}-pip-wheels-${{ hashFiles('requirements.txt', 'dev_requirements.txt') }}
+
+    - name: Drop PyTorch requirement
+      if: ${{ matrix.torch == 'notorch' }}
+      shell: bash
+      run: |
+        # macos/bsd sed requires backup suffix argument to -i
+        sed -i=.bak -e '/torch/d' requirements.txt
+        sed -i=.bak -e '/modeci_mdf/d' requirements.txt
 
     - name: Install PNL package
       uses: ./.github/actions/install-pnl
@@ -188,6 +202,12 @@ jobs:
         path: tests_out.xml
         retention-days: 5
       if: (success() || failure()) && ! contains(matrix.extra-args, 'forked')
+
+    - name: Check that PyTorch wasn't transitively included
+      if: ${{ matrix.torch == 'notorch' }}
+      shell: bash
+      run: |
+        ! pip show torch
 
     - name: Upload coveralls code coverage
       if: contains(matrix.extra-args, '--cov=psyneulink')
