@@ -2828,7 +2828,7 @@ class DriftOnASphereIntegrator(IntegratorFunction):
         """
         x = x / np.linalg.norm(x)
         d = len(x)
-        e0 = np.zeros(d);
+        e0 = np.zeros(d)
         e0[0] = 1.0
         if np.allclose(x, e0):
             return np.eye(d)[:, 1:]
