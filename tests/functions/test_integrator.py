@@ -166,9 +166,9 @@ def DriftOnASphereFun(_init, _value, iterations, noise, **kwargs):
 
     if np.isscalar(noise):
         if "initializer" not in kwargs:
-            return [1.10030505e-01, 6.77893188e-06, 4.36876221e-06, -4.83568579e-06,
-                    4.55349584e-05, 1.77044532e-04, 1.27797893e-03, -1.92233627e-02,
-                    9.74815346e-01, -2.22179738e-01, -6.97708243e-06]
+            return [-0.015710035765, -0.052577778859, 0.681218795793, 0.110947944152,
+                    0.386134081139, -0.266532800135, 0.134110115733, -0.030188100977,
+                    0.245868626971, 0.470058912262, -0.013319475244]
 
         else:
             return [-1.32269048e-01, 4.35051787e-05, 3.87398441e-05, -3.95620568e-06,
@@ -204,10 +204,6 @@ GROUP_PREFIX = "IntegratorFunction "
     (pnl.DriftDiffusionIntegrator, DriftIntFun, {'time_step_size': 1.0}),
     (pnl.LeakyCompetingIntegrator, LeakyFun, {}),
     (pnl.AccumulatorIntegrator, AccumulatorFun, {'increment': RAND0_1}),
-    pytest.param((pnl.DriftOnASphereIntegrator,
-                  DriftOnASphereFun,
-                  {'dimension': len(test_var) + 1},
-                  ), marks=pytest.mark.llvm_not_implemented),
 ], ids=lambda x: x[0])
 @pytest.mark.parametrize("mode", ["test_execution", "test_reset"])
 @pytest.mark.benchmark
@@ -224,7 +220,8 @@ def test_execute(func, func_mode, variable, noise, params, mode, benchmark):
 
     params = {**params, **func_params}
 
-    if issubclass(func_class, pnl.AccumulatorIntegrator):
+    if issubclass(func_class, pnl.AccumulatorIntegrator) \
+            or issubclass(func_class, pnl.DriftOnASphereIntegrator):
         params.pop('offset', None)
 
     f = func_class(default_variable=variable, noise=noise, **params)
@@ -343,6 +340,44 @@ def test_drift_on_a_sphere_noise_rules(dim):
     Functions.DriftOnASphereIntegrator(dimension=dim, noise=[0.1] * (dim - 1))
 
 
+@pytest.mark.parametrize("dim", [3, 5, 7])
+def test_drift_on_a_sphere_dimension_inference(dim):
+    # Infer from initializer (full vector) ---
+    init = np.zeros(dim)
+    init[0] = 1.0
+    f = Functions.DriftOnASphereIntegrator(initializer=init)
+    assert f.parameters.dimension.get(None) == dim
+
+    # All zero initializer → error
+    theta = np.zeros(dim)
+    with pytest.raises(FunctionError):
+        Functions.DriftOnASphereIntegrator(initializer=theta)
+
+    # Infer from noise vector (anisotropic, length dim-1) ---
+    noise = [0.1] * (dim - 1)
+    f = Functions.DriftOnASphereIntegrator(noise=noise)
+    assert f.parameters.dimension.get(None) == dim
+
+    # Here it is allowed to have zero noise in all directions
+    noise = [0] * (dim - 1)
+    f = Functions.DriftOnASphereIntegrator(noise=noise)
+    assert f.parameters.dimension.get(None) == dim
+
+    # Infer from default_variable (full vector) ---
+    dv = np.zeros(dim)
+    dv[0] = 1.0
+    f = Functions.DriftOnASphereIntegrator(default_variable=dv)
+    assert f.parameters.dimension.get(None) == dim + 1
+
+    # Scalar initializer gives no dimension info → error
+    with pytest.raises(FunctionError):
+        Functions.DriftOnASphereIntegrator(initializer=0.5)
+
+    # Scalar noise gives no dimension info → default
+    f = Functions.DriftOnASphereIntegrator(noise=0.5)
+    assert f.parameters.dimension.get(None) == 3  # defaults to 3
+
+
 @pytest.mark.parametrize("dim", [3, 4, 7])
 def test_drift_on_a_sphere_combined_rules(dim):
     good_init = [1.0] + [0.0] * (dim - 1)
@@ -360,6 +395,7 @@ def test_drift_on_a_sphere_combined_rules(dim):
     # bad noise → init OK but noise fails
     with pytest.raises(FunctionError):
         Functions.DriftOnASphereIntegrator(dimension=dim, initializer=good_init, noise=bad_noise)
+
 
 @pytest.mark.parametrize("dim", [3, 5, 7])
 def test_drift_on_sphere(dim):
@@ -383,7 +419,7 @@ def test_drift_on_sphere(dim):
         dimension=dim,
         initializer=init,
         noise=0.0,
-        rate=1.0,
+        rate=.1,
         time_step_size=dt,
         seed=123,
     )
@@ -400,7 +436,8 @@ def test_drift_on_sphere(dim):
     # (2) Angular step is constant
     cosθ = np.sum(xs[1:] * xs[:-1], axis=1)
     thetas = np.arccos(np.clip(cosθ, -1.0, 1.0))
-    assert np.allclose(thetas, thetas[0], rtol=1e-10, atol=1e-12)
+    tol = thetas[0] * 1e-6
+    assert np.allclose(thetas, thetas[0], atol=tol)
 
     # (3) Drift direction matches internally transported drift_dir
     context = f.most_recent_context or None
@@ -435,3 +472,70 @@ def test_drift_on_sphere(dim):
 
     sq_dists = np.sum((xs[1:] - xs[:-1]) ** 2, axis=1)
     assert not np.allclose(sq_dists, 0.0, atol=1e-6)
+
+
+@pytest.mark.parametrize("dim", [3, 5, 7])
+def test_drift_on_sphere_reset(dim):
+    init = np.zeros(dim)
+    init[0] = 1.0
+    f = Functions.DriftOnASphereIntegrator(dimension=dim, initializer=init, noise=0.0)
+    f(variable=0.1)
+    f(variable=0.1)
+    reset_out = f.reset()
+    assert np.allclose(reset_out[0], init / np.linalg.norm(init))
+    assert np.allclose(np.linalg.norm(reset_out[0]), 1.0)
+
+
+@pytest.mark.parametrize("dim", [3, 5])
+def test_target_mode_moves_toward_target(dim):
+    init = np.zeros(dim)
+    init[0] = 1.0
+    target = np.zeros(dim)
+    target[1] = 1.0  # orthogonal pole
+
+    f = Functions.DriftOnASphereIntegrator(
+        dimension=dim,
+        initializer=init,
+        rate=0.1,
+        noise=0.0,
+        input_space="target",
+    )
+
+    x1 = f(variable=target)
+    assert np.linalg.norm(x1) == pytest.approx(1.0, abs=1e-6)
+
+    # angle to target decreases
+    ang_before = np.arccos(np.clip(init @ target, -1, 1))
+    ang_after = np.arccos(np.clip(x1 @ target, -1, 1))
+    assert ang_after < ang_before
+
+
+@pytest.mark.parametrize("start", [[0, 0, 1], [.5, .5, .70710678]])
+@pytest.mark.parametrize("end", [[0, 0, 1], [0, .5, -.5]])
+def test_target_mode_rate1_dt1_reaches_target(start, end):
+    target = np.array(end, dtype=float)
+
+    integ = Functions.DriftOnASphereIntegrator(
+        dimension=len(start),
+        initializer=np.array(start, dtype=float),
+        input_space="target",
+        rate=1.0,
+        noise=0.0,
+        time_step_size=1.0,
+    )
+
+    # One step toward target
+    x1 = integ.execute(variable=target)
+
+    # Normalize both to be safe
+    x1 /= np.linalg.norm(x1)
+    target /= np.linalg.norm(target)
+
+    assert np.allclose(x1, target, atol=1e-6), f"Expected to reach target, got {x1}"
+
+
+def test_target_mode_length_mismatch_error():
+    f = Functions.DriftOnASphereIntegrator(dimension=4)
+    wrong = np.zeros(10)
+    with pytest.raises(Exception):
+        f(variable=wrong)

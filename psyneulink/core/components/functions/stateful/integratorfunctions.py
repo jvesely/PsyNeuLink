@@ -2678,7 +2678,7 @@ class DriftOnASphereIntegrator(IntegratorFunction):
         rate=1.0,               \
         noise=0.0,              \
         offset=0.0,             \
-        time_step_size=0.01,    \
+        time_step_size=1.0,    \
         initializer=None,       \
         dimension=3,            \
         seed=None,              \
@@ -2696,7 +2696,23 @@ class DriftOnASphereIntegrator(IntegratorFunction):
     **Drift Input**
         - If `variable <DriftOnASphereIntegrator.variable>` is a **scalar**, drift is applied along a persistent tangent
           direction that is **parallel transported** at each step.
-        - If it is a **vector** (length = `dimension`), it is projected onto the tangent space and applied directly.
+        - If it is a **vector** of length `(dimension - 1)`, it is interpreted as a tangent-space displacement.
+            The **magnitude of the vector corresponds to an angular rotation** (in radians) along the sphere.
+        - If it is a **vector** (length = `dimension`), it is a target on the sphere to in.
+            The **magnitude is ignored** and the vector is projected onto the sphere.
+
+
+    **Rate**
+        The `rate` parameter controls the **amount of angular movement per unit time**:
+
+        - In **scalar drift mode**, `rate` scales the angular velocity along the persistent drift direction.
+        - In **tangent mode**, the **norm** of the input vector encodes an angular displacement (in radians),
+          and `rate` scales this angular step size.
+        - In **target mode**, the drift direction is the geodesic pointing toward the target; `rate` specifies
+          the **fraction of the remaining geodesic distance traveled per time step**. Thus, with
+          `rate = 1.0` and `time_step_size = 1.0`, the system reaches the target **in exactly one step**.
+          Values `0 < rate < 1` move only partway toward the target.
+
 
     **Initializer**
         - A 1D array of length ``dimension`` is interpreted as a Cartesian point (normalized to unit length).
@@ -2727,7 +2743,7 @@ class DriftOnASphereIntegrator(IntegratorFunction):
     Parameters
     ----------
     default_variable : float or 1d array : default class_defaults.variable
-        Template for input to the integrator. If a vector, its length must equal `dimension`.
+        Template for input to the integrator. If a vector, its length must equal ``dimension - 1``.
 
     rate : float or 1d array : default 1.0
         Multiplies the drift input (see `rate <DriftOnASphereIntegrator.rate>`).
@@ -2738,7 +2754,7 @@ class DriftOnASphereIntegrator(IntegratorFunction):
     offset : float or 1d array : default 0.0
         Additive drift term (projected into tangent space).
 
-    time_step_size : float : default 0.01
+    time_step_size : float : default 1.0
         Integration time step :math:`dt`.
 
     initializer : 1d array or None
@@ -2774,8 +2790,10 @@ class DriftOnASphereIntegrator(IntegratorFunction):
 
 
     componentName = DRIFT_ON_A_SPHERE_INTEGRATOR_FUNCTION
+    _warned_auto_target_once = False
 
     # --- Geometry utilities ---
+
 
     @staticmethod
     def _proj_tangent(x, v):
@@ -2834,6 +2852,42 @@ class DriftOnASphereIntegrator(IntegratorFunction):
         x[d - 1] = s[d - 1]
         return x / np.linalg.norm(x)
 
+    @staticmethod
+    def _logmap_sphere(x, t):
+        """Return tangent vector y at x such that exp_x(y)=t (shortest geodesic)."""
+        eps = 1e-14
+        x_norm = np.linalg.norm(x)
+        if x_norm < eps:
+            # this is a bug → fix, don’t silently normalize
+            raise FunctionError("State x became zero vector — integration step failed.")
+        x = x / x_norm
+
+        t_norm = np.linalg.norm(t)
+        if t_norm < eps:
+            # no drift direction from a zero target
+            return np.zeros_like(x)  # i.e., drift_tan = 0
+        t = t / t_norm
+
+        dot = np.clip(np.dot(x, t), -1.0, 1.0)
+        theta = np.arccos(dot)
+
+        # If already at target → zero tangent step
+        if theta < 1e-14:
+            return np.zeros_like(x)
+
+        u = t - dot * x
+        n = np.linalg.norm(u)
+        if n < 1e-14:
+            # antipodal case: choose any unit tangent direction
+            # Householder gives consistent orthonormal basis
+            B = DriftOnASphereIntegrator._tangent_basis(x)
+            u = B[:, 0]
+        else:
+            u = u / n
+
+        return theta * u
+
+
     # --- Parameter definitions ---
 
     class Parameters(IntegratorFunction.Parameters):
@@ -2861,7 +2915,7 @@ class DriftOnASphereIntegrator(IntegratorFunction):
             time_step_size
                 see `time_step_size <DriftOnASphereIntegrator.time_step_size>`
 
-                :default value: 0.01
+                :default value: 1.0
                 :type: ``float``
 
             dimension
@@ -2922,6 +2976,7 @@ class DriftOnASphereIntegrator(IntegratorFunction):
         time_step_size = Parameter(1.0, modulable=True)
         previous_time = Parameter(0.0, pnl_internal=True)
         dimension = Parameter(3, stateful=False, read_only=True)
+        input_space = Parameter("auto", stateful=False)
 
         initializer = Parameter(
             None,
@@ -2946,14 +3001,20 @@ class DriftOnASphereIntegrator(IntegratorFunction):
 
         def _validate_noise(self, noise):
             return
+
+        def _validate_initializers(self, default_variable, context=None):
+            return
+
     def _validate_noise(self, noise):
+        return
+
+    def _validate_initializers(self, default_variable, context=None):
         return
 
     # --- Construction ---
     @check_user_specified
     @beartype
     def __init__(self, dimension=None, initializer=None, default_variable=None, noise=None, **kwargs):
-        # --- Try to infer dimension from initializer or noise if dimension not given ---
         dim = None
 
         if dimension is not None:
@@ -2961,57 +3022,79 @@ class DriftOnASphereIntegrator(IntegratorFunction):
             if dim < 2:
                 raise FunctionError("dimension must be >= 2")
 
-        # Infer from initializer
+        # Infer from initializer (Cartesian, length d)
         if initializer is not None and dim is None:
             arr = np.asarray(initializer, float)
             if arr.ndim != 1:
-                raise FunctionError(f"'initializer' must be a 1D array.")
+                raise FunctionError("'initializer' must be a 1D array.")
             dim = arr.size
 
-        # Infer from noise
+        # Infer from noise (tangent, length d-1)
         if noise is not None and dim is None and np.ndim(noise) == 1:
             arr = np.asarray(noise, float)
             dim = arr.size + 1
 
-        # Default if still unresolved
+        # Infer from default_variable (tangent, length d-1)
+        if dim is None and default_variable is not None:
+            dv = np.asarray(default_variable, float)
+            if dv.ndim != 1:
+                raise FunctionError("'default_variable' must be a 1D array.")
+            dim = dv.size + 1
+
         if dim is None:
             dim = 3
 
-        # --- Validate default_variable ---
+        # default_variable is tangent coords → length d-1
+        input_space = kwargs.get("input_space", "auto")
+
         if default_variable is None:
-            default_variable = np.zeros(dim, float)
+            # If target mode → default_variable must be length d (target template)
+            if input_space == "target":
+                default_variable = np.zeros(dim, float)
+            else:
+                # Tangent input template
+                default_variable = np.zeros(dim - 1, float)
         else:
             dv = np.asarray(default_variable, float)
-            if dv.ndim != 1 or dv.size != dim:
-                raise FunctionError(
-                    f"'default_variable' must be a list or 1d array of length {dim} "
-                    f"(the value of the 'dimension' parameter)."
-                )
-            default_variable = dv
+            if dv.ndim != 1:
+                raise FunctionError("'default_variable' must be a 1D array.")
 
-        # --- Validate initializer ---
+            if initializer is None and dimension is None:
+                # legacy inference path: interpret as tangent template (kept)
+                if dv.size != dim - 1:
+                    raise FunctionError(
+                        f"'default_variable' must be length {dim - 1} when used to infer dimension."
+                    )
+
+            else:
+                # dimension and/or initializer given explicitly:
+                # allow either tangent (d-1) or target (d) template
+                if dv.size not in (dim - 1, dim):
+                    raise FunctionError(
+                        f"'default_variable' must be length {dim - 1} (tangent template) "
+                        f"or {dim} (target template). Got {dv.size}."
+                    )
+
+
+        # initializer is Cartesian on the sphere → length d
         if initializer is None:
             init = np.zeros(dim, float)
             init[0] = 1.0
         else:
             arr = np.asarray(initializer, float)
-
-            # Always use the SAME required failure message:
             if arr.ndim != 1 or arr.size != dim:
                 raise FunctionError(
                     f"'initializer' must be a list or 1d array of length {dim} "
                     f"(the value of the 'dimension' parameter)."
                 )
-
             init = arr
 
-        # Normalize initializer
         nrm = np.linalg.norm(init)
         if nrm == 0:
             raise FunctionError("'initializer' must not be the zero vector.")
         init = init / nrm
 
-        # --- Validate noise ---
+        # noise: scalar or (d-1,)
         if noise is None:
             noise = 0.0
         elif np.ndim(noise) == 0:
@@ -3040,7 +3123,7 @@ class DriftOnASphereIntegrator(IntegratorFunction):
 
         init = self.parameters.initializer._get(context)
         if init is None:
-            x0 = np.random.normal(size=d);
+            x0 = np.random.normal(size=d)
             x0 /= np.linalg.norm(x0)
         else:
             arr = np.asarray(init, float)
@@ -3090,20 +3173,59 @@ class DriftOnASphereIntegrator(IntegratorFunction):
                     The updated position on the sphere :math:`S^{dimension-1}`. The returned vector is guaranteed
                     to have unit norm.
                 """
-        x = self.parameters.previous_value._get(context)
+        x = self.parameters.previous_value._get(context)  # shape (d,)
         ddir = self.parameters.drift_dir._get(context)
         rate = float(self._get_current_parameter_value("rate", context))
         noise = self._get_current_parameter_value("noise", context)
         dt = float(self._get_current_parameter_value("time_step_size", context))
         rng = self._get_current_parameter_value("random_state", context)
 
-        if variable is None:
-            drift_input = 0.0
-        else:
-            var = np.asarray(variable, float)
-            drift_input = float(var) if var.ndim == 0 or var.size == 1 else self._proj_tangent(x, var)
 
-        drift_tan = rate * ddir * drift_input if np.isscalar(drift_input) else rate * drift_input
+        input_space = self.parameters.input_space._get(context)
+        # --- Drift input ---
+        if variable is None:
+            drift_tan = np.zeros_like(x)
+
+        else:
+            var = np.asarray(variable, float).reshape(-1)
+
+            # scalar → along persistent drift_dir (unchanged)
+            if var.size == 1:
+                drift_tan = rate * ddir * float(var[0])
+
+            else:
+                d = x.size
+                if input_space == "tangent":
+                    if var.size != d - 1:
+                        raise FunctionError(f"In tangent mode, 'variable' must have length {d - 1}. Got {var.size}.")
+                    B = self._tangent_basis(x)
+                    drift_tan = rate * (B @ var)
+
+                elif input_space == "target":
+                    if var.size != d:
+                        raise FunctionError(f"In target mode, 'variable' must have length {d}. Got {var.size}.")
+
+                    y_to_target = self._logmap_sphere(x, var)
+                    drift_tan = rate * y_to_target
+
+                else:  # "auto"
+                    if var.size == d - 1:
+                        B = self._tangent_basis(x)
+                        drift_tan = rate * (B @ var)
+                    elif var.size == d:
+                        if not DriftOnASphereIntegrator._warned_auto_target_once:
+                            warnings.warn(
+                                "DriftOnASphereIntegrator: interpreting variable (length d) as a TARGET point on the sphere. "
+                                "Set input_space='target' to silence this message.",
+                                RuntimeWarning
+                            )
+                            DriftOnASphereIntegrator._warned_auto_target_once = True
+                        y_to_target = self._logmap_sphere(x, var)
+                        drift_tan = rate * y_to_target
+                    else:
+                        raise FunctionError(
+                            f"'variable' length must be 1, {d - 1} (tangent), or {d} (target). Got {var.size}."
+                        )
 
         if noise is None:
             noise_tan = np.zeros_like(x)
@@ -3135,6 +3257,22 @@ class DriftOnASphereIntegrator(IntegratorFunction):
         self.parameters.previous_time._set(np.array(new_t, dtype=float), context)
 
         return x_new
+
+    def reset(self, *args, context=None, **kwargs):
+        """
+        Reset previous_value to initializer and return reset state
+        consistent with PNL integrator reset protocol.
+        """
+        # Ensure internal state is reset the usual way
+        super().reset(*args, context=context, **kwargs)
+
+        x0 = self.parameters.initializer.get(context)
+        d = x0.size
+
+        # Construct return value: first row = initializer, rest zeros
+        result = np.zeros((1, d), dtype=float)
+        result[0] = x0
+        return result
 
 
 class OrnsteinUhlenbeckIntegrator(IntegratorFunction):  # --------------------------------------------------------------
