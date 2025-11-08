@@ -258,7 +258,11 @@ def test_execute(func, variable, params, expected, benchmark, func_mode):
     ex = pytest.helpers.get_func_execution(f, func_mode)
 
     res = benchmark(ex, variable)
-    np.testing.assert_allclose(res, expected, rtol=1e-5, atol=1e-8)
+    # relax tolerances for hyperspherical function since it involves multiple trig functions
+    if func is pnl.HypersphericalToCartesian:
+        np.testing.assert_allclose(res, expected, rtol=1e-6, atol=1e-7)
+    else:
+        np.testing.assert_allclose(res, expected, rtol=1e-5, atol=1e-8)
 
 
 tanh_derivative_helper = (RAND1 * (test_var + RAND2) + RAND3)
