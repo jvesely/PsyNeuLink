@@ -742,6 +742,7 @@ RELU_FUNCTION = "ReLU Function"
 ANGLE_FUNCTION = 'Angle Function'
 GAUSSIAN_FUNCTION = "Gaussian Function"
 GAUSSIAN_DISTORT_FUNCTION = "GaussianDistort Function"
+HYPERSPHERICAL_TO_CARTESIAN_FUNCTION = "HypersphedicalToCartesian Function"
 BINOMIAL_DISTORT_FUNCTION = 'BinomialDistort Function'
 DROPOUT_FUNCTION = 'Dropout Function'
 SOFTMAX_FUNCTION = 'SoftMax Function'
