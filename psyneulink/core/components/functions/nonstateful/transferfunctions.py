@@ -3756,9 +3756,6 @@ class HypersphericalToCartesian(TransferFunction):
         sinprod_ptr = builder.alloca(fty)
         builder.store(fty(1.0), sinprod_ptr)
 
-        # for j in 1..n-1:
-        #   sin_prod *= sin(in[j-1])
-        #   out[j] = sin_prod * cos(in[j])
         with pnlvm.helpers.for_loop(builder, one, n_angles, one, id="prefix_prod") as (b, j):
             # j runs up to (but not including) n_angles, so j ∈ [1, n-1]
             jm1 = b.sub(j, one)
