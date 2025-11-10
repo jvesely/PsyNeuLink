@@ -41,3 +41,6 @@ numpy < 2; platform_system == 'Darwin' and platform_machine == 'x86_64'
 # grpcio 1.75.1 includes files cythonized with cython that doesn't work with
 # pypy3.9
 grpcio < 1.75.1; platform_python_implementation == 'PyPy' and python_version == '3.9'
+
+# newer rpds-py only support pypy 3.11+
+rpds-py < 0.28; platform_python_implementation == 'PyPy' and python_version < '3.11'
