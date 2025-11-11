@@ -35,8 +35,8 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
             "sum": self.call_builtin_horizontal_sum,
             "len": self.call_builtin_len,
             "max": self.call_builtin_max,
-            "float": ctx.float_ty,
-            "int": ctx.int32_ty,
+            "float": self.call_builtin_convert_float,
+            "int": self.call_builtin_convert_int,
         }
 
         # Numpy function calls
@@ -226,16 +226,17 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
                 flat = ir.ArrayType(res[0].type, len(res))(ir.Undefined)
                 for i, v in enumerate(res):
                     flat = self.builder.insert_value(flat, v, i)
+
                 return flat
 
             return flatten
 
         elif node.attr == "astype":
             val = self.get_rval(val)
-            def astype(builder, ty):
-                def _convert(builder, x):
-                    return helpers.convert_type(builder, x, ty)
-                return self._do_unary_op(builder, val, _convert)
+
+            # Python type KW is converted to the cast function in known_names
+            def astype(builder, conversion_func):
+                return self._do_unary_op(builder, val, conversion_func)
 
             return astype
 
@@ -291,6 +292,7 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
         # scalar is the base case
         if helpers.is_scalar(x):
             return scalar_op(self.builder, x)
+
         operands = (builder.extract_value(x, i) for i in range(len(x.type)))
         results = [self._do_unary_op(builder, opx, scalar_op) for opx in operands]
 
@@ -519,6 +521,14 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
         if helpers.is_pointer(x):
             x_ty = x_ty.pointee
         return self.ctx.float_ty(len(x_ty))
+
+    def call_builtin_convert_float(self, builder, x):
+        arg = builder.load(x) if helpers.is_pointer(x) else x
+        return helpers.convert_type(builder, arg, self.ctx.float_ty)
+
+    def call_builtin_convert_int(self, builder, x):
+        arg = builder.load(x) if helpers.is_pointer(x) else x
+        return helpers.convert_type(builder, arg, self.ctx.int32_ty)
 
     def call_builtin_max(self, builder, *args):
         # Python max takes 1 iterable (array in our case),

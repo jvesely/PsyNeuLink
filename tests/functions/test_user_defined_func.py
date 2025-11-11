@@ -281,6 +281,10 @@ def simpleFun(variable, param1, param2):
     return variable * 2 + param2
 
 
+def castReturn(variable, param1, param2):
+    return float(int(param1)) + float(param2) + float(variable[0] + variable[1])
+
+
 def condReturn(variable, param1, param2):
     if variable[0]:
         return param1 + 0.5
@@ -294,12 +298,14 @@ def condValReturn(variable, param1, param2):
         val = param2 + 0.3
     return val
 
+
 def lambdaGen():
     return lambda var, param1, param2: var + param1 * param2
 
 
 @pytest.mark.parametrize("func,var,params,expected", [
     (simpleFun, [1, 3], {"param1":None, "param2":3}, [5, 9]),
+    (castReturn, [1, 3], {"param1":5.5, "param2":3.6}, [12.6]),
     (condReturn, [0], {"param1":1, "param2":2}, [2.3]),
     (condReturn, [1], {"param1":1, "param2":2}, [1.5]),
     (condValReturn, [0], {"param1":1, "param2":2}, [2.3]),
