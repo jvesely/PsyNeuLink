@@ -435,7 +435,7 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
             result = self._do_bin_op(self.builder, result, val, op)
         return result
 
-    def visit_If(self, node:ast.AST):
+    def visit_Iflike(self, node:ast.AST, *, return_value:bool):
         cond = self.visit(node.test)
 
         self._update_debug_metadata(self.builder, node)
@@ -444,11 +444,38 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
         predicate = helpers.convert_type(self.builder, cond_val, self.ctx.bool_ty)
         with self.builder.if_else(predicate) as (then, otherwise):
             with then:
-                for child in node.body:
-                    self.visit(child)
+                if return_value:
+                    true_value = self.visit(node.body)
+                    true_block = self.builder.block
+                else:
+                    for child in node.body:
+                        self.visit(child)
             with otherwise:
-                for child in node.orelse:
-                    self.visit(child)
+                if return_value:
+                    false_value = self.visit(node.orelse)
+                    false_block = self.builder.block
+                else:
+                    for child in node.orelse:
+                        self.visit(child)
+
+        # create PHI node for returned values
+        if return_value:
+            assert true_value.type == false_value.type, \
+                "Type mismatch in IfExpression: {} vs. {}".format(true_value.type, false_value.type)
+
+            final = self.builder.phi(true_value.type)
+            final.add_incoming(true_value, true_block)
+            final.add_incoming(false_value, false_block)
+
+            return final
+
+        return None
+
+    def visit_If(self, node:ast.AST):
+        self.visit_Iflike(node, return_value=False)
+
+    def visit_IfExp(self, node:ast.AST):
+        return self.visit_Iflike(node, return_value=True)
 
     def visit_Return(self, node:ast.AST):
         ret_val = self.visit(node.value)
