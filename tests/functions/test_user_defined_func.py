@@ -3,6 +3,7 @@ import math
 import numpy as np
 import pytest
 
+import psyneulink as pnl
 from psyneulink.core.components.functions.nonstateful.transferfunctions import Linear, Logistic
 from psyneulink.core.components.functions.userdefinedfunction import UserDefinedFunction
 from psyneulink.core.components.mechanisms.processing import ProcessingMechanism
@@ -546,6 +547,20 @@ def test_udf_in_mechanism(mech_mode, benchmark):
 
     val = benchmark(e, [-1, 2, 3, 4])
     np.testing.assert_allclose(val, [[10]])
+
+@pytest.mark.benchmark(group="UDF in Mechanism")
+def test_udf_in_output_port_with_aggregate_variable(mech_mode, benchmark):
+    def myFunction(variable):
+        return sum(variable[0][0]) + variable[1]
+
+    myMech = ProcessingMechanism(input_shapes=4,
+                                 output_ports=[{pnl.VARIABLE: [pnl.OWNER_VALUE, (pnl.OWNER_VALUE, 0, 0)],
+                                                pnl.FUNCTION: myFunction}])
+
+    e = pytest.helpers.get_mech_execution(myMech, mech_mode)
+
+    val = benchmark(e, [-1, 2, 3, 4])
+    np.testing.assert_allclose(val, [[7]])
 
 
 @pytest.mark.parametrize("op,variable,expected", [ # parameter is string since compiled udf doesn't support closures as of present
