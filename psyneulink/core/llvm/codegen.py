@@ -31,12 +31,12 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
         self.arg_out = arg_out
 
         #setup default functions
-        self.register = {
+        self.known_names = {
             "sum": self.call_builtin_horizontal_sum,
             "len": self.call_builtin_len,
+            "max": self.call_builtin_max,
             "float": ctx.float_ty,
             "int": ctx.int32_ty,
-            "max": self.call_builtin_max,
         }
 
         # Numpy function calls
@@ -67,7 +67,7 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
 
         for k, v in func_globals.items():
             if v is np:
-                self.register[k] = numpy_handlers
+                self.known_names[k] = numpy_handlers
 
         super().__init__()
 
@@ -87,8 +87,8 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
         args = node.args
         variable = args[0]
 
-        # update register
-        self.register[variable.arg] = self.arg_in
+        # update known names
+        self.known_names[variable.arg] = self.arg_in
         parameters = args[1:]
         for param in parameters:
             assert param.arg not in ["self", "owner"], f"Unable to reference {param.arg} in a compiled UserDefinedFunction!"
@@ -98,7 +98,7 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
                 # Since contexts are implicit in the structs in compiled mode, we do not compile it.
                 pass
             else:
-                self.register[param.arg] = self.func_params[param.arg]
+                self.known_names[param.arg] = self.func_params[param.arg]
 
     def visit_FunctionDef(self, node:ast.AST):
         # the current position will be used to create temp space
@@ -201,12 +201,13 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
         return _not
 
     def visit_Name(self, node):
-        return self.register.get(node.id, None)
+        return self.known_names.get(node.id, None)
 
     def visit_Attribute(self, node:ast.AST):
         val = self.visit(node.value)
 
         self._update_debug_metadata(self.builder, node)
+
         # special case numpy attributes
         if node.attr == "shape":
             shape = helpers.get_array_shape(val)
@@ -253,7 +254,7 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
             if target is None: # Allocate space for new variable
                 self._update_debug_metadata(self.var_builder, node)
                 target = self.var_builder.alloca(value.type, name=str(t.id) + '_local_variable')
-                self.register[t.id] = target
+                self.known_names[t.id] = target
 
             assert self.is_lval(target)
             self.builder.store(value, target)
