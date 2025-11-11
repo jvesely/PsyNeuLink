@@ -343,6 +343,10 @@ def swap(variable, param1, param2):
     return variable
 
 
+def ternaryOp(variable, param1, param2):
+    return variable[0] if variable[1] else variable[2]
+
+
 def indexBinOp(variable, param1, param2):
     return [1,2,3,4][variable[0] + 2]
 
@@ -363,6 +367,8 @@ def indexLit(variable, param1, param2):
     (branchOnVarFloat, [float("NaN")], [1.0]),
     (branchOnVarFloat, [float("-NaN")], [1.0]),
     (swap, [-1, 3], [3, -1]),
+    (ternaryOp, [-1,0,1], [1]),
+    (ternaryOp, [-1,1,1], [-1]),
     (indexLit, [1,2,3,4], [3]),
     (indexBinOp, [1], [4]),
 ])
