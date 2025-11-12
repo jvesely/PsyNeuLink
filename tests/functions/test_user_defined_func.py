@@ -503,6 +503,9 @@ def numpy_shape(variable):
 def numpy_max(variable):
     return np.max(variable)
 
+def numpy_argmax(variable):
+    return np.argmax(variable)
+
 @pytest.mark.parametrize("function,variable,expected", [
     pytest.param(lambda x: np.tanh(x), [[1, 3]], [[0.76159416, 0.99505475]], id="TANH"),
     pytest.param(lambda x: np.exp(x), [[1, 3]], [[2.71828183, 20.08553692]], id="EXP"),
@@ -526,6 +529,20 @@ def numpy_max(variable):
     pytest.param(numpy_max, [[5.0, float('NaN'), 1.0], [3.0, 6.0, 2.0]], float('NaN'), id="NP_MAX NaN in array3"),
     pytest.param(numpy_max, [[5.0, float('-NaN'), 1.0], [3.0, 6.0, 2.0]], float('-NaN'), id="NP_MAX -NaN in array3"),
     pytest.param(lambda x: x.flatten(), [[1.0, 2.0], [3.0, 4.0]], [1.0, 2.0, 3.0, 4.0], id="FLATTEN"),
+    pytest.param(numpy_argmax, 5.0, 0, id="NP_ARGMAX scalar"),
+    pytest.param(numpy_argmax, [0.0, 0.0], 0, id="NP_ARGMAX 1D equal"),
+    pytest.param(numpy_argmax, [1.0, 2.0], 1, id="NP_ARGMAX 1D"),
+    pytest.param(numpy_argmax, [1.0, 2.0, float("-Inf"), float("Inf"), float("NaN")], 4, id="NP_ARGMAX 2D Inf/NaN"),
+    pytest.param(numpy_argmax, [[2.0, 1.0], [6.0, 2.0]], 2, id="NP_ARGMAX 2D"),
+    pytest.param(numpy_argmax, [[[-2.0, -1.0], [-6.0, -2.0]],[[2.0, 1.0], [6.0, 2.0]]], 6, id="NP_ARGMAX 3D"),
+    pytest.param(numpy_argmax, [[float('-Inf'), 1.0], [6.0, 2.0]], 2, id="NP_ARGMAX -Inf in array2"),
+    pytest.param(numpy_argmax, [[float('Inf'), 1.0], [6.0, 2.0]], 0, id="NP_ARGMAX Inf in array2"),
+    pytest.param(numpy_argmax, [[float('NaN'), 1.0], [6.0, 2.0]], 0, id="NP_ARGMAX NaN in array2"),
+    pytest.param(numpy_argmax, [[float('-NaN'), 1.0], [6.0, 2.0]], 0, id="NP_ARGMAX NaN in array2"),
+    pytest.param(numpy_argmax, [[5.0, float('-Inf'), 1.0], [3.0, 6.0, 2.0]], 4, id="NP_ARGMAX -Inf in array3"),
+    pytest.param(numpy_argmax, [[5.0, float('Inf'), 1.0], [3.0, 6.0, 2.0]], 1, id="NP_ARGMAX Inf in array3"),
+    pytest.param(numpy_argmax, [[5.0, float('NaN'), 1.0], [3.0, 6.0, 2.0]], 1, id="NP_ARGMAX NaN in array3"),
+    pytest.param(numpy_argmax, [[5.0, float('-NaN'), 1.0], [3.0, 6.0, 2.0]], 1, id="NP_ARGMAX -NaN in array3"),
 ])
 @pytest.mark.benchmark(group="Function UDF")
 def test_user_def_func_numpy(function, variable, expected, func_mode, benchmark):

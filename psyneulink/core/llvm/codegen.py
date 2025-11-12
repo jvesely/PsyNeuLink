@@ -63,7 +63,8 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
             'less_equal': get_np_cmp("<="),
             'greater': get_np_cmp(">"),
             'greater_equal': get_np_cmp(">="),
-            "max": self.call_builtin_np_max,
+            'max': self.call_builtin_np_max,
+            'argmax': self.call_builtin_np_argmax,
         }
 
         for k, v in func_globals.items():
@@ -596,29 +597,45 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
         x = self.get_rval(x)
         return self._do_unary_op(builder, x, lambda builder, x: helpers.sqrt(self.ctx, builder, x))
 
-    def call_builtin_np_max(self, builder, x):
-        # numpy max searches for the largest scalar and propagates NaNs be default.
+    def call_builtin_np_maxlike(self, builder, x):
+        # numpy max searches for the largest scalar and propagates NaNs by default.
         # Only the default behaviour is supported atm
         # see: https://numpy.org/doc/stable/reference/generated/numpy.amax.html#numpy.amax
 
         x = self.get_rval(x)
         if helpers.is_scalar(x):
-            return x
+            return self.ctx.int32_ty(0)
 
         res = self.ctx.float_ty(float("-Inf"))
+        idx = self.ctx.int32_ty(0)
+        best_idx = self.ctx.int32_ty(0)
 
-        def find_max(builder, x):
+        def find_argmax(builder, x):
             nonlocal res
+            nonlocal idx
+            nonlocal best_idx
+
             # to propagate NaNs we use unordered >,
             # but only update if the current result is not NaN
             not_nan = builder.fcmp_ordered('ord', res, res)
             greater = builder.fcmp_unordered('>', x, res)
             cond = builder.and_(not_nan, greater)
+
             res = builder.select(cond, x, res)
+            best_idx = builder.select(cond, idx, best_idx)
+            idx = builder.add(idx, idx.type(1))
+
             return res
 
-        self._do_unary_op(builder, x, find_max)
-        return res
+        self._do_unary_op(builder, x, find_argmax)
+        return res, helpers.convert_type(builder, best_idx, self.ctx.float_ty)
+
+
+    def call_builtin_np_max(self, builder, x):
+        return self.call_builtin_np_maxlike(builder, x)[0]
+
+    def call_builtin_np_argmax(self, builder, x):
+        return self.call_builtin_np_maxlike(builder, x)[1]
 
 
 def gen_node_assembly(ctx, composition, node, *, tags:frozenset):
