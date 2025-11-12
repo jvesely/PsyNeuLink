@@ -52,8 +52,9 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
 
             return np_cmp
 
-        # setup numpy
+        # setup attributes of numpy (np) module
         numpy_handlers = {
+            # numpy functions should be consumed by a call node
             'tanh': self.call_builtin_np_tanh,
             'exp': self.call_builtin_np_exp,
             'sqrt': self.call_builtin_np_sqrt,
@@ -65,6 +66,9 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
             'greater_equal': get_np_cmp(">="),
             'max': self.call_builtin_np_max,
             'argmax': self.call_builtin_np_argmax,
+
+            # value attributes can be returned directly
+            'nan':self.ctx.float_ty(float("nan"))
         }
 
         for k, v in func_globals.items():

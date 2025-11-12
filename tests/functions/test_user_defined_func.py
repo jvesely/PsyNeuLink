@@ -543,6 +543,7 @@ def numpy_argmax(variable):
     pytest.param(numpy_argmax, [[5.0, float('Inf'), 1.0], [3.0, 6.0, 2.0]], 1, id="NP_ARGMAX Inf in array3"),
     pytest.param(numpy_argmax, [[5.0, float('NaN'), 1.0], [3.0, 6.0, 2.0]], 1, id="NP_ARGMAX NaN in array3"),
     pytest.param(numpy_argmax, [[5.0, float('-NaN'), 1.0], [3.0, 6.0, 2.0]], 1, id="NP_ARGMAX -NaN in array3"),
+    pytest.param(lambda x: np.nan, [[5.0, float('-NaN'), 1.0], [3.0, 6.0, 2.0]], np.nan, id="NP_NAN"),
 ])
 @pytest.mark.benchmark(group="Function UDF")
 def test_user_def_func_numpy(function, variable, expected, func_mode, benchmark):
