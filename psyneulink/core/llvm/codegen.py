@@ -35,6 +35,7 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
             "sum": self.call_builtin_horizontal_sum,
             "len": self.call_builtin_len,
             "max": self.call_builtin_max,
+            "bool": self.call_builtin_convert_bool,
             "float": self.call_builtin_convert_float,
             "int": self.call_builtin_convert_int,
         }
@@ -548,6 +549,10 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
         if helpers.is_pointer(x):
             x_ty = x_ty.pointee
         return self.ctx.float_ty(len(x_ty))
+
+    def call_builtin_convert_bool(self, builder, x):
+        arg = builder.load(x) if helpers.is_pointer(x) else x
+        return helpers.convert_type(builder, arg, self.ctx.bool_ty)
 
     def call_builtin_convert_float(self, builder, x):
         arg = builder.load(x) if helpers.is_pointer(x) else x

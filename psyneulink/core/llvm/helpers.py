@@ -324,6 +324,10 @@ def convert_type(builder, val, t):
         else:
             assert False, "Unknown float conversion: {} -> {}".format(val.type, t)
 
+    if isinstance(val.type, ir.ArrayType) and len(val.type) == 1:
+        val = builder.extract_value(val, [0])
+        return convert_type(builder, val, t)
+
     assert False, "Unknown type conversion: {} -> {}".format(val.type, t)
 
 

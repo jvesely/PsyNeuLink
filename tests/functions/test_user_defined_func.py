@@ -284,6 +284,9 @@ def simpleFun(variable, param1, param2):
 def castReturn(variable, param1, param2):
     return float(int(param1)) + float(param2) + float(variable[0] + variable[1])
 
+def singletonArrayCast(variable, param1, param2):
+    return float(variable) + float(int(param1)) + float(bool(param2))
+
 
 def condReturn(variable, param1, param2):
     if variable[0]:
@@ -305,6 +308,7 @@ def lambdaGen():
 
 @pytest.mark.parametrize("func,var,params,expected", [
     (simpleFun, [1, 3], {"param1":None, "param2":3}, [5, 9]),
+    (singletonArrayCast, [1], {"param1":5.5, "param2":3.6}, [7]),
     (castReturn, [1, 3], {"param1":5.5, "param2":3.6}, [12.6]),
     (condReturn, [0], {"param1":1, "param2":2}, [2.3]),
     (condReturn, [1], {"param1":1, "param2":2}, [1.5]),
