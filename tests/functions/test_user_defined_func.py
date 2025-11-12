@@ -497,59 +497,40 @@ def test_user_def_func_return(dtype, expected, func_mode, benchmark):
     np.testing.assert_allclose(val, expected)
 
 
-@pytest.mark.parametrize("op,variable,expected", [ # parameter is string since compiled udf doesn't support closures as of present
-                ("TANH", [[1, 3]], [[0.76159416, 0.99505475]]),
-                ("EXP", [[1, 3]], [[2.71828183, 20.08553692]]),
-                ("SQRT", [[1, 3]], [[1.0, 1.7320508075688772]]),
-                ("SHAPE", [1, 2], [2]),
-                ("SHAPE", [[1, 3]], [1, 2]),
-                ("ASTYPE_FLOAT", [1], [1.0]),
-                ("ASTYPE_INT", [-1.5], [-1.0]),
-                ("NP_MAX", 5.0, 5.0),
-                ("NP_MAX", [0.0, 0.0], 0),
-                ("NP_MAX", [1.0, 2.0], 2),
-                ("NP_MAX", [1.0, 2.0, float("-Inf"), float("Inf"), float("NaN")], float("NaN")),
-                ("NP_MAX", [[2.0, 1.0], [6.0, 2.0]], 6),
-                ("NP_MAX", [[[-2.0, -1.0], [-6.0, -2.0]],[[2.0, 1.0], [6.0, 2.0]]], 6),
-                ("NP_MAX", [[float('-Inf'), 1.0], [6.0, 2.0]], 6),
-                ("NP_MAX", [[float('Inf'), 1.0], [6.0, 2.0]], float('Inf')),
-                ("NP_MAX", [[float('NaN'), 1.0], [6.0, 2.0]], float('NaN')),
-                ("NP_MAX", [[float('-NaN'), 1.0], [6.0, 2.0]], float('-NaN')),
-                ("NP_MAX", [[5.0, float('-Inf'), 1.0], [3.0, 6.0, 2.0]], 6),
-                ("NP_MAX", [[5.0, float('Inf'), 1.0], [3.0, 6.0, 2.0]], float('Inf')),
-                ("NP_MAX", [[5.0, float('NaN'), 1.0], [3.0, 6.0, 2.0]], float('NaN')),
-                ("NP_MAX", [[5.0, float('NaN'), 1.0], [3.0, 6.0, 2.0]], float('-NaN')),
-                ("FLATTEN", [[1.0, 2.0], [3.0, 4.0]], [1.0, 2.0, 3.0, 4.0])
-                ])
-@pytest.mark.benchmark(group="Function UDF")
-def test_user_def_func_numpy(op, variable, expected, func_mode, benchmark):
-    if op == "TANH":
-        def myFunction(variable):
-            return np.tanh(variable)
-    elif op == "EXP":
-        def myFunction(variable):
-            return np.exp(variable)
-    elif op == "SQRT":
-        def myFunction(variable):
-            return np.sqrt(variable)
-    elif op == "SHAPE":
-        def myFunction(variable):
-            return variable.shape
-    elif op == "ASTYPE_FLOAT":
-        def myFunction(variable):
-            return variable.astype(float)
-    elif op == "ASTYPE_INT":
-        # return types cannot be integers, so we cast back to float and check for truncation
-        def myFunction(variable):
-            return variable.astype(int).astype(float)
-    elif op == "NP_MAX":
-        def myFunction(variable):
-            return np.max(variable)
-    elif op == "FLATTEN":
-        def myFunction(variable):
-            return variable.flatten()
+def numpy_shape(variable):
+    return variable.shape
 
-    U = UserDefinedFunction(custom_function=myFunction, default_variable=variable)
+def numpy_max(variable):
+    return np.max(variable)
+
+@pytest.mark.parametrize("function,variable,expected", [
+    pytest.param(lambda x: np.tanh(x), [[1, 3]], [[0.76159416, 0.99505475]], id="TANH"),
+    pytest.param(lambda x: np.exp(x), [[1, 3]], [[2.71828183, 20.08553692]], id="EXP"),
+    pytest.param(lambda x: np.sqrt(x), [[1, 3]], [[1.0, 1.7320508075688772]], id="SQRT"),
+    pytest.param(numpy_shape, [1, 2], [2], id="SHAPE 1D"),
+    pytest.param(numpy_shape, [[1, 3]], [1, 2], id="SHAPE 2D"),
+    pytest.param(lambda x: x.astype(float), [1], [1.0], id="ASTYPE_FLOAT"),
+    pytest.param(lambda x: x.astype(int).astype(float), [-1.5], [-1.0], id="ASTYPE_INT"),
+    pytest.param(numpy_max, 5.0, 5.0, id="NP_MAX scalar"),
+    pytest.param(numpy_max, [0.0, 0.0], 0, id="NP_MAX 1D equal"),
+    pytest.param(numpy_max, [1.0, 2.0], 2, id="NP_MAX 1D"),
+    pytest.param(numpy_max, [1.0, 2.0, float("-Inf"), float("Inf"), float("NaN")], float("NaN"), id="NP_MAX 2D Inf/NaN"),
+    pytest.param(numpy_max, [[2.0, 1.0], [6.0, 2.0]], 6, id="NP_MAX 2D"),
+    pytest.param(numpy_max, [[[-2.0, -1.0], [-6.0, -2.0]],[[2.0, 1.0], [6.0, 2.0]]], 6, id="NP_MAX 3D"),
+    pytest.param(numpy_max, [[float('-Inf'), 1.0], [6.0, 2.0]], 6, id="NP_MAX -Inf in array2"),
+    pytest.param(numpy_max, [[float('Inf'), 1.0], [6.0, 2.0]], float('Inf'), id="NP_MAX Inf in array2"),
+    pytest.param(numpy_max, [[float('NaN'), 1.0], [6.0, 2.0]], float('NaN'), id="NP_MAX NaN in array2"),
+    pytest.param(numpy_max, [[float('-NaN'), 1.0], [6.0, 2.0]], float('-NaN'), id="NP_MAX NaN in array2"),
+    pytest.param(numpy_max, [[5.0, float('-Inf'), 1.0], [3.0, 6.0, 2.0]], 6, id="NP_MAX -Inf in array3"),
+    pytest.param(numpy_max, [[5.0, float('Inf'), 1.0], [3.0, 6.0, 2.0]], float('Inf'), id="NP_MAX Inf in array3"),
+    pytest.param(numpy_max, [[5.0, float('NaN'), 1.0], [3.0, 6.0, 2.0]], float('NaN'), id="NP_MAX NaN in array3"),
+    pytest.param(numpy_max, [[5.0, float('-NaN'), 1.0], [3.0, 6.0, 2.0]], float('-NaN'), id="NP_MAX -NaN in array3"),
+    pytest.param(lambda x: x.flatten(), [[1.0, 2.0], [3.0, 4.0]], [1.0, 2.0, 3.0, 4.0], id="FLATTEN"),
+])
+@pytest.mark.benchmark(group="Function UDF")
+def test_user_def_func_numpy(function, variable, expected, func_mode, benchmark):
+
+    U = UserDefinedFunction(custom_function=function, default_variable=variable)
     e = pytest.helpers.get_func_execution(U, func_mode)
 
     val = benchmark(e, variable)
