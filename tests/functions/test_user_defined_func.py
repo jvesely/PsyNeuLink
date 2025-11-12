@@ -572,6 +572,7 @@ def test_udf_in_mechanism(mech_mode, benchmark):
 @pytest.mark.parametrize("variable,shapes,expected,ports", [
     pytest.param([-1, 2, 3, 4], 4, [[7]], [{pnl.VARIABLE: [pnl.OWNER_VALUE, (pnl.OWNER_VALUE, 0, 0)], pnl.FUNCTION: lambda x: sum(x[0][0]) + x[1]}], id="aggregate_variable"),
     pytest.param([-1, 2, 3, 4], 4, [[9]], [{pnl.VARIABLE: [pnl.OWNER_VALUE, "is_finished_flag"], pnl.FUNCTION: lambda x: sum(x[0][0]) + x[1]}], id="is_finished"),
+    pytest.param([-1, 2, 4, 3], 4, [[2]], [{pnl.VARIABLE: [pnl.OWNER_VALUE, "is_finished_flag"], pnl.FUNCTION: lambda x: np.argmax(x[0]) if x[1] else np.nan}], id="decision_index"),
 ])
 def test_udf_in_output_port(variable, shapes, expected, ports, mech_mode, benchmark):
 
