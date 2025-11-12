@@ -570,18 +570,17 @@ def test_udf_in_mechanism(mech_mode, benchmark):
     np.testing.assert_allclose(val, [[10]])
 
 @pytest.mark.benchmark(group="UDF in Mechanism")
-def test_udf_in_output_port_with_aggregate_variable(mech_mode, benchmark):
-    def myFunction(variable):
-        return sum(variable[0][0]) + variable[1]
+@pytest.mark.parametrize("variable,shapes,expected,ports", [
+    pytest.param([-1, 2, 3, 4], 4, [[7]], [{pnl.VARIABLE: [pnl.OWNER_VALUE, (pnl.OWNER_VALUE, 0, 0)], pnl.FUNCTION: lambda x: sum(x[0][0]) + x[1]}], id="aggregate_variable"),
+])
+def test_udf_in_output_port(variable, shapes, expected, ports, mech_mode, benchmark):
 
-    myMech = ProcessingMechanism(input_shapes=4,
-                                 output_ports=[{pnl.VARIABLE: [pnl.OWNER_VALUE, (pnl.OWNER_VALUE, 0, 0)],
-                                                pnl.FUNCTION: myFunction}])
+    myMech = ProcessingMechanism(input_shapes=shapes, output_ports=ports)
 
     e = pytest.helpers.get_mech_execution(myMech, mech_mode)
 
-    val = benchmark(e, [-1, 2, 3, 4])
-    np.testing.assert_allclose(val, [[7]])
+    val = benchmark(e, variable)
+    np.testing.assert_allclose(val, expected)
 
 
 @pytest.mark.parametrize("op,variable,expected", [ # parameter is string since compiled udf doesn't support closures as of present
