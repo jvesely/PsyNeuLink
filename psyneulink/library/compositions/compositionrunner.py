@@ -246,7 +246,11 @@ class CompositionRunner():
                                                  and optimization_num
                                                  in pytorch_rep._execute_in_additional_optimizations[node])):
                                     continue
-                                node.execute(variable, optimization_num, synch_with_pnl_options, context)
+                                node.execute(variable=variable,
+                                             optimization_num=optimization_num,
+                                             synch_with_pnl_options=synch_with_pnl_options,
+                                             sequence_lengths=lengths_for_minibatch,
+                                             context=context)
 
                         # Synchronize after every optimization step for a given stimulus (i.e., trial) if specified
                         pytorch_rep.synch_with_psyneulink(synch_with_pnl_options, LearningScale.OPTIMIZATION_STEP, context,
