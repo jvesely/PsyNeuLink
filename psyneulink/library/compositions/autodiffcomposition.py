@@ -1907,14 +1907,6 @@ class AutodiffComposition(Composition):
                                    f"that includes nested AutodiffComposition(s).")
 
         if execution_mode is not pnlvm.ExecutionMode.Python:
-            # self._assign_execution_ids(context)
-            # context.composition = self
-            # context.source = ContextFlags.COMPOSITION
-            #
-            # if execution_mode is pnlvm.ExecutionMode.PyTorch and not torch_available:
-            #     raise AutodiffCompositionError(f"'{self.name}.learn()' has been called with ExecutionMode.Pytorch, "
-            #                                    f"but Pytorch module ('torch') is not installed. "
-            #                                    f"Please install it with `pip install torch` or `pip3 install torch`")
 
             if scheduler is None:
                 scheduler = self.scheduler
