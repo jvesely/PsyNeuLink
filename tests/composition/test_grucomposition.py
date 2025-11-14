@@ -367,7 +367,8 @@ if torch_available:
 
             torch.set_default_dtype(entry_torch_dtype)
 
-        def test_gru_with_sequences(self):
+        @pytest.mark.parametrize('varying_lengths', [False, True], ids=['fixed_length','varying_length'])
+        def test_gru_with_sequences(self, varying_lengths):
 
             import torch
 
@@ -392,7 +393,12 @@ if torch_available:
 
             # Generate random training sequences with varying lengths
             torch.manual_seed(42)
-            lengths = torch.randint(1, max_sequence_length + 1, (num_sequences,)).tolist()
+
+            if varying_lengths:
+                lengths = torch.randint(1, max_sequence_length + 1, (num_sequences,)).tolist()
+            else:
+                lengths = [max_sequence_length] * num_sequences
+
             train_sequences = [torch.rand((L, input_size)) * 10 for L in lengths]
             train_labels = [(s.sum() > threshold).double() for s in train_sequences]
             train_labels = torch.tensor(train_labels)
