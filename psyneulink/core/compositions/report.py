@@ -1639,13 +1639,16 @@ class Report:
         # Generate report -------------------------------------------------------------------------------
 
         if params_string:
-            node_report = Group(input_report,
-                                      Panel(params_string,
-                                            box=params_panel_box,
-                                            border_style=params_panel_color,
-                                            title='params'
-                                            ),
-                                      output_report)
+            node_report = Group(
+                input_report,
+                Panel(
+                    params_string,
+                    box=params_panel_box,
+                    border_style=params_panel_color,
+                    title='params',
+                ),
+                output_report,
+            )
         else:
             node_report = f'{input_report}\n{output_report}'
 
