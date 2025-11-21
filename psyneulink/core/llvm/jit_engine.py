@@ -54,7 +54,11 @@ __initialized = False
 def _binding_initialize():
     global __initialized
     if not __initialized:
-        binding.initialize()
+        # calling binding.initalize() is not needed in later versions
+        # of llvmlite, and throws exception in >=0.45.0
+        if version.parse(llvmlite.__version__) < version.parse('0.45.0'):
+            binding.initialize()
+
         if not ptx_enabled:
             # native == currently running CPU. ASM printer includes opcode emission
             binding.initialize_native_target()
