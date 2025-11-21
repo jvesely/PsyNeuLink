@@ -8,7 +8,9 @@
 
 # ********************************************* LLVM bindings **************************************************************
 
-from llvmlite import binding
+import llvmlite
+import llvmlite.binding as binding
+import packaging.version as version
 import time
 import warnings
 
@@ -64,29 +66,49 @@ def _binding_initialize():
         __initialized = True
 
 
+def _new_pass_builder(target_machine, opt_level):
+    pto = binding.create_pipeline_tuning_options(speed_level=opt_level)
+    pto.loop_vectorization = opt_level != 0
+    pto.slp_vectorization = opt_level != 0
+
+    pass_builder = binding.create_pass_builder(target_machine, pto)
+
+    return pass_builder
+
+def _old_pass_manager(target_machine, opt_level):
+    pass_manager_builder = binding.PassManagerBuilder()
+    pass_manager_builder.loop_vectorize = opt_level != 0
+    pass_manager_builder.slp_vectorize = opt_level != 0
+    pass_manager_builder.opt_level = opt_level
+
+    # Create module pass manager and populate it with analysis and opt passes
+    pass_manager = binding.ModulePassManager()
+    target_machine.add_analysis_passes(pass_manager)
+    pass_manager_builder.populate(pass_manager)
+
+    return pass_manager
+
 def _cpu_jit_constructor():
     _binding_initialize()
 
     opt_level = int(debug_env.get('opt', 2))
 
-    # PassManagerBuilder can be shared
-    __pass_manager_builder = binding.PassManagerBuilder()
-    __pass_manager_builder.loop_vectorize = opt_level != 0
-    __pass_manager_builder.slp_vectorize = opt_level != 0
-    __pass_manager_builder.opt_level = opt_level
-
-    __cpu_features = binding.get_host_cpu_features().flatten()
-    __cpu_name = binding.get_host_cpu_name()
-
-    # Create compilation target, use default triple
-    __cpu_target = binding.Target.from_default_triple()
+    # Create compilation target, use triple from current process
     # FIXME: reloc='static' is needed to avoid crashes on win64
     # see: https://github.com/numba/llvmlite/issues/457
-    __cpu_target_machine = __cpu_target.create_target_machine(cpu=__cpu_name, features=__cpu_features, opt=opt_level, reloc='static')
+    cpu_target = binding.Target.from_triple(binding.get_process_triple())
+    cpu_target_machine = cpu_target.create_target_machine(cpu=binding.get_host_cpu_name(),
+                                                          features=binding.get_host_cpu_features().flatten(),
+                                                          opt=opt_level,
+                                                          reloc='static')
 
-    __cpu_pass_manager = binding.ModulePassManager()
-    __cpu_target_machine.add_analysis_passes(__cpu_pass_manager)
-    __pass_manager_builder.populate(__cpu_pass_manager)
+    # llvmlite>=0.44 introduced a new pass manager
+    if version.parse(llvmlite.__version__) >= version.parse('0.44.0'):
+        pass_manager = None
+        pass_builder = _new_pass_builder(cpu_target_machine, opt_level)
+    else:
+        pass_manager = _old_pass_manager(cpu_target_machine, opt_level)
+        pass_builder = None
 
     # And an execution engine with a builtins backing module
     builtins_module = _generate_cpu_builtins_module(LLVMBuilderContext.get_current().float_ty)
@@ -94,10 +116,11 @@ def _cpu_jit_constructor():
         with open(builtins_module.name + '.generated.ll', 'w') as dump_file:
             dump_file.write(str(builtins_module))
 
-    __backing_mod = binding.parse_assembly(str(builtins_module))
+    backing_mod = binding.parse_assembly(str(builtins_module))
 
-    __cpu_jit_engine = binding.create_mcjit_compiler(__backing_mod, __cpu_target_machine)
-    return __cpu_jit_engine, __cpu_pass_manager, __cpu_target_machine
+    cpu_jit_engine = binding.create_mcjit_compiler(backing_mod, cpu_target_machine)
+
+    return cpu_jit_engine, cpu_target_machine, pass_manager, pass_builder
 
 
 def _ptx_jit_constructor():
@@ -154,10 +177,12 @@ class jit_engine:
     def __init__(self):
         self._jit_engine = None
         self._jit_pass_manager = None
+        self._jit_pass_builder = None
         self._target_machine = None
         self.__mod = None
+
         # Add an extra reference to make sure it's not destroyed before
-        # instances of jit_engine
+        # all instances of jit_engine
         self.__debug_env = debug_env
 
         self.staged_modules = set()
@@ -177,7 +202,7 @@ class jit_engine:
 
     def opt_and_add_bin_module(self, module):
         start = time.perf_counter()
-        self._pass_manager.run(module)
+        self._pass_manager.run(module, self._pass_builder)
         finish = time.perf_counter()
 
         if "time_stat" in debug_env:
@@ -233,10 +258,22 @@ class jit_engine:
 
     @property
     def _pass_manager(self):
+        # use new pass manager
+        if self._pass_builder is not None:
+            return self._pass_builder.getModulePassManager()
+
+        # use old pass manager
         if self._jit_pass_manager is None:
             self._init()
 
         return self._jit_pass_manager
+
+    @property
+    def _pass_builder(self):
+        if self._jit_pass_builder is None and self._jit_pass_manager is None:
+            self._init()
+
+        return self._jit_pass_builder
 
     def stage_compilation(self, modules):
         self.staged_modules |= modules
@@ -275,9 +312,10 @@ class cpu_jit_engine(jit_engine):
     def _init(self):
         assert self._jit_engine is None
         assert self._jit_pass_manager is None
+        assert self._jit_pass_builder is None
         assert self._target_machine is None
 
-        self._jit_engine, self._jit_pass_manager, self._target_machine = _cpu_jit_constructor()
+        self._jit_engine, self._target_machine, self._jit_pass_manager, self._jit_pass_builder = _cpu_jit_constructor()
         if self._object_cache is not None:
             self._jit_engine.set_object_cache(self._object_cache)
 
