@@ -66,20 +66,30 @@ def _binding_initialize():
         __initialized = True
 
 
-def _new_pass_builder(target_machine, opt_level):
+def _new_pass_builder(target_machine, opt_level, extra_opts = dict()):
     pto = binding.create_pipeline_tuning_options(speed_level=opt_level)
     pto.loop_vectorization = opt_level != 0
     pto.slp_vectorization = opt_level != 0
+
+    assert set(extra_opts.keys()).issubset(dir(pto)), dir(pto)
+
+    for key, value in extra_opts.items():
+        setattr(pto, key, value)
 
     pass_builder = binding.create_pass_builder(target_machine, pto)
 
     return pass_builder
 
-def _old_pass_manager(target_machine, opt_level):
+def _old_pass_manager(target_machine, opt_level, extra_opts = dict()):
     pass_manager_builder = binding.PassManagerBuilder()
     pass_manager_builder.loop_vectorize = opt_level != 0
     pass_manager_builder.slp_vectorize = opt_level != 0
     pass_manager_builder.opt_level = opt_level
+
+    assert set(extra_opts.keys()).issubset(dir(pass_manager_builder))
+
+    for key, value in extra_opts.items():
+        setattr(pass_manager_builder, key, value)
 
     # Create module pass manager and populate it with analysis and opt passes
     pass_manager = binding.ModulePassManager()
@@ -128,28 +138,37 @@ def _ptx_jit_constructor():
 
     opt_level = int(debug_env.get('opt', 2))
 
-    # PassManagerBuilder is used only for inlining simple functions
-    __pass_manager_builder = binding.PassManagerBuilder()
-    __pass_manager_builder.opt_level = 2
-    __pass_manager_builder.size_level = 1
-
-    # The threshold of '64' is empirically selected on GF 3050
-    __pass_manager_builder.inlining_threshold = 64
-
     # Use default device
     # TODO: Add support for multiple devices
-    __compute_capability = pycuda_default.device.compute_capability()
-    __ptx_sm = "sm_{}{}".format(__compute_capability[0], __compute_capability[1])
+    compute_capability = pycuda_default.device.compute_capability()
+    ptx_sm = "sm_{}{}".format(compute_capability[0], compute_capability[1])
 
     # Create compilation target, use 64bit triple
-    __ptx_target = binding.Target.from_triple("nvptx64-nvidia-cuda")
-    __ptx_target_machine = __ptx_target.create_target_machine(cpu=__ptx_sm, opt=opt_level)
+    ptx_target = binding.Target.from_triple("nvptx64-nvidia-cuda")
+    ptx_target_machine = ptx_target.create_target_machine(cpu=ptx_sm, opt=opt_level)
 
-    __ptx_pass_manager = binding.ModulePassManager()
-    __ptx_target_machine.add_analysis_passes(__ptx_pass_manager)
-    __pass_manager_builder.populate(__ptx_pass_manager)
+    # The threshold of '64' is empirically selected on GF 3050
+    extra_opts = {'size_level' : 1, 'inlining_threshold': 64}
 
-    return __ptx_pass_manager, __ptx_target_machine
+    # llvmlite>=0.44 introduced a new pass manager, but inlining threshold
+    # is not supported until 0.45.0 [1], and using new pass manager for CUDA
+    # leads to error when using 0.44.0
+    # [1] https://github.com/numba/llvmlite/commit/ccfbf78bd838fef886a1ec9fc4a353ec952fa035
+    if version.parse(llvmlite.__version__) >= version.parse('0.45.0'):
+
+        # size_level check is mismatched between Python and C++ until 0.46 [1]
+        # even then size_level is only allowed for opt_level==2
+        # [1] https://github.com/numba/llvmlite/issues/1306
+        if version.parse(llvmlite.__version__) < version.parse('0.46.0') or opt_level != 2:
+            del extra_opts['size_level']
+
+        ptx_pass_builder = _new_pass_builder(ptx_target_machine, opt_level, extra_opts)
+        ptx_pass_manager = None
+    else:
+        ptx_pass_manager = _old_pass_manager(ptx_target_machine, opt_level, extra_opts)
+        ptx_pass_builder = None
+
+    return ptx_target_machine, ptx_pass_manager, ptx_pass_builder
 
 
 def _try_parse_module(module):
@@ -391,9 +410,10 @@ class ptx_jit_engine(jit_engine):
     def _init(self):
         assert self._jit_engine is None
         assert self._jit_pass_manager is None
+        assert self._jit_pass_builder is None
         assert self._target_machine is None
 
-        self._jit_pass_manager, self._target_machine = _ptx_jit_constructor()
+        self._target_machine, self._jit_pass_manager, self._jit_pass_builder = _ptx_jit_constructor()
         self._jit_engine = ptx_jit_engine.cuda_engine(self._target_machine)
 
     def get_kernel(self, name):
