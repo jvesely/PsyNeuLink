@@ -202,7 +202,9 @@ class jit_engine:
 
     def opt_and_add_bin_module(self, module):
         start = time.perf_counter()
-        self._pass_manager.run(module, self._pass_builder)
+        pm = self._pass_manager
+        pm.add_verifier()
+        pm.run(module, self._pass_builder)
         finish = time.perf_counter()
 
         if "time_stat" in debug_env:
