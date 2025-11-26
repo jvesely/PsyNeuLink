@@ -91,7 +91,7 @@ def _old_pass_manager(target_machine, opt_level):
 def _cpu_jit_constructor():
     _binding_initialize()
 
-    opt_level = int(debug_env.get('opt', 2))
+    opt_level = int(debug_env.get('opt', 0))
 
     # Create compilation target, use triple from current process
     # FIXME: reloc='static' is needed to avoid crashes on win64
