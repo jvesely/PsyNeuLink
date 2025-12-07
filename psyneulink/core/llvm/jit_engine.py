@@ -135,6 +135,7 @@ def _cpu_jit_constructor():
     builtins_module = _generate_cpu_builtins_module(LLVMBuilderContext.get_current().float_ty)
 
     backing_mod = binding.parse_assembly(str(builtins_module))
+    backing_mod.triple = cpu_target_machine.triple
     backing_mod.verify()
 
     if "dump-llvm-gen" in debug_env:
@@ -233,6 +234,8 @@ class jit_engine:
             print("Total parsed modules in '{}': {}".format(s, self.__parsed_modules))
 
     def opt_and_add_bin_module(self, module):
+        assert module.triple == self._target_machine.triple, "Triple mismatch: {} vs. {}".format(module.triple, self._target_machine.triple)
+
         start = time.perf_counter()
         self._pass_manager.run(module, self._pass_builder)
         finish = time.perf_counter()
@@ -326,12 +329,14 @@ class jit_engine:
     def compile_staged(self):
         # Parse generated modules and link them
         mod_bundle = binding.parse_assembly("")
+        mod_bundle.triple = self._target_machine.triple
 
         while self.staged_modules:
             m = self.staged_modules.pop()
 
             start = time.perf_counter()
             new_mod = _try_parse_module(m)
+            new_mod.triple = self._target_machine.triple
             finish = time.perf_counter()
 
             if "time_stat" in debug_env:
