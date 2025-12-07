@@ -90,11 +90,14 @@ def _cpu_jit_constructor():
 
     # And an execution engine with a builtins backing module
     builtins_module = _generate_cpu_builtins_module(LLVMBuilderContext.get_current().float_ty)
-    if "dump-llvm-gen" in debug_env:
-        with open(builtins_module.name + '.generated.ll', 'w') as dump_file:
-            dump_file.write(str(builtins_module))
 
     __backing_mod = binding.parse_assembly(str(builtins_module))
+    __backing_mod.triple = __cpu_target_machine.triple
+    __backing_mod.verify()
+
+    if "dump-llvm-gen" in debug_env:
+        with open(builtins_module.name + '.generated.ll', 'w') as dump_file:
+            dump_file.write(str(__backing_mod))
 
     __cpu_jit_engine = binding.create_mcjit_compiler(__backing_mod, __cpu_target_machine)
     return __cpu_jit_engine, __cpu_pass_manager, __cpu_target_machine
@@ -154,7 +157,7 @@ class jit_engine:
     def __init__(self):
         self._jit_engine = None
         self._jit_pass_manager = None
-        self._target_machine = None
+        self._jit_target_machine = None
         self.__mod = None
         # Add an extra reference to make sure it's not destroyed before
         # instances of jit_engine
@@ -176,6 +179,8 @@ class jit_engine:
             print("Total parsed modules in '{}': {}".format(s, self.__parsed_modules))
 
     def opt_and_add_bin_module(self, module):
+        assert module.triple == self._target_machine.triple, "Triple mismatch: {} vs. {}".format(module.triple, self._target_machine.triple)
+
         start = time.perf_counter()
         self._pass_manager.run(module)
         finish = time.perf_counter()
@@ -196,8 +201,10 @@ class jit_engine:
         self._engine.add_module(module)
         self._engine.finalize_object()
         finish = time.perf_counter()
+
         if "time_stat" in debug_env:
             print("Time to finalize LLVM module bundle '{}': {}".format(module.name, finish - start))
+
         self.__optimized_modules += 1
 
     def _remove_bin_module(self, module):
@@ -232,6 +239,13 @@ class jit_engine:
         return self._jit_engine
 
     @property
+    def _target_machine(self):
+        if self._jit_target_machine is None:
+            self._init()
+
+        return self._jit_target_machine
+
+    @property
     def _pass_manager(self):
         if self._jit_pass_manager is None:
             self._init()
@@ -242,16 +256,20 @@ class jit_engine:
         self.staged_modules |= modules
 
     # Unfortunately, this needs to be done for every jit_engine.
-    # Liking step in opt_and_add_bin_module invalidates 'mod_bundle',
-    # so it can't be linked mutliple times (in multiple engines).
+    # Linking step in opt_and_add_bin_module invalidates 'mod_bundle',
+    # so it can't be linked multiple times (in multiple engines).
+    # These modules are still using 'unknown-unknown-unknown' triple
     def compile_staged(self):
         # Parse generated modules and link them
         mod_bundle = binding.parse_assembly("")
+        mod_bundle.triple = self._target_machine.triple
+
         while self.staged_modules:
             m = self.staged_modules.pop()
 
             start = time.perf_counter()
             new_mod = _try_parse_module(m)
+            new_mod.triple = self._target_machine.triple
             finish = time.perf_counter()
 
             if "time_stat" in debug_env:
@@ -275,9 +293,9 @@ class cpu_jit_engine(jit_engine):
     def _init(self):
         assert self._jit_engine is None
         assert self._jit_pass_manager is None
-        assert self._target_machine is None
+        assert self._jit_target_machine is None
 
-        self._jit_engine, self._jit_pass_manager, self._target_machine = _cpu_jit_constructor()
+        self._jit_engine, self._jit_pass_manager, self._jit_target_machine = _cpu_jit_constructor()
         if self._object_cache is not None:
             self._jit_engine.set_object_cache(self._object_cache)
 
@@ -353,9 +371,9 @@ class ptx_jit_engine(jit_engine):
     def _init(self):
         assert self._jit_engine is None
         assert self._jit_pass_manager is None
-        assert self._target_machine is None
+        assert self._jit_target_machine is None
 
-        self._jit_pass_manager, self._target_machine = _ptx_jit_constructor()
+        self._jit_pass_manager, self._jit_target_machine = _ptx_jit_constructor()
         self._jit_engine = ptx_jit_engine.cuda_engine(self._target_machine)
 
     def get_kernel(self, name):
