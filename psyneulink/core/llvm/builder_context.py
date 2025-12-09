@@ -674,8 +674,8 @@ def _gen_cuda_kernel_wrapper_module(function):
         shared = ir.GlobalVariable(module, ptr.type.pointee,
                                    name=function.name + "_shared_" + name,
                                    addrspace=3)
-        shared.alignment = 128
         shared.linkage = "internal"
+        shared.align = 128
         shared_ptr = b.addrspacecast(shared, shared.type.pointee.as_pointer())
 
         char_ptr_ty = ir.IntType(8).as_pointer()
@@ -724,7 +724,7 @@ def _gen_cuda_kernel_wrapper_module(function):
         builder, args[1] = _upload_to_shared(builder, args[1], one, "state")
         builder, args[4] = _upload_to_shared(builder, args[4], one, "data")
 
-        # TODO: Investigate benefit of uplaoding dynamic RO structures to
+        # TODO: Investigate benefit of uploading dynamic RO structures to
         #       shared memory (e.g. inputs)
 
     # Check global id and exit if we're over
