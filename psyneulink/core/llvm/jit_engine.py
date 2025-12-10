@@ -25,9 +25,14 @@ try:
     if pycuda.VERSION[0] < 2018:
         raise UserWarning("pycuda too old (need 2018+): " + str(pycuda.VERSION))
     import pycuda.driver
-    # pyCUDA needs to be built against 6+ to enable Linker
-    if pycuda.driver.get_version()[0] < 6:
-        raise UserWarning("CUDA driver too old (need 6+): " + str(pycuda.driver.get_version()))
+    # pyCUDA needs to be built against CUDA SDK 6+ to enable Linker
+    # PTX workaround in ptx jit compiler below requires at least ISA
+    # version 6.0 which was added in CUDA 9.0 [0] and the respective
+    # driver 384.81 [1] (for runtime JIT PTX compilation)
+    # [0] https://docs.nvidia.com/cuda/archive/9.0/parallel-thread-execution/index.html
+    # [1] https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html#id8
+    if pycuda.driver.get_version()[0] < 9:
+        raise UserWarning("CUDA driver too old (need 9+): " + str(pycuda.driver.get_version()))
 
     from pycuda import autoinit as pycuda_default
     import pycuda.compiler
@@ -158,7 +163,16 @@ def _ptx_jit_constructor():
 
     # Create compilation target, use 64bit triple
     ptx_target = binding.Target.from_triple("nvptx64-nvidia-cuda")
-    ptx_target_machine = ptx_target.create_target_machine(cpu=ptx_sm, opt=opt_level)
+
+    # llvm 20 (and possibly other versions) generates unsupported instructions
+    # for the selected ptx isa version used for older targets (sm_50, sm_60)[0]
+    # Using higher version of ptx isa works around the issue.
+    # There isn't a good way to get supported ptx versions from llvmlite, so just
+    # hardcode ptx_60 (from 'llc -mattr=help -mtriple=nvptx64-nvidia-cuda').
+    # [0] https://github.com/llvm/llvm-project/issues/171709
+    use_ptx = "+ptx60" if binding.llvm_version_info[0] == 20 else ""
+
+    ptx_target_machine = ptx_target.create_target_machine(cpu=ptx_sm, opt=opt_level, features=use_ptx)
 
     # The threshold of '64' is empirically selected on GF 3050
     extra_opts = {'size_level' : 1, 'inlining_threshold': 64}
