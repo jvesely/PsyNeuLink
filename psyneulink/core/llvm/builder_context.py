@@ -823,6 +823,16 @@ def _convert_llvm_ir_to_ctype(t: ir.Type):
             field_list.append((field_uniq_name, _convert_llvm_ir_to_ctype(e)))
 
         ret_t = type(uniq_name, (ctypes.Structure,), {"__init__": ctypes.Structure.__init__})
+
+        # ctypes '_pack_' takes a small non-negative integer to override structure
+        # alignment. Use 1 byte for LLVM packed structures.
+        # This attribute needs to be set before assigning the '_fields_'.
+        # Despite the official documentation, setting _pack_ = 0 is not equivalent
+        # to not setting it at all and numpy complains about the resulting ctypes
+        # structure
+        if t.packed:
+            ret_t._pack_ = 1
+
         ret_t._fields_ = field_list
         assert len(ret_t._fields_) == len(t.elements)
 
@@ -875,7 +885,7 @@ def _convert_llvm_ir_to_dtype(t: ir.Type):
         for i, e in enumerate(t.elements):
             field_list.append(("field_" + str(i), _convert_llvm_ir_to_dtype(e)))
 
-        ret_t = np.dtype(field_list, align=True)
+        ret_t = np.dtype(field_list, align=not t.packed)
     else:
         assert False, "Don't know how to convert LLVM type to dtype: {}".format(t)
 
