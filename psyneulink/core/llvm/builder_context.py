@@ -773,12 +773,11 @@ def _gen_cuda_kernel_wrapper_module(function):
 
 @functools.lru_cache(maxsize=128)
 def _convert_llvm_ir_to_ctype(t: ir.Type):
-    type_t = type(t)
 
-    if type_t is ir.VoidType:
+    if isinstance(t, ir.VoidType):
         return None
 
-    elif type_t is ir.IntType:
+    elif isinstance(t, ir.IntType):
         if t.width == 1:
             return ctypes.c_bool
         elif t.width == 8:
@@ -790,15 +789,15 @@ def _convert_llvm_ir_to_ctype(t: ir.Type):
         elif t.width == 64:
             return ctypes.c_uint64
         else:
-            assert False, "Unknown integer type: {}".format(type_t)
+            assert False, "Unknown integer type: {}".format(t)
 
-    elif type_t is ir.DoubleType:
+    elif isinstance(t, ir.DoubleType):
         return ctypes.c_double
 
-    elif type_t is ir.FloatType:
+    elif isinstance(t, ir.FloatType):
         return ctypes.c_float
 
-    elif type_t is ir.HalfType:
+    elif isinstance(t, ir.HalfType):
         # There's no half type in ctypes. Use uint16 instead.
         # User will need to do the necessary casting.
         return ctypes.c_uint16
@@ -808,11 +807,11 @@ def _convert_llvm_ir_to_ctype(t: ir.Type):
         pointee = _convert_llvm_ir_to_ctype(t.pointee)
         ret_t = ctypes.POINTER(pointee)
 
-    elif type_t is ir.ArrayType:
+    elif isinstance(t, ir.ArrayType):
         element_type = _convert_llvm_ir_to_ctype(t.element)
         ret_t = element_type * len(t)
 
-    elif type_t is ir.LiteralStructType:
+    elif isinstance(t, ir.LiteralStructType):
         global _struct_count
         uniq_name = "struct_" + str(_struct_count)
         _struct_count += 1
