@@ -2202,7 +2202,7 @@ def get_philox_state_struct(ctx):
         # to most structures having only 4B alignment that might conflict with
         # int64 types used above.
         # The behaviour only appeared with new llvmlite-0.45 and LLVM 20.
-        packed=(ctx.float_ty == ir.FloatType() and binding.llvm_version_info[0] >= 20))
+        packed=(ctx.float_ty == ir.FloatType() and binding.llvm_version_info[0] >= 20 and False))
 
 
 def setup_philox(ctx):

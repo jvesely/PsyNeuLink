@@ -172,6 +172,13 @@ class LLVMBinaryFunction:
 
         for i, arg in enumerate(self.np_arg_dtypes):
             if i not in ctype_ptr_args and self.byref_arg_types[i] is not None:
+                for e in _get_engines():
+                    print("ABI SIZE for arg", i, "LLVM:", e.get_abi_size(f.args[i].type.pointee), "ctypes", ctypes.sizeof(self.byref_arg_types[i]))
+                    assert e.get_abi_size(f.args[i].type.pointee) == ctypes.sizeof(self.byref_arg_types[i]), \
+                        "ABI check: Arg {} size mismatch, LLVM: {} vs. ctypes {}".format(i,
+                                                                                         e.get_abi_size(f.args[i].type.pointee),
+                                                                                         ctypes.sizeof(self.byref_arg_types[i]))
+
                 if i in dynamic_size_args:
                     args[i] = np.ctypeslib.ndpointer(dtype=arg.base, ndim=len(arg.shape) + 1, flags='C_CONTIGUOUS')
                 else:

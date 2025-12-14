@@ -336,6 +336,9 @@ class jit_engine:
 
         return self._jit_pass_builder
 
+    def get_abi_size(self, llvm_struct):
+        return llvm_struct.get_abi_size(self._target_machine.target_data)
+
     def stage_compilation(self, modules):
         self.staged_modules |= modules
 
