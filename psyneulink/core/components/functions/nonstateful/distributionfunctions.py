@@ -631,15 +631,17 @@ class UniformDist(DistributionFunction):
 
     def _gen_llvm_function_body(self, ctx, builder, params, state, _, arg_out, *, tags:frozenset):
         random_state = ctx.get_random_state_ptr(builder, self, state, params)
-        low_ptr = ctx.get_param_or_state_ptr(builder, self, LOW, param_struct_ptr=params)
         high_ptr = ctx.get_param_or_state_ptr(builder, self, HIGH, param_struct_ptr=params)
+        low_ptr = ctx.get_param_or_state_ptr(builder, self, LOW, param_struct_ptr=params)
+
+        high = builder.load(high_ptr)
+        low = builder.load(low_ptr)
+
         ret_val_ptr = builder.alloca(ctx.float_ty)
         norm_rand_f = ctx.get_uniform_dist_function_by_state(random_state)
         builder.call(norm_rand_f, [random_state, ret_val_ptr])
 
         ret_val = builder.load(ret_val_ptr)
-        high = pnlvm.helpers.load_extract_scalar_array_one(builder, high_ptr)
-        low = pnlvm.helpers.load_extract_scalar_array_one(builder, low_ptr)
         scale = builder.fsub(high, low)
 
         ret_val = builder.fmul(ret_val, scale)
@@ -648,6 +650,7 @@ class UniformDist(DistributionFunction):
         while isinstance(arg_out.type.pointee, pnlvm.ir.ArrayType):
             assert len(arg_out.type.pointee) == 1
             arg_out = builder.gep(arg_out, [ctx.int32_ty(0), ctx.int32_ty(0)])
+
         builder.store(ret_val, arg_out)
         return builder
 
@@ -1426,7 +1429,7 @@ class DriftDiffusionAnalytical(DistributionFunction):  # -----------------------
 
         def load_scalar_param(name):
             param_ptr = ctx.get_param_or_state_ptr(builder, self, name, param_struct_ptr=params)
-            return pnlvm.helpers.load_extract_scalar_array_one(builder, param_ptr)
+            return builder.load(param_ptr)
 
         attentional_drift_rate = load_scalar_param(DRIFT_RATE)
         threshold = load_scalar_param(THRESHOLD)
@@ -1453,6 +1456,7 @@ class DriftDiffusionAnalytical(DistributionFunction):  # -----------------------
             if isinstance(ptr.type.pointee, pnlvm.ir.ArrayType):
                 assert len(ptr.type.pointee) == 1
                 ptr = builder.gep(ptr, [ctx.int32_ty(0), ctx.int32_ty(0)])
+
             return ptr
 
         rt_ptr = _get_arg_out_ptr(0)
