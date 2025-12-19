@@ -26,16 +26,12 @@ Functions that integrate current value of input with previous value.
 
 """
 
+import contextlib
+import numpy as np
 import warnings
 
-import numpy as np
-from math import e
-
-try:
-    import torch
-except ImportError:
-    torch = None
 from beartype import beartype
+from math import e
 
 from psyneulink._typing import Callable, Mapping, Optional, Union
 
@@ -382,12 +378,22 @@ class IntegratorFunction(StatefulFunction):  # ---------------------------------
         if arg_out.type.pointee.count == 1:
             arg_out = pnlvm.helpers.unwrap_2d_array(builder, arg_out)
 
-        with pnlvm.helpers.array_ptr_loop(builder, arg_in, "integrate") as args:
-            self._gen_llvm_integrate(*args, ctx, arg_in, arg_out, params, state)
+        with contextlib.ExitStack() as stack:
+            element = arg_in
+            indices = [ctx.int32_ty(0)]
+            b = builder
+
+            while not pnlvm.helpers.is_scalar(element):
+                b, idx = stack.enter_context(pnlvm.helpers.array_ptr_loop(b, element, "integrator_loop"))
+                indices.append(idx)
+                element = b.gep(element, [ctx.int32_ty(0), idx])
+
+            self._gen_llvm_integrate(b, indices, ctx, arg_in, arg_out, params, state)
+
 
         return builder
 
-    def _gen_llvm_load_param(self, ctx, builder, params, index, param, *, state=None):
+    def _gen_llvm_load_param(self, ctx, builder, params, indices, param, *, state=None):
         param_p = ctx.get_param_or_state_ptr(builder, self, param, param_struct_ptr=params, state_struct_ptr=state)
         if param == NOISE and isinstance(param_p, tuple):
             # This is a noise function so call it to get value
@@ -398,7 +404,7 @@ class IntegratorFunction(StatefulFunction):  # ---------------------------------
             value_p = noise_out
 
         elif isinstance(param_p.type.pointee, pnlvm.ir.ArrayType) and param_p.type.pointee.count > 1:
-            value_p = builder.gep(param_p, [ctx.int32_ty(0), index])
+            value_p = builder.gep(param_p, indices)
         else:
             value_p = param_p
         return pnlvm.helpers.load_extract_scalar_array_one(builder, value_p)
@@ -668,10 +674,10 @@ class AccumulatorIntegrator(IntegratorFunction):  # ----------------------------
 
         return self.convert_output_type(value)
 
-    def _gen_llvm_integrate(self, builder, index, ctx, vi, vo, params, state):
-        rate = self._gen_llvm_load_param(ctx, builder, params, index, RATE)
-        increment = self._gen_llvm_load_param(ctx, builder, params, index, INCREMENT)
-        noise = self._gen_llvm_load_param(ctx, builder, params, index, NOISE, state=state)
+    def _gen_llvm_integrate(self, builder, indices, ctx, vi, vo, params, state):
+        rate = self._gen_llvm_load_param(ctx, builder, params, indices, RATE)
+        increment = self._gen_llvm_load_param(ctx, builder, params, indices, INCREMENT)
+        noise = self._gen_llvm_load_param(ctx, builder, params, indices, NOISE, state=state)
 
         # Get the only state member; previous value
         prev_ptr = ctx.get_param_or_state_ptr(builder, self, PREVIOUS_VALUE, state_struct_ptr=state)
@@ -681,14 +687,14 @@ class AccumulatorIntegrator(IntegratorFunction):  # ----------------------------
         prev_ptr = pnlvm.helpers.unwrap_2d_array(builder, prev_ptr)
         assert len(prev_ptr.type.pointee) == len(vi.type.pointee)
 
-        prev_ptr = builder.gep(prev_ptr, [ctx.int32_ty(0), index])
+        prev_ptr = builder.gep(prev_ptr, indices)
         prev_val = builder.load(prev_ptr)
 
         res = builder.fmul(prev_val, rate)
         res = builder.fadd(res, noise)
         res = builder.fadd(res, increment)
 
-        vo_ptr = builder.gep(vo, [ctx.int32_ty(0), index])
+        vo_ptr = builder.gep(vo, indices)
         builder.store(res, vo_ptr)
         builder.store(res, prev_ptr)
 
@@ -895,10 +901,10 @@ class SimpleIntegrator(IntegratorFunction):  # ---------------------------------
 
         return self.convert_output_type(adjusted_value)
 
-    def _gen_llvm_integrate(self, builder, index, ctx, vi, vo, params, state):
-        rate = self._gen_llvm_load_param(ctx, builder, params, index, RATE)
-        offset = self._gen_llvm_load_param(ctx, builder, params, index, OFFSET)
-        noise = self._gen_llvm_load_param(ctx, builder, params, index, NOISE, state=state)
+    def _gen_llvm_integrate(self, builder, indices, ctx, vi, vo, params, state):
+        rate = self._gen_llvm_load_param(ctx, builder, params, indices, RATE)
+        offset = self._gen_llvm_load_param(ctx, builder, params, indices, OFFSET)
+        noise = self._gen_llvm_load_param(ctx, builder, params, indices, NOISE, state=state)
 
         # Get the only state member; previous value
         prev_ptr = ctx.get_param_or_state_ptr(builder, self, PREVIOUS_VALUE, state_struct_ptr=state)
@@ -908,10 +914,10 @@ class SimpleIntegrator(IntegratorFunction):  # ---------------------------------
         prev_ptr = pnlvm.helpers.unwrap_2d_array(builder, prev_ptr)
         assert len(prev_ptr.type.pointee) == len(vi.type.pointee)
 
-        prev_ptr = builder.gep(prev_ptr, [ctx.int32_ty(0), index])
+        prev_ptr = builder.gep(prev_ptr, indices)
         prev_val = builder.load(prev_ptr)
 
-        vi_ptr = builder.gep(vi, [ctx.int32_ty(0), index])
+        vi_ptr = builder.gep(vi, indices)
         vi_val = builder.load(vi_ptr)
 
         new_val = builder.fmul(vi_val, rate)
@@ -920,7 +926,7 @@ class SimpleIntegrator(IntegratorFunction):  # ---------------------------------
         ret = builder.fadd(ret, noise)
         res = builder.fadd(ret, offset)
 
-        vo_ptr = builder.gep(vo, [ctx.int32_ty(0), index])
+        vo_ptr = builder.gep(vo, indices)
         builder.store(res, vo_ptr)
         builder.store(res, prev_ptr)
 
@@ -1160,10 +1166,10 @@ class AdaptiveIntegrator(IntegratorFunction):  # -------------------------------
         if not all_within_range(rate, 0, 1):
             raise FunctionError(rate_value_msg.format(rate, self.name))
 
-    def _gen_llvm_integrate(self, builder, index, ctx, vi, vo, params, state):
-        rate = self._gen_llvm_load_param(ctx, builder, params, index, RATE)
-        offset = self._gen_llvm_load_param(ctx, builder, params, index, OFFSET)
-        noise = self._gen_llvm_load_param(ctx, builder, params, index, NOISE, state=state)
+    def _gen_llvm_integrate(self, builder, indices, ctx, vi, vo, params, state):
+        rate = self._gen_llvm_load_param(ctx, builder, params, indices, RATE)
+        offset = self._gen_llvm_load_param(ctx, builder, params, indices, OFFSET)
+        noise = self._gen_llvm_load_param(ctx, builder, params, indices, NOISE, state=state)
 
         # Get the only state member; previous value
         prev_ptr = ctx.get_param_or_state_ptr(builder, self, PREVIOUS_VALUE, state_struct_ptr=state)
@@ -1173,10 +1179,10 @@ class AdaptiveIntegrator(IntegratorFunction):  # -------------------------------
         prev_ptr = pnlvm.helpers.unwrap_2d_array(builder, prev_ptr)
         assert len(prev_ptr.type.pointee) == len(vi.type.pointee)
 
-        prev_ptr = builder.gep(prev_ptr, [ctx.int32_ty(0), index])
+        prev_ptr = builder.gep(prev_ptr, indices)
         prev_val = builder.load(prev_ptr)
 
-        vi_ptr = builder.gep(vi, [ctx.int32_ty(0), index])
+        vi_ptr = builder.gep(vi, indices)
         vi_val = builder.load(vi_ptr)
 
         rev_rate = builder.fsub(rate.type(1), rate)
@@ -1187,7 +1193,7 @@ class AdaptiveIntegrator(IntegratorFunction):  # -------------------------------
         ret = builder.fadd(ret, noise)
         res = builder.fadd(ret, offset)
 
-        vo_ptr = builder.gep(vo, [ctx.int32_ty(0), index])
+        vo_ptr = builder.gep(vo, indices)
         builder.store(res, vo_ptr)
         builder.store(res, prev_ptr)
 
@@ -2550,13 +2556,13 @@ class DriftDiffusionIntegrator(IntegratorFunction):  # -------------------------
         self.parameters.previous_value._set(previous_value, context)
         return convert_all_elements_to_np_array([previous_value, previous_time])
 
-    def _gen_llvm_integrate(self, builder, index, ctx, vi, vo, params, state):
+    def _gen_llvm_integrate(self, builder, indices, ctx, vi, vo, params, state):
         # Get parameter pointers
-        rate = self._gen_llvm_load_param(ctx, builder, params, index, RATE)
-        noise = self._gen_llvm_load_param(ctx, builder, params, index, NOISE, state=state)
-        offset = self._gen_llvm_load_param(ctx, builder, params, index, OFFSET)
-        threshold = self._gen_llvm_load_param(ctx, builder, params, index, THRESHOLD)
-        time_step_size = self._gen_llvm_load_param(ctx, builder, params, index, TIME_STEP_SIZE)
+        rate = self._gen_llvm_load_param(ctx, builder, params, indices, RATE)
+        noise = self._gen_llvm_load_param(ctx, builder, params, indices, NOISE, state=state)
+        offset = self._gen_llvm_load_param(ctx, builder, params, indices, OFFSET)
+        threshold = self._gen_llvm_load_param(ctx, builder, params, indices, THRESHOLD)
+        time_step_size = self._gen_llvm_load_param(ctx, builder, params, indices, TIME_STEP_SIZE)
 
         random_state = ctx.get_random_state_ptr(builder, self, state, params)
         rand_val_ptr = builder.alloca(ctx.float_ty, name="random_out")
@@ -2570,10 +2576,10 @@ class DriftDiffusionIntegrator(IntegratorFunction):  # -------------------------
 
         # value = previous_value + rate * variable * time_step_size \
         #       + np.sqrt(time_step_size * noise) * random_state.normal()
-        prev_val_ptr = builder.gep(prev_ptr, [ctx.int32_ty(0), index])
+        prev_val_ptr = builder.gep(prev_ptr, indices)
         prev_val = builder.load(prev_val_ptr)
 
-        val = builder.load(builder.gep(vi, [ctx.int32_ty(0), index]))
+        val = builder.load(builder.gep(vi, indices))
         val = builder.fmul(val, rate)
         val = builder.fmul(val, time_step_size)
         val = builder.fadd(val, prev_val)
@@ -2590,17 +2596,17 @@ class DriftDiffusionIntegrator(IntegratorFunction):  # -------------------------
         val = pnlvm.helpers.fclamp(builder, val, neg_threshold, threshold)
 
         # Store value result
-        data_vo_ptr = builder.gep(vo, [ctx.int32_ty(0), ctx.int32_ty(0), index])
+        data_vo_ptr = builder.gep(vo, [ctx.int32_ty(0), *indices])
         builder.store(val, data_vo_ptr)
         builder.store(val, prev_val_ptr)
 
         # Update timestep
-        prev_time_ptr = builder.gep(prev_time_ptr, [ctx.int32_ty(0), index])
+        prev_time_ptr = builder.gep(prev_time_ptr, indices)
         prev_time = builder.load(prev_time_ptr)
         curr_time = builder.fadd(prev_time, time_step_size)
         builder.store(curr_time, prev_time_ptr)
 
-        time_vo_ptr = builder.gep(vo, [ctx.int32_ty(0), ctx.int32_ty(1), index])
+        time_vo_ptr = builder.gep(vo, [ctx.int32_ty(0), ctx.int32_ty(1), *indices[1:]])
         builder.store(curr_time, time_vo_ptr)
 
     def _gen_llvm_function_reset(self, ctx, builder, params, state, arg_in, arg_out, *, tags: frozenset):
@@ -3906,12 +3912,11 @@ class LeakyCompetingIntegrator(IntegratorFunction):  # -------------------------
 
         return self.convert_output_type(adjusted_value)
 
-    def _gen_llvm_integrate(self, builder, index, ctx, vi, vo, params, state):
-        rate = self._gen_llvm_load_param(ctx, builder, params, index, RATE)
-        noise = self._gen_llvm_load_param(ctx, builder, params, index, NOISE,
-                                          state=state)
-        offset = self._gen_llvm_load_param(ctx, builder, params, index, OFFSET)
-        time_step = self._gen_llvm_load_param(ctx, builder, params, index, TIME_STEP_SIZE)
+    def _gen_llvm_integrate(self, builder, indices, ctx, vi, vo, params, state):
+        rate = self._gen_llvm_load_param(ctx, builder, params, indices, RATE)
+        offset = self._gen_llvm_load_param(ctx, builder, params, indices, OFFSET)
+        time_step = self._gen_llvm_load_param(ctx, builder, params, indices, TIME_STEP_SIZE)
+        noise = self._gen_llvm_load_param(ctx, builder, params, indices, NOISE, state=state)
 
         # Get the only state member; previous value
         prev_ptr = ctx.get_param_or_state_ptr(builder, self, PREVIOUS_VALUE, state_struct_ptr=state)
@@ -3921,10 +3926,10 @@ class LeakyCompetingIntegrator(IntegratorFunction):  # -------------------------
         prev_ptr = pnlvm.helpers.unwrap_2d_array(builder, prev_ptr)
         assert len(prev_ptr.type.pointee) == len(vi.type.pointee)
 
-        prev_ptr = builder.gep(prev_ptr, [ctx.int32_ty(0), index])
+        prev_ptr = builder.gep(prev_ptr, indices)
         prev_val = builder.load(prev_ptr)
 
-        in_ptr = builder.gep(vi, [ctx.int32_ty(0), index])
+        in_ptr = builder.gep(vi, indices)
         in_val = builder.load(in_ptr)
 
         ret = builder.fmul(prev_val, rate)
@@ -3940,7 +3945,7 @@ class LeakyCompetingIntegrator(IntegratorFunction):  # -------------------------
         ret = builder.fadd(ret, mod_noise)
         ret = builder.fadd(ret, offset)
 
-        out_ptr = builder.gep(vo, [ctx.int32_ty(0), index])
+        out_ptr = builder.gep(vo, indices)
         builder.store(ret, out_ptr)
         builder.store(ret, prev_ptr)
 
