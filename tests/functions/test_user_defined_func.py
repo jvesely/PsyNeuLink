@@ -285,20 +285,23 @@ def castReturn(variable, param1, param2):
     return float(int(param1)) + float(param2) + float(variable[0] + variable[1])
 
 def singletonArrayCast(variable, param1, param2):
-    return float(variable) + float(int(param1)) + float(bool(param2))
+    return float(variable[0]) + float(int(param1)) + float(bool(param2))
 
 
 def condReturn(variable, param1, param2):
     if variable[0]:
         return param1 + 0.5
+
     return param2 + 0.3
 
 
 def condValReturn(variable, param1, param2):
     if variable[0]:
         val = param1 + 0.5
+
     else:
         val = param2 + 0.3
+
     return val
 
 
@@ -696,7 +699,7 @@ def test_udf_runtime_params_reset():
         ('(x + y) * z', {'x': 2, 'y': 4, 'z': 2}, 12),
         ('x + f(3)', {'x': 1, 'f': lambda x: x}, 4),
         ('x + f (3)', {'x': 1, 'f': lambda x: x}, 4),
-        ('np.sum([int(x), 2])', {'x': 1, 'np': np}, 3),
+        ('np.sum([int(x[0]), 2])', {'x': [1], 'np': np}, 3),
         (
             '(x * y) / 3 + f(z_0, z) + z0 - (x**y) * VAR',
             {'x': 2, 'y': 3, 'f': lambda a, b: a + b, 'z_0': 1, 'z0': 1, 'z': 1, 'VAR': 1},
