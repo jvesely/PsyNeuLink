@@ -11,7 +11,6 @@ from . import registry
 from . import utilities
 from . import sampleiterator
 from . import warnings
-from . import threads
 
 from .context import *
 from .defaults import *
@@ -26,7 +25,6 @@ from .registry import *
 from .utilities import *
 from .sampleiterator import *
 from .warnings import *
-from .threads import *
 
 __all__ = list(context.__all__)
 __all__.extend(defaults.__all__)
@@ -41,4 +39,3 @@ __all__.extend(registry.__all__)
 __all__.extend(utilities.__all__)
 __all__.extend(sampleiterator.__all__)
 __all__.extend(warnings.__all__)
-__all__.extend(threads.__all__)

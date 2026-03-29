@@ -21,7 +21,6 @@ import weakref
 
 from psyneulink.core import llvm as pnlvm
 from psyneulink.core.globals.context import Context
-from psyneulink.core.globals import get_num_threads
 
 from . import builder_context, jit_engine, scheduler
 from .debug import debug_env
@@ -679,9 +678,7 @@ class CompExecution(CUDAExecution):
         comp_params, comp_state, comp_data, ct_inputs, outputs, num_inputs = \
             self._prepare_evaluate(inputs, num_input_sets, num_evaluations, all_results)
 
-
-
-        jobs = min(get_num_threads(), num_evaluations)
+        jobs = min(os.cpu_count(), num_evaluations)
         evals_per_job = (num_evaluations + jobs - 1) // jobs
 
         parallel_start = time.time()
