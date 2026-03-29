@@ -96,5 +96,4 @@ Core
    - `Report`
    - `Log`
    - `mdf`
-   - :doc:`Thread configuration <threads>`
    - `Graph`
