@@ -4,6 +4,7 @@ import inspect
 import io
 import itertools
 import numpy as np
+import os
 import pytest
 import re
 import types
@@ -63,6 +64,13 @@ def pytest_configure(config):
     psyneulink._called_from_pytest = True
 
     patch_parameter_set_value_numeric_check()
+
+    # If the tests are running in pytest-xdist distributed mode,
+    # restrict the number of threads used in parallel frameworks
+    if config.getoption("dist") != 'no':
+        env_vars = ["OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS", "VECLIB_MAXIMUM_THREADS", "NUMEXPR_NUM_THREADS"]
+        for env_var in env_vars:
+            os.environ.setdefault(env_var, "1")
 
 
 # ## Collection hooks ## #
