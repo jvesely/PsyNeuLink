@@ -51,34 +51,33 @@ def pytest_addoption(parser):
     parser.addoption('--fp-precision', action='store', default='fp64', choices=['fp32', 'fp64'],
                      help='Set default fp precision for the runtime compiler. Default: fp64')
 
-def pytest_runtest_setup(item):
-    # Check that all 'cuda' tests are also marked 'llvm'
-    assert 'llvm' in item.keywords or 'cuda' not in item.keywords
+def patch_parameter_set_value_numeric_check():
+    orig_parameter_set_value = psyneulink.core.globals.parameters.Parameter._set_value
 
-    # It the item is a parametrized function. It has a 'callspec' attribute.
-    # Convert any dict arguments to an unmutable MappingProxyType.
-    if hasattr(item, 'callspec'):
-        for k, v in item.callspec.params.items():
-            if isinstance(v, dict):
-                item.callspec.params[k] = types.MappingProxyType(v)
+    def check_numeric_set_value(self, value, **kwargs):
+        assert isinstance(value, np.ndarray) or not is_numeric(value), (
+            f'{self._owner._owner}.{self.name} is being set to a numeric value.'
+            f' It must first be wrapped in a numpy array:\n\t{value}\n\t{type(value)}'
+        )
 
-    for m in marks_default_skip:
-        if m in item.keywords and not item.config.getvalue(m):
-            pytest.skip('{0} tests not requested'.format(m))
+        return orig_parameter_set_value(self, value, **kwargs)
 
-    if 'llvm' in item.keywords and 'llvm_not_implemented' in item.keywords:
-        pytest.skip('LLVM implementation not available')
+    psyneulink.core.globals.parameters.Parameter._set_value = check_numeric_set_value
 
-    if 'cuda' in item.keywords and not pnlvm.ptx_enabled:
-        pytest.skip('PTX engine not enabled/available')
 
-    if 'pytorch' in item.keywords and not torch_available:
-        pytest.skip('pytorch not available')
+# flag when run from pytest
+# https://docs.pytest.org/en/stable/example/simple.html#detect-if-running-from-within-a-pytest-run
+def pytest_configure(config):
+    psyneulink._called_from_pytest = True
 
     if 'dask' in item.keywords and not dask_available:
         pytest.skip('dask not available')
 
     doctest.ELLIPSIS_MARKER = "[...]"
+    patch_parameter_set_value_numeric_check()
+
+
+# ## Collection hooks ## #
 
 def pytest_generate_tests(metafunc):
     mech_and_func_modes = ['Python',
@@ -111,18 +110,21 @@ def pytest_generate_tests(metafunc):
 
 _old_register_prefix = None
 
-# Collection hooks
 def pytest_sessionstart(session):
     """Initialize session with the right floating point precision and component name prefix."""
 
+    # Set default compiled precision
     precision = session.config.getvalue("--fp-precision")
     if precision == 'fp64':
         pnlvm.LLVMBuilderContext.default_float_ty = pnlvm.ir.DoubleType()
+
     elif precision == 'fp32':
         pnlvm.LLVMBuilderContext.default_float_ty = pnlvm.ir.FloatType()
+
     else:
         assert False, "Unsupported precision parameter: {}".format(precision)
 
+    # Mark all components instantiated in this session with pytest prefix
     global _old_register_prefix
     _old_register_prefix = psyneulink.core.globals.registry._register_auto_name_prefix
     psyneulink.core.globals.registry._register_auto_name_prefix = "__pnl_pytest_"
@@ -131,7 +133,35 @@ def pytest_collection_finish(session):
     """Restore component prefix at the end of test collection."""
     psyneulink.core.globals.registry._register_auto_name_prefix = _old_register_prefix
 
-# Runtest hooks
+# ## Runtest hooks ## #
+
+def pytest_runtest_setup(item):
+    # Check that all 'cuda' tests are also marked 'llvm'
+    assert 'llvm' in item.keywords or 'cuda' not in item.keywords
+
+    # It the item is a parametrized function. It has a 'callspec' attribute.
+    # Convert any dict arguments to an unmutable MappingProxyType.
+    if hasattr(item, 'callspec'):
+        for k, v in item.callspec.params.items():
+            if isinstance(v, dict):
+                item.callspec.params[k] = types.MappingProxyType(v)
+
+    for m in marks_default_skip:
+        if m in item.keywords and not item.config.getvalue(m):
+            pytest.skip('{0} tests not requested'.format(m))
+
+    if 'llvm' in item.keywords and 'llvm_not_implemented' in item.keywords:
+        pytest.skip('LLVM implementation not available')
+
+    if 'cuda' in item.keywords and not pnlvm.ptx_enabled:
+        pytest.skip('PTX engine not enabled/available')
+
+    if 'pytorch' in item.keywords and not torch_available:
+        pytest.skip('pytorch not available')
+
+    doctest.ELLIPSIS_MARKER = "[...]"
+
+
 def pytest_runtest_call(item):
     # seed = int(item.config.getoption('--pnl-seed'))
     seed = 0
@@ -161,6 +191,9 @@ def pytest_runtest_teardown(item):
     # Only run the llvm leak checker on llvm tests
     pnlvm.cleanup("llvm" in item.keywords and not skip_cleanup_check)
 
+
+# ## Fixtures used by PNL tests ## #
+
 @pytest.fixture
 def comp_mode_no_per_node():
     # dummy fixture to allow 'comp_mode' filtering
@@ -185,13 +218,18 @@ def benchmark(benchmark):
 
     return benchmark
 
+
+# ## Helpers used by PNL tests ## #
+
 @pytest.helpers.register
 def llvm_current_fp_precision():
     float_ty = pnlvm.LLVMBuilderContext.get_current().float_ty
     if float_ty == pnlvm.ir.DoubleType():
         return 'fp64'
+
     elif float_ty == pnlvm.ir.FloatType():
         return 'fp32'
+
     else:
         assert False, "Unknown floating point type: {}".format(float_ty)
 
@@ -304,28 +342,6 @@ def power_set(s):
 
     vals = list(s)
     return (c for l in range(len(vals) + 1) for c in itertools.combinations(vals, l))
-
-
-def patch_parameter_set_value_numeric_check():
-    orig_parameter_set_value = psyneulink.core.globals.parameters.Parameter._set_value
-
-    def check_numeric_set_value(self, value, **kwargs):
-        assert isinstance(value, np.ndarray) or not is_numeric(value), (
-            f'{self._owner._owner}.{self.name} is being set to a numeric value.'
-            f' It must first be wrapped in a numpy array:\n\t{value}\n\t{type(value)}'
-        )
-
-        return orig_parameter_set_value(self, value, **kwargs)
-
-    psyneulink.core.globals.parameters.Parameter._set_value = check_numeric_set_value
-
-
-# flag when run from pytest
-# https://docs.pytest.org/en/stable/example/simple.html#detect-if-running-from-within-a-pytest-run
-def pytest_configure(config):
-    psyneulink._called_from_pytest = True
-
-    patch_parameter_set_value_numeric_check()
 
 
 @pytest.helpers.register
