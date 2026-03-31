@@ -32,3 +32,9 @@ numpy < 2; platform_system == 'Darwin' and platform_machine == 'x86_64'
 
 # newer rpds-py only support pypy 3.11+
 rpds-py < 0.28; platform_python_implementation == 'PyPy' and python_version < '3.11'
+
+# pandas 3+ segfaults on load when using pypy3.11 < 7.3.22alpha
+# https://github.com/pypy/pypy/issues/5402
+# crashes when creating dataframe
+# https://github.com/pypy/pypy/issues/5418
+pandas < 3; platform_python_implementation == 'PyPy' and implementation_version < '7.3.22a'
