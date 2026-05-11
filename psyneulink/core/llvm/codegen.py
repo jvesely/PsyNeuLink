@@ -66,6 +66,7 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
             'greater_equal': get_np_cmp(">="),
             'max': self.call_builtin_np_max,
             'argmax': self.call_builtin_np_argmax,
+            'sum': self.call_builtin_np_sum,
 
             # value attributes can be returned directly
             'nan':self.ctx.float_ty(float("nan"))
@@ -640,6 +641,26 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
 
     def call_builtin_np_argmax(self, builder, x):
         return self.call_builtin_np_maxlike(builder, x)[1]
+
+    def call_builtin_np_sum(self, builder, x):
+        """Numpy sum. Accumulates scalars in all dimensions"""
+
+        x = self.get_rval(x)
+        res = None
+
+        def accumulate(builder, val):
+            nonlocal res
+            if res is None:
+                res = val
+
+            else:
+                res = builder.fadd(res, val)
+
+            return res
+
+        self._do_unary_op(builder, x, accumulate)
+        return res
+
 
 
 def gen_node_assembly(ctx, composition, node, *, tags:frozenset):
