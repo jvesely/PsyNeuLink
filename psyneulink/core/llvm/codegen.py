@@ -30,8 +30,9 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
         self.arg_in = arg_in
         self.arg_out = arg_out
 
-        #setup default functions
+        # Setup default functions
         self.known_names = {
+            # Builtin functions should be consumed by a call node
             "sum": self.call_builtin_horizontal_sum,
             "len": self.call_builtin_len,
             "max": self.call_builtin_max,
@@ -46,13 +47,15 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
                 op = self._generate_fcmp_handler(None, None, cmp_op)
                 if helpers.is_pointer(x):
                     x = builder.load(x)
+
                 if helpers.is_pointer(y):
                     y = builder.load(y)
+
                 return self._do_bin_op(builder, x, y, op)
 
             return np_cmp
 
-        # setup attributes of numpy (np) module
+        # Setup attributes of numpy (np) module
         numpy_handlers = {
             # numpy functions should be consumed by a call node
             'tanh': self.call_builtin_np_tanh,
@@ -78,12 +81,12 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
         super().__init__()
 
     def _update_debug_metadata(self, builder: ir.IRBuilder, node:ast.AST):
-        builder.debug_metadata = self.ctx.update_debug_loc_position(builder.debug_metadata,
-                                                                    node.lineno,
-                                                                    node.col_offset)
+        builder.debug_metadata = self.ctx.update_debug_loc_position(builder.debug_metadata, node.lineno, node.col_offset)
+
     def get_rval(self, val):
         if helpers.is_pointer(val):
             return self.builder.load(val)
+
         return val
 
     def is_lval(self, val):
@@ -93,16 +96,19 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
         args = node.args
         variable = args[0]
 
-        # update known names
         self.known_names[variable.arg] = self.arg_in
+
+        # update known names
         parameters = args[1:]
         for param in parameters:
             assert param.arg not in ["self", "owner"], f"Unable to reference {param.arg} in a compiled UserDefinedFunction!"
             if param.arg == 'params':
                 assert False, "Runtime parameters are not supported in compiled mode"
+
             elif param.arg == 'context':
                 # Since contexts are implicit in the structs in compiled mode, we do not compile it.
                 pass
+
             else:
                 self.known_names[param.arg] = self.func_params[param.arg]
 
@@ -142,6 +148,7 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
 
         return self.builder
 
+    # Binary operations
     def visit_Add(self, node):
         def _add(builder, x, y):
             assert helpers.is_floating_point(x)
@@ -183,6 +190,43 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
 
         return _pow
 
+    def _do_bin_op(self, builder, x, y, scalar_op):
+        assert not helpers.is_pointer(x)
+        assert not helpers.is_pointer(y)
+
+        # 2 scalars is the base case
+        if helpers.is_scalar(x) and helpers.is_scalar(y):
+            return scalar_op(self.builder, x, y)
+
+        x_len = len(x.type) if hasattr(x.type, '__len__') else 0
+        y_len = len(y.type) if hasattr(y.type, '__len__') else 0
+        iters = max(x_len, y_len)
+        assert x_len == 0 or x_len == iters
+        assert y_len == 0 or y_len == iters
+        assert iters > 0, "At least one of the operands should be vector: {} op {}".format(x.type, y.type)
+
+        x_operands = (builder.extract_value(x, i) if x_len > 0 else x for i in range(iters))
+        y_operands = (builder.extract_value(y, i) if y_len > 0 else y for i in range(iters))
+        results = [self._do_bin_op(builder, opx, opy, scalar_op) for opx, opy in zip(x_operands, y_operands)]
+
+        assert len(results) > 0
+        res = ir.ArrayType(results[0].type, len(results))(ir.Undefined)
+        for i in range(iters):
+            res = builder.insert_value(res, results[i], i)
+
+        return res
+
+    def visit_BinOp(self, node:ast.AST):
+        operator = self.visit(node.op)
+        lhs = self.visit(node.left)
+        rhs = self.visit(node.right)
+
+        self._update_debug_metadata(self.builder, node)
+        lhs = self.get_rval(lhs)
+        rhs = self.get_rval(rhs)
+        return self._do_bin_op(self.builder, lhs, rhs, operator)
+
+    # Unary operations
     def visit_USub(self, node):
         def _usub(builder, x):
             assert helpers.is_floating_point(x)
@@ -205,6 +249,31 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
             return builder.not_(x_b)
 
         return _not
+
+    def _do_unary_op(self, builder, x, scalar_op):
+        assert not helpers.is_pointer(x)
+
+        # scalar is the base case
+        if helpers.is_scalar(x):
+            return scalar_op(self.builder, x)
+
+        operands = (builder.extract_value(x, i) for i in range(len(x.type)))
+        results = [self._do_unary_op(builder, opx, scalar_op) for opx in operands]
+
+        result = ir.ArrayType(results[0].type, len(results))(ir.Undefined)
+        for i, res in enumerate(results):
+            result = builder.insert_value(result, res, i)
+
+        return result
+
+    def visit_UnaryOp(self, node:ast.AST):
+        operator = self.visit(node.op)
+
+        operand = self.visit(node.operand)
+        self._update_debug_metadata(self.builder, node)
+        operand = self.get_rval(operand)
+        return self._do_unary_op(self.builder, operand, operator)
+
 
     def visit_Name(self, node):
         return self.known_names.get(node.id, None)
@@ -256,9 +325,12 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
 
         for t in node.targets:
             target = self.visit(t)
+
             # Visiting 't' might have changed code location metadata
             self._update_debug_metadata(self.builder, node)
-            if target is None: # Allocate space for new variable
+
+            # Create new local variable
+            if target is None:
                 self._update_debug_metadata(self.var_builder, node)
                 target = self.var_builder.alloca(value.type, name=str(t.id) + '_local_variable')
                 self.known_names[t.id] = target
@@ -284,6 +356,7 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
 
         if len(element_types) > 0 and all(x == element_types[0] for x in element_types):
             result = ir.ArrayType(element_types[0], len(element_types))(ir.Undefined)
+
         else:
             result = ir.LiteralStructType(element_types)(ir.Undefined)
 
@@ -291,66 +364,6 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
             result = self.builder.insert_value(result, val, i)
 
         return result
-
-    def _do_unary_op(self, builder, x, scalar_op):
-        assert not helpers.is_pointer(x)
-
-        # scalar is the base case
-        if helpers.is_scalar(x):
-            return scalar_op(self.builder, x)
-
-        operands = (builder.extract_value(x, i) for i in range(len(x.type)))
-        results = [self._do_unary_op(builder, opx, scalar_op) for opx in operands]
-
-        result = ir.ArrayType(results[0].type, len(results))(ir.Undefined)
-        for i, res in enumerate(results):
-            result = builder.insert_value(result, res, i)
-
-        return result
-
-    def visit_UnaryOp(self, node:ast.AST):
-        operator = self.visit(node.op)
-
-        operand = self.visit(node.operand)
-        self._update_debug_metadata(self.builder, node)
-        operand = self.get_rval(operand)
-        return self._do_unary_op(self.builder, operand, operator)
-
-    def _do_bin_op(self, builder, x, y, scalar_op):
-        assert not helpers.is_pointer(x)
-        assert not helpers.is_pointer(y)
-
-        # 2 scalars is the base case
-        if helpers.is_scalar(x) and helpers.is_scalar(y):
-            return scalar_op(self.builder, x, y)
-
-        x_len = len(x.type) if hasattr(x.type, '__len__') else 0
-        y_len = len(y.type) if hasattr(y.type, '__len__') else 0
-        iters = max(x_len, y_len)
-        assert x_len == 0 or x_len == iters
-        assert y_len == 0 or y_len == iters
-        assert iters > 0, "At least one of the operands should be vector: {} op {}".format(x.type, y.type)
-
-        x_operands = (builder.extract_value(x, i) if x_len > 0 else x for i in range(iters))
-        y_operands = (builder.extract_value(y, i) if y_len > 0 else y for i in range(iters))
-        results = [self._do_bin_op(builder, opx, opy, scalar_op) for opx, opy in zip(x_operands, y_operands)]
-
-        assert len(results) > 0
-        res = ir.ArrayType(results[0].type, len(results))(ir.Undefined)
-        for i in range(iters):
-            res = builder.insert_value(res, results[i], i)
-
-        return res
-
-    def visit_BinOp(self, node:ast.AST):
-        operator = self.visit(node.op)
-        lhs = self.visit(node.left)
-        rhs = self.visit(node.right)
-
-        self._update_debug_metadata(self.builder, node)
-        lhs = self.get_rval(lhs)
-        rhs = self.get_rval(rhs)
-        return self._do_bin_op(self.builder, lhs, rhs, operator)
 
     def visit_BoolOp(self, node:ast.AST):
         operator = self.visit(node.op)
@@ -362,6 +375,7 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
         for val in rvals:
             assert ret_val.type == val.type, "Don't know how to mix types in boolean expressions!"
             ret_val = operator(self.builder, ret_val, val)
+
         return ret_val
 
     def visit_And(self, node):
@@ -392,6 +406,7 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
 
         if all(e_type == element_types[0] for e_type in element_types):
             result = ir.ArrayType(element_types[0], len(element_types))(ir.Undefined)
+
         else:
             result = ir.LiteralStructType(element_types)(ir.Undefined)
 
@@ -439,6 +454,7 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
         values = (self.builder.load(val) if helpers.is_pointer(val) else val for val in comparators)
         for val, op in zip(values, ops):
             result = self._do_bin_op(self.builder, result, val, op)
+
         return result
 
     def visit_Iflike(self, node:ast.AST, *, return_value:bool):
@@ -453,13 +469,16 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
                 if return_value:
                     true_value = self.visit(node.body)
                     true_block = self.builder.block
+
                 else:
                     for child in node.body:
                         self.visit(child)
+
             with otherwise:
                 if return_value:
                     false_value = self.visit(node.orelse)
                     false_block = self.builder.block
+
                 else:
                     for child in node.orelse:
                         self.visit(child)
@@ -553,6 +572,7 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
         x_ty = x.type
         if helpers.is_pointer(x):
             x_ty = x_ty.pointee
+
         return self.ctx.float_ty(len(x_ty))
 
     def call_builtin_convert_bool(self, builder, x):
@@ -578,6 +598,7 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
             assert helpers.is_vector(args[0]), "Only 1D vectors supported!"
             arg = builder.load(args[0]) if helpers.is_pointer(args[0]) else args[0]
             values = (builder.extract_value(arg, i) for i in range(len(arg.type)))
+
         else:
             values = (builder.load(arg) if helpers.is_pointer(arg) else arg for arg in args)
 
@@ -585,6 +606,7 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
         for val in values:
             greater = builder.fcmp_ordered('>', val, res)
             res = builder.select(greater, val, res)
+
         return res
 
     #  Numpy builtins
@@ -633,7 +655,6 @@ class UserDefinedFunctionVisitor(ast.NodeVisitor):
 
         self._do_unary_op(builder, x, find_argmax)
         return res, helpers.convert_type(builder, best_idx, self.ctx.float_ty)
-
 
     def call_builtin_np_max(self, builder, x):
         return self.call_builtin_np_maxlike(builder, x)[0]
