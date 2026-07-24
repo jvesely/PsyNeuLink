@@ -1311,7 +1311,7 @@ class RandomMatrix(_MatrixInitializer):
        and **scale** arguments, respectively.
 
     Arguments
-    ----------
+    ---------
     center : float
         specifies the value around which the matrix elements are distributed in all calls to the function.
     range : float
@@ -1345,7 +1345,7 @@ class KaimingMatrix(_MatrixInitializer):
     Can be used to specify the `matrix <MappingProjection.matrix>` parameter of a `MappingProjection`.
 
     Arguments
-    ----------
+    ---------
     distribution : {'normal', 'uniform'}
         specifies the distribution used to sample the matrix elements.
 
@@ -1414,7 +1414,7 @@ class XavierMatrix(_MatrixInitializer):
     Can be used to specify the `matrix <MappingProjection.matrix>` parameter of a `MappingProjection`.
 
     Arguments
-    ----------
+    ---------
     distribution : {'normal', 'uniform'}
         specifies the distribution used to sample the matrix elements.
 
@@ -1466,7 +1466,7 @@ class OrthogonalMatrix(_MatrixInitializer):
     `MappingProjection`.
 
     Arguments
-    ----------
+    ---------
     gain : float
         scaling factor applied to the orthogonal matrix.
 

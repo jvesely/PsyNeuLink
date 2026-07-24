@@ -2891,7 +2891,7 @@ class AutodiffComposition(Composition):
         For InuptPorts, replace with owner
 
         Returns
-        ---------
+        -------
         A dict mapping INPUT Nodes -> input values for a single trial
         """
         autodiff_input_dict = {}
@@ -2916,7 +2916,7 @@ class AutodiffComposition(Composition):
            as those are assumed to be executed in autodiff_forward()
 
         Returns
-        ---------
+        -------
         A dict mapping TARGET_MECHANISMs -> target values
         """
         target_values = {}
@@ -2960,7 +2960,7 @@ class AutodiffComposition(Composition):
         """Map target values to target mechanisms (as needed by learning)
 
         Returns
-        ---------
+        -------
 
         `dict`:
             Dict mapping TargetMechanisms -> target values

@@ -8172,7 +8172,7 @@ class Composition(Composition_Base, metaclass=ComponentsMeta):
             species the name used for `Pathway`; supersedes `name <Pathway.name>` of `Pathway` object if it is has one.
 
         Returns
-        --------
+        -------
 
         `Pathway` :
             `learning Pathway` <Composition_Learning_Pathway>` added to the Composition.
@@ -8371,7 +8371,7 @@ class Composition(Composition_Base, metaclass=ComponentsMeta):
             species the name used for `Pathway`; supersedes `name <Pathway.name>` of `Pathway` object if it is has one.
 
         Returns
-        --------
+        -------
 
         `Pathway` :
             Reinforcement `learning Pathway` <Composition_Learning_Pathway>` added to the Composition.
@@ -8428,7 +8428,7 @@ class Composition(Composition_Base, metaclass=ComponentsMeta):
             species the name used for `Pathway`; supersedes `name <Pathway.name>` of `Pathway` object if it is has one.
 
         Returns
-        --------
+        -------
 
         `Pathway` :
             TD Reinforcement `learning Pathway` <Composition_Learning_Pathway>` added to the Composition.
@@ -8488,7 +8488,7 @@ class Composition(Composition_Base, metaclass=ComponentsMeta):
             species the name used for `Pathway`; supersedes `name <Pathway.name>` of `Pathway` object if it is has one.
 
         Returns
-        --------
+        -------
 
         `Pathway` :
             BackPropagation `learning Pathway` <Composition_Learning_Pathway>` added to the Composition.
@@ -10477,7 +10477,7 @@ class Composition(Composition_Base, metaclass=ComponentsMeta):
         """Map target values to target mechanisms (as needed by learning)
 
         Returns
-        ---------
+        -------
 
         `dict`:
             Dict mapping TargetMechanisms -> target values
@@ -10523,7 +10523,7 @@ class Composition(Composition_Base, metaclass=ComponentsMeta):
         Integrate TARGET_MECHANISM inputs into inputs dict - _insert_targets_into_inputs_dict()
 
         Returns
-        ---------
+        -------
 
         `dict` :
             Dict mapping mechanisms to values (including inputs to TARGET_MECHANISMs)
@@ -12136,7 +12136,7 @@ class Composition(Composition_Base, metaclass=ComponentsMeta):
         COMMENT
 
         Returns
-        ---------
+        -------
 
         2d list of values of OUTPUT Nodes at end of last trial : list[list]
           each item in the list is the `output_values <Mechanism_Base.output_values>` for an `OUTPUT` `Node
@@ -12759,7 +12759,7 @@ class Composition(Composition_Base, metaclass=ComponentsMeta):
                 context will be set to self.default_execution_id if unspecified
 
             Returns
-            ---------
+            -------
 
             the results of the last trial of training : list
 
@@ -13021,7 +13021,7 @@ class Composition(Composition_Base, metaclass=ComponentsMeta):
                 details and `ReportDevices` for options.
 
             Returns
-            ---------
+            -------
             output_values : np.ndarray
             These are the values of the Composition's output_CIM.output_ports, excluding those the source of which
             are from a (potentially nested) Node with NodeRole.PROBE in its enclosing Composition.
@@ -14122,7 +14122,7 @@ class Composition(Composition_Base, metaclass=ComponentsMeta):
         If a context is not provided, the most recent context under which the Composition has executed is used.
 
         Arguments
-        ----------
+        ---------
         values: Dict { Node: Node Value }
             A dictionary containing key-value pairs of Nodes and initialization values. Nodes within cycles that are
             not included in this dict are initialized to their default values.
