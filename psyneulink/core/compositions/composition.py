@@ -3464,7 +3464,7 @@ class OptParam:
     @property
     def pnl_param_enabled_name(self) -> Optional[str]:
         """
-        name of Parameter on a Component that enables/disables this optparam with highest priority
+        Name of Parameter on a Component that enables/disables this optparam with highest priority
         (ex: learning_rate and Composition.enable_learning)
         """
         if self.name is None:
@@ -14246,7 +14246,7 @@ class Composition(Composition_Base, metaclass=ComponentsMeta):
 
     def _assign_execution_ids(self, context=None):
         """
-            assigns the same execution id to each Node in the composition's processing graph as well as the CIMs.
+            Assigns the same execution id to each Node in the composition's processing graph as well as the CIMs.
             he execution id is either specified in the user's call to run(), or from the Composition's
             **default_execution_id**
         """

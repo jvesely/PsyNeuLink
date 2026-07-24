@@ -226,7 +226,7 @@ class Condition(ConditionBase):
     def __init__(self, func, *args, **kwargs) -> None: ...
     def is_satisfied(self, *args, execution_id: Incomplete | None = ..., **kwargs):
         """
-        the function called to determine satisfaction of this Condition.
+        The function called to determine satisfaction of this Condition.
 
         Arguments
         ---------
@@ -276,7 +276,7 @@ class While(ConditionBase):
     def __init__(self, func, *args, **kwargs) -> None: ...
     def is_satisfied(self, *args, execution_id: Incomplete | None = ..., **kwargs):
         """
-        the function called to determine satisfaction of this Condition.
+        The function called to determine satisfaction of this Condition.
 
         Arguments
         ---------
@@ -320,7 +320,7 @@ class When(ConditionBase):
     def __init__(self, func, *args, **kwargs) -> None: ...
     def is_satisfied(self, *args, execution_id: Incomplete | None = ..., **kwargs):
         """
-        the function called to determine satisfaction of this Condition.
+        The function called to determine satisfaction of this Condition.
 
         Arguments
         ---------

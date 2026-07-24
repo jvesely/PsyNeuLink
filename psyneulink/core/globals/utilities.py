@@ -830,7 +830,7 @@ def powerset(iterable):
 
 @beartype
 def tensor_power(items, levels: Optional[range] = None, flat=False):
-    """return tensor product for all members of powerset of items
+    """Return tensor product for all members of powerset of items
 
     levels specifies a range of set levels to return;  1=first order terms, 2=2nd order terms, etc.
     if None, all terms will be returned

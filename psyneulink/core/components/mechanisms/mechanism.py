@@ -1968,7 +1968,7 @@ class Mechanism_Base(Mechanism):
         return variable
 
     def _validate_params(self, request_set, target_set=None, context=None):
-        """validate TimeScale, INPUT_PORTS, FUNCTION_PARAMS, OUTPUT_PORTS and MONITOR_FOR_CONTROL
+        """Validate TimeScale, INPUT_PORTS, FUNCTION_PARAMS, OUTPUT_PORTS and MONITOR_FOR_CONTROL
 
         Go through target_set params (populated by Component._validate_params) and validate values for:
             + INPUT_PORTS:

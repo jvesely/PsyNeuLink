@@ -581,7 +581,7 @@ class AccumulatorIntegrator(IntegratorFunction):  # ----------------------------
         )
 
     def _accumulator_check_args(self, variable=None, context=None, params=None, target_set=None):
-        """validate params and assign any runtime params.
+        """Validate params and assign any runtime params.
 
         Called by AccumulatorIntegrator to validate params
         Validation can be suppressed by turning parameter_validation attribute off

@@ -2016,7 +2016,7 @@ class Component(MDFSerializable, metaclass=ComponentsMeta):
                     self.owner.parameter_ports[param].parameters.value._set(new_port_value, context)
 
     def _check_args(self, variable=None, params=None, context=None, target_set=None):
-        """validate variable and params, instantiate variable (if necessary) and assign any runtime params.
+        """Validate variable and params, instantiate variable (if necessary) and assign any runtime params.
 
         Called by functions to validate variable and params
         Validation can be suppressed by turning parameter_validation attribute off
