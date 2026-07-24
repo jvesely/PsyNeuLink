@@ -1043,7 +1043,7 @@ class AfterNCallsCombined(_DependencyValidation, Condition):
     def __init__(self, *dependencies, n: Incomplete | None = ..., time_scale: graph_scheduler.time.TimeScale = ...) -> None: ...
 
 class EveryNCalls(_DependencyValidation, Condition):
-    '''EveryNCalls
+    """EveryNCalls
 
     Parameters:
 
@@ -1055,15 +1055,15 @@ class EveryNCalls(_DependencyValidation, Condition):
     Satisfied when:
 
         - the node specified in **dependency** has executed at least n times since the last time the
-          Condition\'s owner executed.
+          Condition's owner executed.
 
 
     Notes:
 
-        - scheduler\'s count of each other node that is "useable" by the node is reset to 0 when the
+        - scheduler's count of each other node that is "useable" by the node is reset to 0 when the
           node runs
 
-    '''
+    """
     def __init__(self, dependency, n) -> None: ...
 
 class JustRan(_DependencyValidation, Condition):
