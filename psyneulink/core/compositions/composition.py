@@ -6343,7 +6343,7 @@ class Composition(Composition_Base, metaclass=ComponentsMeta):
         `Projection` :
             `Projection` if added, else None
 
-    """
+        """
         if context.flags & ContextFlags.COMMAND_LINE:
             self._pre_existing_pathway_components = {NODES: [], PROJECTIONS: []}
 
@@ -10334,7 +10334,7 @@ class Composition(Composition_Base, metaclass=ComponentsMeta):
         `controller_mode <Composition.controller_mode>` of the `Composition` is set to `before` or `after`,
         respectively.
 
-       .. note::
+        .. note::
             Block simulation can not be used if the Composition's stimuli were specified as a generator.
             If `block_simulate` is set to True and the input type for the Composition was a generator,
             block simulation will be disabled for the current execution of `evaluate <Composition.evaluate>`.

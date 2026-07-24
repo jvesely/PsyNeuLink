@@ -72,7 +72,7 @@ class ExecutionMode(enum.Flag):
 
     PTXRun
       compile and run multiple `TRIAL <TimeScale.TRIAL>`\\s using CUDA for GPU.
-   """
+    """
 
     Python    = 0
     PyTorch   = enum.auto()
