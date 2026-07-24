@@ -15,7 +15,6 @@ GraphDependencyDict = Dict[Hashable, Set[Hashable]]
 
 
 class Operation(enum.Enum):
-
     """
     Used in conjunction with `GraphStructureCondition` to indicate how a
     set of source nodes (**S** below) should be combined with a set of
@@ -80,7 +79,6 @@ class ConditionError(Exception):
     __init__: ClassVar[wrapper_descriptor] = ...
 
 class ConditionSet:
-
     """Used in conjunction with a `Scheduler <graph_scheduler.scheduler.Scheduler>` to store the `Conditions <Condition>` associated with a node.
 
     Arguments
@@ -194,7 +192,6 @@ class ConditionSet:
     def conditions(self): ...
 
 class ConditionBase:
-
     """
     Abstract base class for `basic conditions
     <graph_scheduler.condition.Condition>` and `graph structure
@@ -210,7 +207,6 @@ class ConditionBase:
     def __init__(self, _owner: Hashable = ..., **kwargs) -> None: ...
 
 class Condition(ConditionBase):
-
     """
     Used in conjunction with a :class:`Scheduler` to specify the condition under which a node should be
     allowed to execute.
@@ -261,7 +257,6 @@ class AbsoluteCondition(Condition):
 
 class _DependencyValidation: ...
 class While(ConditionBase):
-
     """
     Used in conjunction with a :class:`Scheduler` to specify the condition under which a node should be
     allowed to execute.
@@ -306,7 +301,6 @@ class While(ConditionBase):
     def is_absolute(self): ...
 
 class When(ConditionBase):
-
     """
     Used in conjunction with a :class:`Scheduler` to specify the condition under which a node should be
     allowed to execute.
@@ -351,7 +345,6 @@ class When(ConditionBase):
     def is_absolute(self): ...
 
 class WhileNot(Condition):
-
     """
     WhileNot
 
@@ -374,7 +367,6 @@ class WhileNot(Condition):
     def __init__(self, func, *args, **kwargs) -> None: ...
 
 class Always(Condition):
-
     """Always
 
     Parameters:
@@ -389,7 +381,6 @@ class Always(Condition):
     def __init__(self) -> None: ...
 
 class Never(Condition):
-
     """Never
 
     Parameters:
@@ -413,7 +404,6 @@ class CompositeCondition(Condition):
     def is_absolute(self): ...
 
 class All(CompositeCondition):
-
     """All
 
     Parameters:
@@ -439,7 +429,6 @@ class All(CompositeCondition):
     def satis(self, *conds, **kwargs): ...
 
 class Any(CompositeCondition):
-
     """Any
 
     Parameters:
@@ -465,7 +454,6 @@ class Any(CompositeCondition):
     def satis(self, *conds, **kwargs): ...
 
 class And(CompositeCondition):
-
     """All
 
     Parameters:
@@ -491,7 +479,6 @@ class And(CompositeCondition):
     def satis(self, *conds, **kwargs): ...
 
 class Or(CompositeCondition):
-
     """Any
 
     Parameters:
@@ -517,7 +504,6 @@ class Or(CompositeCondition):
     def satis(self, *conds, **kwargs): ...
 
 class Not(Condition):
-
     """Not
 
     Parameters:
@@ -533,7 +519,6 @@ class Not(Condition):
     def __init__(self, condition) -> None: ...
 
 class NWhen(Condition):
-
     """NWhen
 
     Parameters:
@@ -552,7 +537,6 @@ class NWhen(Condition):
     def satis(self, condition, n, *args, scheduler: Incomplete | None = ..., execution_id: Incomplete | None = ..., **kwargs): ...
 
 class TimeInterval(AbsoluteCondition):
-
     """TimeInterval
 
     Attributes:
@@ -610,7 +594,6 @@ class TimeInterval(AbsoluteCondition):
     def absolute_fixed_points(self): ...
 
 class TimeTermination(AbsoluteCondition):
-
     """TimeTermination
 
     Attributes:
@@ -636,7 +619,6 @@ class TimeTermination(AbsoluteCondition):
     def absolute_fixed_points(self): ...
 
 class BeforeTimeStep(Condition):
-
     """BeforeTimeStep
 
     Parameters:
@@ -658,7 +640,6 @@ class BeforeTimeStep(Condition):
     def __init__(self, n, time_scale: graph_scheduler.time.TimeScale = ...) -> None: ...
 
 class AtTimeStep(Condition):
-
     """AtTimeStep
 
     Parameters:
@@ -681,7 +662,6 @@ class AtTimeStep(Condition):
     def __init__(self, n, time_scale: graph_scheduler.time.TimeScale = ...) -> None: ...
 
 class AfterTimeStep(Condition):
-
     """AfterTimeStep
 
     Parameters:
@@ -703,7 +683,6 @@ class AfterTimeStep(Condition):
     def __init__(self, n, time_scale: graph_scheduler.time.TimeScale = ...) -> None: ...
 
 class AfterNTimeSteps(Condition):
-
     """AfterNTimeSteps
 
     Parameters:
@@ -721,7 +700,6 @@ class AfterNTimeSteps(Condition):
     def __init__(self, n, time_scale: graph_scheduler.time.TimeScale = ...) -> None: ...
 
 class BeforePass(Condition):
-
     """BeforePass
 
     Parameters:
@@ -743,7 +721,6 @@ class BeforePass(Condition):
     def __init__(self, n, time_scale: graph_scheduler.time.TimeScale = ...) -> None: ...
 
 class AtPass(Condition):
-
     """AtPass
 
     Parameters:
@@ -766,7 +743,6 @@ class AtPass(Condition):
     def __init__(self, n, time_scale: graph_scheduler.time.TimeScale = ...) -> None: ...
 
 class AfterPass(Condition):
-
     """AfterPass
 
     Parameters:
@@ -788,7 +764,6 @@ class AfterPass(Condition):
     def __init__(self, n, time_scale: graph_scheduler.time.TimeScale = ...) -> None: ...
 
 class AfterNPasses(Condition):
-
     """AfterNPasses
 
     Parameters:
@@ -806,7 +781,6 @@ class AfterNPasses(Condition):
     def __init__(self, n, time_scale: graph_scheduler.time.TimeScale = ...) -> None: ...
 
 class EveryNPasses(Condition):
-
     """EveryNPasses
 
     Parameters:
@@ -826,7 +800,6 @@ class EveryNPasses(Condition):
     def __init__(self, n, time_scale: graph_scheduler.time.TimeScale = ...) -> None: ...
 
 class BeforeTrial(Condition):
-
     """BeforeTrial
 
     Parameters:
@@ -851,7 +824,6 @@ class BeforeTrial(Condition):
     def __init__(self, n, time_scale: graph_scheduler.time.TimeScale = ...) -> None: ...
 
 class AtTrial(Condition):
-
     """AtTrial
 
     Parameters:
@@ -876,7 +848,6 @@ class AtTrial(Condition):
     def __init__(self, n, time_scale: graph_scheduler.time.TimeScale = ...) -> None: ...
 
 class AfterTrial(Condition):
-
     """AfterTrial
 
     Parameters:
@@ -901,7 +872,6 @@ class AfterTrial(Condition):
     def __init__(self, n, time_scale: graph_scheduler.time.TimeScale = ...) -> None: ...
 
 class AfterNTrials(Condition):
-
     """AfterNTrials
 
     Parameters:
@@ -920,7 +890,6 @@ class AfterNTrials(Condition):
     def __init__(self, n, time_scale: graph_scheduler.time.TimeScale = ...) -> None: ...
 
 class AtRun(Condition):
-
     """AtRun
 
     Parameters:
@@ -938,7 +907,6 @@ class AtRun(Condition):
     def __init__(self, n) -> None: ...
 
 class AfterRun(Condition):
-
     """AfterRun
 
     Parameters:
@@ -956,7 +924,6 @@ class AfterRun(Condition):
     def __init__(self, n) -> None: ...
 
 class AfterNRuns(Condition):
-
     """AfterNRuns
 
     Parameters:
@@ -974,7 +941,6 @@ class AfterNRuns(Condition):
     def __init__(self, n) -> None: ...
 
 class BeforeNCalls(_DependencyValidation, Condition):
-
     """BeforeNCalls
 
     Parameters:
@@ -995,7 +961,6 @@ class BeforeNCalls(_DependencyValidation, Condition):
     def __init__(self, dependency, n, time_scale: graph_scheduler.time.TimeScale = ...) -> None: ...
 
 class AtNCalls(_DependencyValidation, Condition):
-
     """AtNCalls
 
     Parameters:
@@ -1016,7 +981,6 @@ class AtNCalls(_DependencyValidation, Condition):
     def __init__(self, dependency, n, time_scale: graph_scheduler.time.TimeScale = ...) -> None: ...
 
 class AfterCall(_DependencyValidation, Condition):
-
     """AfterCall
 
     Parameters:
@@ -1037,7 +1001,6 @@ class AfterCall(_DependencyValidation, Condition):
     def __init__(self, dependency, n, time_scale: graph_scheduler.time.TimeScale = ...) -> None: ...
 
 class AfterNCalls(_DependencyValidation, Condition):
-
     """AfterNCalls
 
     Parameters:
@@ -1058,7 +1021,6 @@ class AfterNCalls(_DependencyValidation, Condition):
     def __init__(self, dependency, n, time_scale: graph_scheduler.time.TimeScale = ...) -> None: ...
 
 class AfterNCallsCombined(_DependencyValidation, Condition):
-
     """AfterNCallsCombined
 
     Parameters:
@@ -1081,7 +1043,6 @@ class AfterNCallsCombined(_DependencyValidation, Condition):
     def __init__(self, *dependencies, n: Incomplete | None = ..., time_scale: graph_scheduler.time.TimeScale = ...) -> None: ...
 
 class EveryNCalls(_DependencyValidation, Condition):
-
     '''EveryNCalls
 
     Parameters:
@@ -1106,7 +1067,6 @@ class EveryNCalls(_DependencyValidation, Condition):
     def __init__(self, dependency, n) -> None: ...
 
 class JustRan(_DependencyValidation, Condition):
-
     """JustRan
 
     Parameters:
@@ -1127,7 +1087,6 @@ class JustRan(_DependencyValidation, Condition):
     def __init__(self, dependency) -> None: ...
 
 class AllHaveRun(_DependencyValidation, Condition):
-
     """AllHaveRun
 
     Parameters:
@@ -1146,7 +1105,6 @@ class AllHaveRun(_DependencyValidation, Condition):
     def __init__(self, *dependencies, time_scale: graph_scheduler.time.TimeScale = ...) -> None: ...
 
 class WhenFinished(_DependencyValidation, Condition):
-
     """WhenFinished
 
     Parameters:
@@ -1169,7 +1127,6 @@ class WhenFinished(_DependencyValidation, Condition):
     def __init__(self, dependency) -> None: ...
 
 class WhenFinishedAny(_DependencyValidation, Condition):
-
     """WhenFinishedAny
 
     Parameters:
@@ -1196,7 +1153,6 @@ class WhenFinishedAny(_DependencyValidation, Condition):
     def __init__(self, *dependencies) -> None: ...
 
 class WhenFinishedAll(_DependencyValidation, Condition):
-
     """WhenFinishedAll
 
     Parameters:
@@ -1223,7 +1179,6 @@ class WhenFinishedAll(_DependencyValidation, Condition):
     def __init__(self, *dependencies) -> None: ...
 
 class AtTrialStart(AtPass):
-
     """AtTrialStart
 
     Satisfied when:
@@ -1237,7 +1192,6 @@ class AtTrialStart(AtPass):
     def __init__(self) -> None: ...
 
 class AtTrialNStart(All):
-
     """AtTrialNStart
 
     Parameters:
@@ -1259,7 +1213,6 @@ class AtTrialNStart(All):
     def __init__(self, n, time_scale: graph_scheduler.time.TimeScale = ...) -> None: ...
 
 class AtRunStart(AtTrial):
-
     """AtRunStart
 
     Satisfied when:
@@ -1273,7 +1226,6 @@ class AtRunStart(AtTrial):
     def __init__(self) -> None: ...
 
 class AtRunNStart(All):
-
     """AtRunNStart
 
     Parameters:
@@ -1292,7 +1244,6 @@ class AtRunNStart(All):
     def __init__(self, n) -> None: ...
 
 class Threshold(_DependencyValidation, Condition):
-
     """Threshold
 
     Attributes:
@@ -1352,7 +1303,6 @@ class Threshold(_DependencyValidation, Condition):
     def validate_parameter(self, dependency, parameter, custom_parameter_validator: Incomplete | None = ...): ...
 
 class GraphStructureCondition(ConditionBase):
-
     """
     Abstract base class for `graph structure conditions
     <Condition_Graph_Structure_Intro>`
@@ -1379,7 +1329,6 @@ class GraphStructureCondition(ConditionBase):
     def __init__(self, _owner: Hashable = ..., **kwargs) -> None: ...
 
 class CustomGraphStructureCondition(GraphStructureCondition):
-
     """
     Applies a user-defined function to a graph
 
@@ -1394,7 +1343,6 @@ class CustomGraphStructureCondition(GraphStructureCondition):
     def __init__(self, process_graph_function: Callable, **kwargs) -> None: ...
 
 class _GSCUsingNodes(GraphStructureCondition):
-
     """
     Attributes:
         nodes: the subject nodes
@@ -1404,7 +1352,6 @@ class _GSCUsingNodes(GraphStructureCondition):
     def __init__(self, *nodes: Hashable, **kwargs) -> None: ...
 
 class _GSCSingleNode(_GSCUsingNodes):
-
     """
     Attributes:
         node: the subject node
@@ -1416,7 +1363,6 @@ class _GSCSingleNode(_GSCUsingNodes):
     def node(self): ...
 
 class _GSCWithOperations(_GSCUsingNodes):
-
     """
     Args:
         owner_senders: `Operation` that determines how the original
@@ -1484,7 +1430,6 @@ class _GSCReposition(_GSCUsingNodes):
     def __init__(self, *nodes: Hashable, **kwargs) -> None: ...
 
 class BeforeNodes(_GSCReposition, _GSCWithOperations):
-
     """
     Adds a dependency from the owner to each of the specified nodes and
     optionally modifies the senders and receivers of all affected nodes
@@ -1550,7 +1495,6 @@ class BeforeNodes(_GSCReposition, _GSCWithOperations):
     def __init__(self, *nodes, owner_senders: Operation | str = ..., owner_receivers: Operation | str = ..., subject_senders: SubjectOperation = ..., subject_receivers: SubjectOperation = ..., reconnect_non_subject_receivers: bool = ..., remove_new_self_referential_edges: bool = ..., prune_cycles: bool = ..., ignore_conflicts: bool = ...) -> None: ...
 
 class BeforeNode(BeforeNodes, _GSCSingleNode):
-
     """
     Adds a dependency from the owner to the specified node and
     optionally modifies the senders and receivers of both
@@ -1618,7 +1562,6 @@ class BeforeNode(BeforeNodes, _GSCSingleNode):
     def __init__(self, *nodes, owner_senders: Operation | str = ..., owner_receivers: Operation | str = ..., subject_senders: SubjectOperation = ..., subject_receivers: SubjectOperation = ..., reconnect_non_subject_receivers: bool = ..., remove_new_self_referential_edges: bool = ..., prune_cycles: bool = ..., ignore_conflicts: bool = ...) -> None: ...
 
 class WithNode(_GSCReposition, _GSCWithOperations, _GSCSingleNode):
-
     """
     Adds a dependency from each of the senders of both the owner and the
     specified node to both the owner and the specified node, and
@@ -1688,7 +1631,6 @@ class WithNode(_GSCReposition, _GSCWithOperations, _GSCSingleNode):
     def __init__(self, node, owner_receivers: Operation | str = ..., subject_receivers: SubjectOperation = ..., reconnect_non_subject_receivers: bool = ..., remove_new_self_referential_edges: bool = ..., prune_cycles: bool = ..., ignore_conflicts: bool = ...) -> None: ...
 
 class AfterNodes(_GSCReposition, _GSCWithOperations):
-
     """
     Adds a dependency from each of the specified nodes to the owner
     and optionally modifies the senders and receivers of all
@@ -1755,7 +1697,6 @@ class AfterNodes(_GSCReposition, _GSCWithOperations):
     def __init__(self, *nodes, owner_senders: Operation | str = ..., owner_receivers: Operation | str = ..., subject_senders: SubjectOperation = ..., subject_receivers: SubjectOperation = ..., reconnect_non_subject_receivers: bool = ..., remove_new_self_referential_edges: bool = ..., prune_cycles: bool = ..., ignore_conflicts: bool = ...) -> None: ...
 
 class AfterNode(AfterNodes, _GSCSingleNode):
-
     """
     Adds a dependency from the specified node to the owner and
     optionally modifies the senders and receivers of both
@@ -1823,7 +1764,6 @@ class AfterNode(AfterNodes, _GSCSingleNode):
     def __init__(self, *nodes, owner_senders: Operation | str = ..., owner_receivers: Operation | str = ..., subject_senders: SubjectOperation = ..., subject_receivers: SubjectOperation = ..., reconnect_non_subject_receivers: bool = ..., remove_new_self_referential_edges: bool = ..., prune_cycles: bool = ..., ignore_conflicts: bool = ...) -> None: ...
 
 class AddEdgeTo(_GSCSingleNode):
-
     """
     Adds an edge from `AddEdgeTo.owner <ConditionBase.owner>` to
     `AddEdgeTo.node`
@@ -1836,7 +1776,6 @@ class AddEdgeTo(_GSCSingleNode):
     def __init__(self, node: Hashable) -> None: ...
 
 class RemoveEdgeFrom(_GSCSingleNode):
-
     """
     Removes an edge from `RemoveEdgeFrom.node` to `RemoveEdgeFrom.owner
     <ConditionBase.owner>`
