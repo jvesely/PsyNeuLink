@@ -1479,7 +1479,7 @@ class InputPort(Port_Base):
     @property
     def input_shape(self):
         """
-        shows the shape of the input to the InputPort;  that is, the
+        Shows the shape of the input to the InputPort;  that is, the
         shape of the `value <Projection_Base.value>` expected for any
         `path_afferent Projections <Port_Base.path_afferents>`.
         """

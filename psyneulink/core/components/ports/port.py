@@ -1140,7 +1140,7 @@ class Port_Base(Port):
         return variable
 
     def _validate_params(self, request_set, target_set=None, context=None):
-        """validate projection specification(s)
+        """Validate projection specification(s)
 
         Call super (Component._validate_params()
         Validate following params:
