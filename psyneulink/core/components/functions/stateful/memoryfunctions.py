@@ -1918,7 +1918,7 @@ class ContentAddressableMemory(MemoryFunction): # ------------------------------
     def memory(self):
         """Return entries in self._memory as lists in an outer np.array;
            use np.array for multi-line printout
-       """
+        """
         try:
             return self._memory
         except:
@@ -1927,7 +1927,7 @@ class ContentAddressableMemory(MemoryFunction): # ------------------------------
     @property
     def memory_num_entries(self):
         """Return number of entries in self._memory.
-       """
+        """
         return len(self._memory)
 
 

@@ -231,7 +231,7 @@ class AGTControlMechanism(ControlMechanism):
         <ObjectiveMechanism.function>` to parametrize the contribution made to its output by each of the values that
         it monitors (see `ObjectiveMechanism Function <ObjectiveMechanism_Function>`).
 
-   """
+    """
 
     componentName = "AGTControlMechanism"
 

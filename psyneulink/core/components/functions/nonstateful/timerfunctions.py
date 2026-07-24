@@ -862,7 +862,7 @@ class DeceleratingTimer(TimerFunction):  # -------------------------------------
     def derivative(self, input, output=None, context=None):
         """Derivative of `function <DeceleratingTimer._function>` at **input**:
 
-      .. math::
+        .. math::
          \\frac{direction \\cdot rate \\cdot(initial-final-direction)\\cdot\\ln(direction(
          final-initial+direction))\\cdot \\left(\\frac{variable}{duration}\\right)^{rate-1}}{duration\\cdot e^{\\ln(
          direction(final-initial+direction))\\left(\\frac{variable}{duration}\\right)^{rate}}}

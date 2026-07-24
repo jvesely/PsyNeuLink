@@ -167,7 +167,7 @@ class ModulatoryMechanism_Base(Mechanism_Base):
     modulation : str
         determines how the output of the ModulatoryMechanism's `ModulatorySignal(s) <ModulatorySignal>` are used to
         modulate the value of the Port(s) to which their `ModulatoryProjection(s) <ModulatoryProjection>` project.
-   """
+    """
 
     componentType = ADAPTIVE_MECHANISM
 

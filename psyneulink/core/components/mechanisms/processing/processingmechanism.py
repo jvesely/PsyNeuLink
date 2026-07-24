@@ -227,7 +227,7 @@ class ProcessingMechanism_Base(Mechanism_Base):
        It should be instantiated using the constructor for `ProcessingMechanism` or one of its  `subclasses
        <ProcessingMechanism_Subtypes>`.
 
-   """
+    """
 
     componentType = "ProcessingMechanism"
 

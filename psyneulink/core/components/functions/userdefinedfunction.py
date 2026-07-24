@@ -294,11 +294,11 @@ class UserDefinedFunction(Function_Base):
     Below is an example plot of the output of the 'SINUSOIDAL OUTPUT' `OutputPort` from my_wave_mech above, as the
     execution count increments, when the input to the mechanism is 0.005 for 1000 runs::
 
-.. figure:: _static/sinusoid_005.png
-   :alt: Sinusoid function
-   :scale: 50 %
+    .. figure:: _static/sinusoid_005.png
+    :alt: Sinusoid function
+    :scale: 50 %
 
-.. _UDF_Modulatory_Params_Examples:
+    .. _UDF_Modulatory_Params_Examples:
 
     The parameters of a custom function assigned to an InputPort or OutputPort can also be used for `gating
     <GatingMechanism_Specifying_Gating>`.  However, this requires that its `Function_Modulatory_Params` be specified
@@ -327,14 +327,14 @@ class UserDefinedFunction(Function_Base):
     `Function_Modulatory_Params` for gating any InputPort or OutputPort to which the function is assigned (see
     `GatingMechanism_Specifying_Gating` and `GatingSignal_Examples`).
 
-.. _UDF_Compilation:
+    .. _UDF_Compilation:
 
     **Compiling a User Defined Function**
 
     User defined functions may also be `automatically compiled <Composition_Compilation>`, by adding them as a mechanism or projection function.
     There are several restrictions to take into account:
 
-.. _UDF_Compilation_Restrictions:
+    .. _UDF_Compilation_Restrictions:
 
     * *Lambda Functions* -- User defined functions currently do not support Python Lambda functions
 
@@ -348,7 +348,7 @@ class UserDefinedFunction(Function_Base):
 
     * *Libraries* -- User defined functions currently do not support libraries, aside from **NumPy** (with limited support)
 
-.. _UDF_Compilation_Numpy:
+    .. _UDF_Compilation_Numpy:
 
     **NumPy Support for Compiled User Defined Functions**
 
