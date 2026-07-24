@@ -2202,7 +2202,7 @@ class MatrixTransform(TransformFunction):  # -----------------------------------
             arguments of the constructor.
 
         Returns
-        ---------
+        -------
 
         dot product of or difference between variable and matrix : 1d array
             length of the array returned equals the number of columns of `matrix <MatrixTransform.matrix>`.
@@ -3238,7 +3238,7 @@ class PredictionErrorDeltaFunction(TransformFunction):
         """
 
         Arguments
-        ----------
+        ---------
         variable : 2d np.array : default class_defaults.variable
             a 2d array representing the sample and target values to be used to
             calculate the temporal difference delta values. Both arrays must

@@ -1279,7 +1279,7 @@ def random_matrix(num_rows, num_cols, offset=0.0, scale=1.0):
     in place of -.05.
 
     Arguments
-    ----------
+    ---------
     num_rows : int
         specifies number of rows.
 

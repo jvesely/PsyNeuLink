@@ -383,7 +383,7 @@ class CompositionRunner():
         Runs the composition repeatedly with the specified parameters.
 
         Returns
-        ---------
+        -------
         Outputs from the final execution
         """
 
