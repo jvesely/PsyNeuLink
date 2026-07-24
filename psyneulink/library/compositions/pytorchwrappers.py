@@ -203,6 +203,7 @@ class PytorchCompositionWrapper(torch.nn.Module):
                 of a Composition.
 
     COMMENT:
+
     Arguments
     ---------
     COMMENT
@@ -1987,6 +1988,7 @@ class PytorchCompositionWrapper(torch.nn.Module):
                               retain_in_pnl_options:dict,
                               context):
         """Store outputs, targets, and losses from Pytorch execution for copying to PsyNeuLink at end of learn().
+
         Arguments
         ---------
         data : dict
