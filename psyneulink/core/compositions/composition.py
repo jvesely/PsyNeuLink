@@ -12184,6 +12184,7 @@ class Composition(Composition_Base, metaclass=ComponentsMeta):
 
         COMMENT:
         REPLACE WITH EVC/OCM EXAMPLE
+
         Examples
         --------
 

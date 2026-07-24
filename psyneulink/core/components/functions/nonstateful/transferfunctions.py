@@ -5067,6 +5067,7 @@ class TransferWithCosts(TransferFunction):
         ---------
         cost_functions: CostFunctions or List[CostFunctions]
             `cost function <TransferWithCosts_Cost_Functions>` or list of ones to be used;  all other will be disabled.
+
         Returns
         -------
         enabled_cost_functions :  boolean combination of CostFunctions
@@ -5088,6 +5089,7 @@ class TransferWithCosts(TransferFunction):
         cost_functions: CostFunctions or List[CostFunctions]
             `cost function <TransferWithCosts_Cost_Functions>` or list of ones to be enabled,
             in addition to any that are already enabled.
+
         Returns
         -------
         enabled_cost_functions :  boolean combination of CostFunctions
@@ -5111,6 +5113,7 @@ class TransferWithCosts(TransferFunction):
         ---------
         cost_functions: CostFunction or List[CostFunctions]
             `cost function <TransferWithCosts_Cost_Functions>` or list of ones to be disabled.
+
         Returns
         -------
         enabled_cost_functions :  boolean combination of CostFunctions

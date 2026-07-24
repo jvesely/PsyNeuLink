@@ -2484,6 +2484,7 @@ def _instantiate_port_list(owner,
         # the Port value for each entry to the corresponding item of the Mechanism's port_type Port's value
         # the dict to self.<port_type>Ports
         # self.<port_type>Port to self.<port_type>Ports[0] (the first entry of the dict)
+
     Notes:
         * if there is only one Port, but the value of the Mechanism's port_type has more than one item:
             assign it to the sole Port, which is assumed to have a multi-item value
