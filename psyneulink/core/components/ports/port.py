@@ -1032,6 +1032,7 @@ class Port_Base(Port):
         This is used by subclasses to implement the InputPort(s), OutputPort(s), and ParameterPort(s) of a Mechanism.
 
         COMMENT: [OLD]
+
         Arguments:
             - owner (Mechanism):
                  Mechanism with which Port is associated (default: NotImplemented)

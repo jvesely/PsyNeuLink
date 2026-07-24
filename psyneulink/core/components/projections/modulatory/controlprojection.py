@@ -282,6 +282,7 @@ class ControlProjection(ModulatoryProjection_Base):
             - puts them in DefaultController's input_ports and outputPorts attributes
             - lengthens variable of DefaultController to accommodate the ControlProjection
             - updates value of the DefaultController (in response to the new variable)
+
         Notes:
             * the default function of the DefaultControlMechanism simply maps the inputPort value to the outputPort
             * the params arg is assumed to be a dictionary of params for the ControlSignal of the ControlMechanism

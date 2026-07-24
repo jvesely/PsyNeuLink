@@ -1148,6 +1148,7 @@ def get_alias_property_setter(name, attr=None):
 def counts(item_list:list)->list:
     """Return number of times each unique unhashable item (e.g., array) occurs in list of items
     Note: can only handle one level of unhashable items (e.g., list within a list will raise an error)
+
     Returns:
         Dictionary where keys are the unique items (e.g., array values) and values are their counts.
     """
@@ -1586,6 +1587,7 @@ class ContentAddressableList(UserList):
     @property
     def names(self):
         """Return list of `values <Component.value>` of the name attribute of components in the list.
+
         Returns
         -------
         names :  list
@@ -1596,6 +1598,7 @@ class ContentAddressableList(UserList):
     @property
     def key_values(self):
         """Return list of `values <Component.value>` of the keyed attribute of components in the list.
+
         Returns
         -------
         key_values :  list
@@ -1606,6 +1609,7 @@ class ContentAddressableList(UserList):
     def get_key_values(self, context=None):
         """Return list of `values <Component.value>` of the keyed
         parameter of components in the list.
+
         Returns
         -------
         key_values :  list
@@ -1617,6 +1621,7 @@ class ContentAddressableList(UserList):
     @property
     def values(self):
         """Return list of values of components in the list.
+
         Returns
         -------
         values :  list
@@ -1626,6 +1631,7 @@ class ContentAddressableList(UserList):
 
     def get_values(self, context=None):
         """Return list of values of components in the list.
+
         Returns
         -------
         values :  list
@@ -1637,6 +1643,7 @@ class ContentAddressableList(UserList):
     @property
     def values_as_lists(self):
         """Return list of values of components in the list, each converted to a list.
+
         Returns
         -------
         values :  list
@@ -1646,6 +1653,7 @@ class ContentAddressableList(UserList):
 
     def get_values_as_lists(self, context=None):
         """Return list of values of components in the list, each converted to a list.
+
         Returns
         -------
         values :  list

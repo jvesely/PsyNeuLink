@@ -755,6 +755,7 @@ class Report:
     def __enter__(self):
         """
         This  returns a singleton of the Report class.
+
         Returns:
             A new singleton PNL progress context if none is currently active, otherwise, it returns the currently
             active context.
@@ -773,6 +774,7 @@ class Report:
     def __exit__(self, type, value, traceback) -> None:
         """
         Called when the context is closed.
+
         Args:
             type:
             value:
