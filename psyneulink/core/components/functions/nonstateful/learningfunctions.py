@@ -1326,6 +1326,7 @@ class Hebbian(LearningFunction):  # --------------------------------------------
 
     prefs : PreferenceSet or specification dict : default Function.classPreferences
         specifies the `PreferenceSet` for the Function (see `prefs <Function_Base.prefs>` for details).
+
     Attributes
     ----------
 
@@ -1547,6 +1548,7 @@ class ContrastiveHebbian(LearningFunction):  # ---------------------------------
 
     prefs : PreferenceSet or specification dict : default Function.classPreferences
         specifies the `PreferenceSet` for the Function (see `prefs <Function_Base.prefs>` for details).
+
     Attributes
     ----------
 
