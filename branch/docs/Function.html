@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Function &mdash; PsyNeuLink 0+untagged.80.g0f38799 documentation</title>
+  <title>Function &mdash; PsyNeuLink 0.19.0.0+10.g5bd38728b documentation</title>
   
 
   
@@ -99,7 +99,7 @@
               
               
                 <div class="version">
-                  0+untagged.80.g0f38799
+                  0.19.0.0+10
                 </div>
               
             
@@ -280,10 +280,10 @@ used by <a class="reference internal" href="ControlProjection.html"><span class=
 </section>
 <section id="modulatory-parameters">
 <span id="function-modulatory-params"></span><h3><em>Modulatory Parameters</em><a class="headerlink" href="#modulatory-parameters" title="Link to this heading">¶</a></h3>
-<p>Some classes of Functions also implement a pair of modulatory parameters: <code class="xref any docutils literal notranslate"><span class="pre">multiplicative_param</span></code> and <code class="xref any docutils literal notranslate"><span class="pre">additive_param</span></code>.
+<p>Some classes of Functions also implement a pair of modulatory parameters: <a class="reference internal" href="UserDefinedFunction.html#psyneulink.core.components.functions.userdefinedfunction.UserDefinedFunction.multiplicative_param" title="psyneulink.core.components.functions.userdefinedfunction.UserDefinedFunction.multiplicative_param"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">multiplicative_param</span></code></a> and <a class="reference internal" href="UserDefinedFunction.html#psyneulink.core.components.functions.userdefinedfunction.UserDefinedFunction.additive_param" title="psyneulink.core.components.functions.userdefinedfunction.UserDefinedFunction.additive_param"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">additive_param</span></code></a>.
 Each of these is assigned the name of one of the function’s parameters. These are used by <a class="reference internal" href="ModulatorySignal.html"><span class="doc">ModulatorySignals</span></a> to modulate the <a class="reference internal" href="Port.html#psyneulink.core.components.ports.port.Port_Base.function" title="psyneulink.core.components.ports.port.Port_Base.function"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">function</span></code></a> of a <a class="reference internal" href="Port.html"><span class="doc">Port</span></a> and thereby its <a class="reference internal" href="Port.html#psyneulink.core.components.ports.port.Port_Base.value" title="psyneulink.core.components.ports.port.Port_Base.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> (see <a class="reference internal" href="ModulatorySignal.html#modulatorysignal-modulation"><span class="std std-ref">Modulation</span></a> and <a class="reference internal" href="ModulatorySignal.html#modulatorysignal-detail-figure"><span class="std std-ref">figure</span></a> for additional
-details). For example, a <a class="reference internal" href="ControlSignal.html"><span class="doc">ControlSignal</span></a> typically uses the <code class="xref any docutils literal notranslate"><span class="pre">multiplicative_param</span></code> to modulate the value of a parameter
-of a Mechanism’s <a class="reference internal" href="Mechanism.html#psyneulink.core.components.mechanisms.mechanism.Mechanism_Base.function" title="psyneulink.core.components.mechanisms.mechanism.Mechanism_Base.function"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">function</span></code></a>, whereas a <a class="reference internal" href="LearningSignal.html"><span class="doc">LearningSignal</span></a> uses the <code class="xref any docutils literal notranslate"><span class="pre">additive_param</span></code> to increment
+details). For example, a <a class="reference internal" href="ControlSignal.html"><span class="doc">ControlSignal</span></a> typically uses the <a class="reference internal" href="UserDefinedFunction.html#psyneulink.core.components.functions.userdefinedfunction.UserDefinedFunction.multiplicative_param" title="psyneulink.core.components.functions.userdefinedfunction.UserDefinedFunction.multiplicative_param"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">multiplicative_param</span></code></a> to modulate the value of a parameter
+of a Mechanism’s <a class="reference internal" href="Mechanism.html#psyneulink.core.components.mechanisms.mechanism.Mechanism_Base.function" title="psyneulink.core.components.mechanisms.mechanism.Mechanism_Base.function"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">function</span></code></a>, whereas a <a class="reference internal" href="LearningSignal.html"><span class="doc">LearningSignal</span></a> uses the <a class="reference internal" href="UserDefinedFunction.html#psyneulink.core.components.functions.userdefinedfunction.UserDefinedFunction.additive_param" title="psyneulink.core.components.functions.userdefinedfunction.UserDefinedFunction.additive_param"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">additive_param</span></code></a> to increment
 the <code class="xref any docutils literal notranslate"><span class="pre">value</span></code> of the <a class="reference internal" href="MappingProjection.html#psyneulink.core.components.projections.pathway.mappingprojection.MappingProjection.matrix" title="psyneulink.core.components.projections.pathway.mappingprojection.MappingProjection.matrix"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">matrix</span></code></a> parameter of a <a class="reference internal" href="MappingProjection.html"><span class="doc">MappingProjection</span></a>.</p>
 </section>
 </section>
@@ -755,7 +755,7 @@ and <strong>scale</strong> arguments, respectively.</p>
        <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
          <script src="_static/jquery.js?v=5d32c60e"></script>
          <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-         <script src="_static/documentation_options.js?v=6a22f3d6"></script>
+         <script src="_static/documentation_options.js?v=d27d9922"></script>
          <script src="_static/doctools.js?v=9bcbadda"></script>
          <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
      

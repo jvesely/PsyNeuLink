@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Component &mdash; PsyNeuLink 0+untagged.80.g0f38799 documentation</title>
+  <title>Component &mdash; PsyNeuLink 0.19.0.0+10.g5bd38728b documentation</title>
   
 
   
@@ -99,7 +99,7 @@
               
               
                 <div class="version">
-                  0+untagged.80.g0f38799
+                  0.19.0.0+10
                 </div>
               
             
@@ -580,7 +580,7 @@ input to the Component if none is provided on execution (see <code class="xref a
 <li><p><strong>input_shapes</strong> (<em>int</em><em>, or </em><em>Iterable</em><em> of </em><em>tuple</em><em> or </em><em>int : default None</em>) – specifies default_variable as array(s) of zeros if <strong>default_variable</strong> is not passed as an argument;
 if <strong>default_variable</strong> is specified, it is checked for
 compatibility against <strong>input_shapes</strong> (see
-<a class="reference internal" href="#component-input-shapes"><span class="std std-ref">input_shapes</span></a> for additonal details).</p></li>
+<a class="reference internal" href="#component-input-shapes"><span class="std std-ref">input_shapes</span></a> for additional details).</p></li>
 <li><p><strong>params</strong> (<em>Dict</em><em>[</em><em>param keyword: param value</em><em>] </em><em>: default None</em>) – a <a class="reference internal" href="ParameterPort.html#parameterport-specification"><span class="std std-ref">parameter dictionary</span></a> that can be used to specify the parameters for
 the Component and/or a custom function and its parameters. Values specified for parameters in the dictionary
 override any assigned to those parameters in arguments of the constructor.</p></li>
@@ -894,7 +894,7 @@ constructor_argument</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="psyneulink.core.components.component.Component._check_args">
 <span class="sig-name descname"><span class="pre">_check_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.component.Component._check_args" title="Link to this definition">¶</a></dt>
-<dd><p>validate variable and params, instantiate variable (if necessary) and assign any runtime params.</p>
+<dd><p>Validate variable and params, instantiate variable (if necessary) and assign any runtime params.</p>
 <p>Called by functions to validate variable and params
 Validation can be suppressed by turning parameter_validation attribute off
 target_set is a params dictionary to which params should be assigned;</p>
@@ -932,12 +932,15 @@ Cache params to reset in _runtime_params_reset</p>
 <dt class="sig sig-object py" id="psyneulink.core.components.component.Component._instantiate_defaults">
 <span class="sig-name descname"><span class="pre">_instantiate_defaults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assign_missing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.component.Component._instantiate_defaults" title="Link to this definition">¶</a></dt>
 <dd><p>Validate variable and/or param defaults in requested set and assign values to params in target set</p>
-<p>Variable can be any type other than a dictionary (reserved for use as params)
-request_set must contain a dict of params to be assigned to target_set</p>
-<dl class="simple">
-<dt>If assign_missing option is set, then any params defined for the class</dt><dd><p>but not included in the requested set are assigned values from the default_set;
+<blockquote>
+<div><p>Variable can be any type other than a dictionary (reserved for use as params)
+request_set must contain a dict of params to be assigned to target_set
+If assign_missing option is set, then any params defined for the class</p>
+<blockquote>
+<div><p>but not included in the requested set are assigned values from the default_set;
 if request_set is None, then all values in the target_set are assigned from the default_set</p>
-</dd>
+</div></blockquote>
+<dl class="simple">
 <dt>Class defaults can not be passed as target_set</dt><dd><dl class="simple">
 <dt>IMPLEMENTATION NOTE:  for now, treating class defaults as hard coded;</dt><dd><p>could be changed in the future simply by commenting out code below</p>
 </dd>
@@ -946,6 +949,7 @@ if request_set is None, then all values in the target_set are assigned from the 
 <dt>If not context:  instantiates function and any ports specified in request set</dt><dd><p>(if they have changed from the previous value(s))</p>
 </dd>
 </dl>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -966,10 +970,17 @@ if request_set is None, then all values in the target_set are assigned from the 
 <dt class="sig sig-object py" id="psyneulink.core.components.component.Component._validate_arguments">
 <span class="sig-name descname"><span class="pre">_validate_arguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter_values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.component.Component._validate_arguments" title="Link to this definition">¶</a></dt>
 <dd><p>Raises errors for illegal specifications of arguments to
-__init__:
-- original Parameter name when Parameter has a constructor_argument
-- arguments that don’t correspond to Parameters or other arguments to __init__
-- non-equal values of a Parameter and a corresponding ParameterAlias</p>
+__init__:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>original Parameter name when Parameter has a
+constructor_argument</p></li>
+<li><p>arguments that don’t correspond to Parameters or other
+arguments to __init__</p></li>
+<li><p>non-equal values of a Parameter and a corresponding
+ParameterAlias</p></li>
+</ul>
+</div></blockquote>
 </dd></dl>
 
 <dl class="py method">
@@ -1128,11 +1139,16 @@ It is called only if the parameter_validation attribute is <code class="xref any
 # It also checks FUNCTION:
 #     if it is specified and is a type reference (rather than an instance),
 #     it instantiates the reference (using FUNCTION_PARAMS if present)
-#     and puts a reference to the instance in target_set[FUNCTION]</p>
-<p>This checks for an execute method in function.
-If a specification is not present or valid:
-- it checks self.execute and, if present, kwExecute is assigned to it
-- if self.execute is not present or valid, an exception is raised</p>
+#     and puts a reference to the instance in target_set[FUNCTION]
+#
+This checks for an execute method in function
+If a specification is not present or valid:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>it checks self.execute and, if present, kwExecute is assigned to it</p></li>
+<li><p>if self.execute is not present or valid, an exception is raised</p></li>
+</ul>
+</div></blockquote>
 <dl class="simple">
 <dt>When completed, there is guaranteed to be a valid method in self.function and/or self.execute;</dt><dd><p>otherwise, an exception is raised</p>
 </dd>
@@ -1275,6 +1291,13 @@ this Component</p>
 <dd class="field-odd"><p><a class="reference internal" href="Utilities.html#psyneulink.core.globals.utilities.ContentAddressableList" title="psyneulink.core.globals.utilities.ContentAddressableList">ContentAddressableList</a></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="psyneulink.core.components.component.Component.full_name">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">full_name</span></span><a class="headerlink" href="#psyneulink.core.components.component.Component.full_name" title="Link to this definition">¶</a></dt>
+<dd><p>Stub to allow override by subclasses (such as port)
+Allows use blind to whether subclass has a full_name attribute or not, providing default if not</p>
 </dd></dl>
 
 <dl class="py property">
@@ -1494,6 +1517,7 @@ constructor string</p>
 <li><a class="reference internal" href="#psyneulink.core.components.component.Component._receiver_ports"><code class="docutils literal notranslate"><span class="pre">Component._receiver_ports</span></code></a></li>
 <li><a class="reference internal" href="#psyneulink.core.components.component.Component.get_afferents"><code class="docutils literal notranslate"><span class="pre">Component.get_afferents()</span></code></a></li>
 <li><a class="reference internal" href="#psyneulink.core.components.component.Component.get_efferents"><code class="docutils literal notranslate"><span class="pre">Component.get_efferents()</span></code></a></li>
+<li><a class="reference internal" href="#psyneulink.core.components.component.Component.full_name"><code class="docutils literal notranslate"><span class="pre">Component.full_name</span></code></a></li>
 <li><a class="reference internal" href="#psyneulink.core.components.component.Component.loggable_items"><code class="docutils literal notranslate"><span class="pre">Component.loggable_items</span></code></a></li>
 <li><a class="reference internal" href="#psyneulink.core.components.component.Component.set_log_conditions"><code class="docutils literal notranslate"><span class="pre">Component.set_log_conditions()</span></code></a></li>
 <li><a class="reference internal" href="#psyneulink.core.components.component.Component.set_delivery_conditions"><code class="docutils literal notranslate"><span class="pre">Component.set_delivery_conditions()</span></code></a></li>
@@ -1527,7 +1551,7 @@ constructor string</p>
        <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
          <script src="_static/jquery.js?v=5d32c60e"></script>
          <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-         <script src="_static/documentation_options.js?v=6a22f3d6"></script>
+         <script src="_static/documentation_options.js?v=d27d9922"></script>
          <script src="_static/doctools.js?v=9bcbadda"></script>
          <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
      

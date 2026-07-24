@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>TimerFunctions &mdash; PsyNeuLink 0+untagged.80.g0f38799 documentation</title>
+  <title>TimerFunctions &mdash; PsyNeuLink 0.19.0.0+10.g5bd38728b documentation</title>
   
 
   
@@ -99,7 +99,7 @@
               
               
                 <div class="version">
-                  0+untagged.80.g0f38799
+                  0.19.0.0+10
                 </div>
               
             
@@ -801,13 +801,23 @@ arguments of the constructor.</p></li>
 <span class="sig-name descname"><span class="pre">derivative</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.functions.nonstateful.timerfunctions.DeceleratingTimer.derivative" title="Link to this definition">¶</a></dt>
 <dd><p>Derivative of <a class="reference internal" href="#psyneulink.core.components.functions.nonstateful.timerfunctions.DeceleratingTimer._function" title="psyneulink.core.components.functions.nonstateful.timerfunctions.DeceleratingTimer._function"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">function</span></code></a> at <strong>input</strong>:</p>
 <div class="math notranslate nohighlight">
-\[ \begin{align}\begin{aligned}\frac{direction \cdot rate \cdot(initial-final-direction)\cdot\ln(direction(
- final-initial+direction))\cdot \left(\frac{variable}{duration}\right)^{rate-1}}{duration\cdot e^{\ln(
- direction(final-initial+direction))\left(\frac{variable}{duration}\right)^{rate}}}\\Arguments
----------\\input : number
-    value of the input to the DeceleratingTimer transform at which derivative is to be taken.\\Derivative of `function &lt;DeceleratingTimer._function&gt;` at **input**.\\Returns
--------
-derivative :  number or array\end{aligned}\end{align} \]</div>
+\[\frac{direction \cdot rate \cdot(initial-final-direction)\cdot\ln(direction(
+final-initial+direction))\cdot \left(\frac{variable}{duration}\right)^{rate-1}}{duration\cdot e^{\ln(
+direction(final-initial+direction))\left(\frac{variable}{duration}\right)^{rate}}}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input</strong> (<em>number</em>) – value of the input to the DeceleratingTimer transform at which derivative is to be taken.</p></li>
+<li><p><strong>input.</strong> (<em>Derivative</em><em> of </em><em>function at</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>derivative</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>number or array</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -1208,7 +1218,7 @@ to <a class="reference internal" href="#psyneulink.core.components.functions.non
        <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
          <script src="_static/jquery.js?v=5d32c60e"></script>
          <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-         <script src="_static/documentation_options.js?v=6a22f3d6"></script>
+         <script src="_static/documentation_options.js?v=d27d9922"></script>
          <script src="_static/doctools.js?v=9bcbadda"></script>
          <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
          <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
