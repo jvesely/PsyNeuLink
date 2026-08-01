@@ -182,15 +182,19 @@ exclude = [
 ]
 
 [tool.ruff.lint]
-select = ["D", "E", "F", "UP", "W"]
+select = ["D", "E", "F", "UP", "PT", "W"]
 ignore = [
     "D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107", "D200", "D202", "D203", "D204", "D205", "D207", "D208", "D211", "D212", "D213", "D214", "D215", "D300", "D301", "D400", "D401", "D402", "D403", "D404", "D405", "D406", "D407", "D409", "D410", "D411", "D412", "D413", "D415", "D416", "D417",
     "E501", "E713", "E721", "E722", "E731", "E741",
     "F401", "F403", "F405", "F521", "F523", "F524", "F525", "F541", "F601", "F602", "F722", "F811", "F821", "F841",
     "UP008", "UP009", "UP015", "UP030", "UP032", "UP034",
+    "PT001", "PT003", "PT006", "PT007", "PT011", "PT012", "PT014", "PT015", "PT017", "PT018", "PT022", "PT028", "PT030", "PT031",
 ]
 
 [tool.ruff.lint.per-file-ignores]
+# Ignore pytest issues outside of tests
+"!tests/*" = ["PT"]
+
 # Ignore documentation errors outside psyneulink source
 "!psyneulink/*" = ["D"]
 
