@@ -57,7 +57,7 @@ jobs:
         torch: ['']
         arch: ['arm64', 'x64']
         # Bump this list (e.g. [1, 2, 3, 4]) to multiply parallel attempts/push.
-        attempt: [1, 2]
+        attempt: [1, 2, 3, 4]
 
 
     steps:
