@@ -288,23 +288,6 @@ class TestStructural:
         # (inner proj specific value of None in outer comp's runtime dict d_ocn; receives default from d_lcn at middle comp construction)
         ("d_ocn_mcs", .15,   None,  .2, "d_lcn", .3,  None, "d_ocn", .15,    .4,  .3,  .6,   .4,   .4, .15,   .4,   .3),  # noqa: E241
     ]
-    @pytest.fixture
-    def test_nested_dicts(self):
-        # Need to make these a fixture so that popping DEFAULT_LEARNING_RATE doesn't interfere with other tests
-        def _get_learning_rate_dicts(dict):
-            test_nested_dicts = \
-                {"d_ic": {"INNER PROJECTION": .2},
-                 "d_icf": {DEFAULT_LEARNING_RATE: False},
-                 "d_mc": {"MIDDLE PROJECTION 1": .4, DEFAULT_LEARNING_RATE: .5},
-                 "d_mcf": {"INNER PROJECTION": True, "MIDDLE PROJECTION 1": .4, DEFAULT_LEARNING_RATE: False},
-                 "d_oc":  {"INNER PROJECTION": True, "OUTER PROJECTION 2":  .4, DEFAULT_LEARNING_RATE: False},
-                 "d_ocn": {"INNER PROJECTION": None, "OUTER PROJECTION 2": .4},
-                 "d_lc":  {"INNER PROJECTION": True, "MIDDLE PROJECTION 1": .4, DEFAULT_LEARNING_RATE: False},
-                 "d_lct": {"INNER PROJECTION": True, "MIDDLE PROJECTION 1": .4, "OUTER PROJECTION 2": .5},
-                 "d_lcn": {"MIDDLE PROJECTION 1": .4, "OUTER PROJECTION 2": .5, DEFAULT_LEARNING_RATE: .6},
-                 }
-            return test_nested_dicts[dict]
-        return _get_learning_rate_dicts
 
     @pytest.mark.pytorch
     @pytest.mark.parametrize("_condition, "
@@ -314,21 +297,29 @@ class TestStructural:
                                            ip, ic, m1, mc, o2, oc, lr,
                                            ipc, m1c, o2c,
                                            ipl, m1l,o2l,
-                                           ipr, m1r, o2r,
-                                           test_nested_dicts):
+                                           ipr, m1r, o2r):
+
+        nested_dicts = \
+            {"d_ic": {"INNER PROJECTION": .2},
+             "d_icf": {DEFAULT_LEARNING_RATE: False},
+             "d_mc": {"MIDDLE PROJECTION 1": .4, DEFAULT_LEARNING_RATE: .5},
+             "d_mcf": {"INNER PROJECTION": True, "MIDDLE PROJECTION 1": .4, DEFAULT_LEARNING_RATE: False},
+             "d_oc":  {"INNER PROJECTION": True, "OUTER PROJECTION 2":  .4, DEFAULT_LEARNING_RATE: False},
+             "d_ocn": {"INNER PROJECTION": None, "OUTER PROJECTION 2": .4},
+             "d_lc":  {"INNER PROJECTION": True, "MIDDLE PROJECTION 1": .4, DEFAULT_LEARNING_RATE: False},
+             "d_lct": {"INNER PROJECTION": True, "MIDDLE PROJECTION 1": .4, "OUTER PROJECTION 2": .5},
+             "d_lcn": {"MIDDLE PROJECTION 1": .4, "OUTER PROJECTION 2": .5, DEFAULT_LEARNING_RATE: .6},
+             }
+
+
+        ic = nested_dicts.get(str(ic), ic)
+        mc = nested_dicts.get(str(mc), mc)
+        oc = nested_dicts.get(str(oc), oc)
+        lr = nested_dicts.get(str(lr), lr)
 
         # These are not parameterized, and since they are assigned in Projection constructors, should always be the same
         m2 = m2c = m2l = m2r = .98
         o1 = o1c = o1l = o1r = .99
-
-        if isinstance(ic, str):
-            ic = test_nested_dicts(ic)
-        if isinstance(mc, str):
-            mc = test_nested_dicts(mc)
-        if isinstance(oc, str):
-            oc = test_nested_dicts(oc)
-        if isinstance(lr, str):
-            lr = test_nested_dicts(lr)
 
         inner_mech_1 = pnl.ProcessingMechanism(name='INNER NODE 1')
         inner_mech_2 = pnl.ProcessingMechanism(name='INNER NODE 2')

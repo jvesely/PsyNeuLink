@@ -544,8 +544,7 @@ class TestConnectCompositionsViaCIMS:
         assert NOISE in icomp.parameter_CIM.output_ports.names[1]
         assert SLOPE in icomp.parameter_CIM.output_ports.names[2]
 
-    @pytest.fixture
-    def parameter_CIM_routing_composition(self):
+    def create_parameter_CIM_routing_composition(self):
         # Inner Composition
         ia = TransferMechanism(name='ia')
         ib = TransferMechanism(name='ib')
@@ -558,10 +557,9 @@ class TestConnectCompositionsViaCIMS:
         )
         return ia, ib, cm, icomp, ocomp
 
-    def test_parameter_CIM_routing_from_ControlMechanism_pathway_explicit(
-        self, parameter_CIM_routing_composition
-    ):
-        ia, ib, cm, icomp, ocomp = parameter_CIM_routing_composition
+    def test_parameter_CIM_routing_from_ControlMechanism_pathway_explicit(self):
+        ia, ib, cm, icomp, ocomp = self.create_parameter_CIM_routing_composition()
+
         # warning_msg = f"A MappingProjection has been created from a ControlSignal of 'control_mechanism' " \
         #               f"-- specified in 'pathway' arg for add_linear_processing_pathway method of 'ocomp' -- " \
         #               f"to another Mechanism in that pathway.  " \
@@ -592,10 +590,8 @@ class TestConnectCompositionsViaCIMS:
         assert icomp.parameter_CIM_ports[ib.parameter_ports['slope']][0].path_afferents[0].sender == cm.output_port
         assert cm in ocomp.graph_processing.dependency_dict[icomp]
 
-    def test_parameter_CIM_routing_from_ControlMechanism_pathway_implicit(
-        self, parameter_CIM_routing_composition
-    ):
-        ia, ib, cm, icomp, ocomp = parameter_CIM_routing_composition
+    def test_parameter_CIM_routing_from_ControlMechanism_pathway_implicit(self):
+        ia, ib, cm, icomp, ocomp = self.create_parameter_CIM_routing_composition()
         ocomp.add_node(cm)
         ocomp.add_node(icomp)
 

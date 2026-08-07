@@ -1151,12 +1151,11 @@ class TestAbsolute:
     )
     def test_TimeTermination(
         self,
-        three_node_linear_composition,
         repeat,
         inclusive,
         last_time
     ):
-        _, comp = three_node_linear_composition
+        _, comp = pytest.helpers.create_three_node_linear_composition()
 
         comp.scheduler.termination_conds = {
             TimeScale.TRIAL: TimeTermination(repeat, inclusive)

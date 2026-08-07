@@ -1286,8 +1286,7 @@ class TestClearLog:
 
 class TestFiltering:
 
-    @pytest.fixture(scope='module')
-    def node_logged_in_simulation(self):
+    def create_node_logged_in_simulation(self):
         Input = pnl.TransferMechanism(name='Input')
         reward = pnl.TransferMechanism(
             output_ports=[pnl.RESULT, pnl.MEAN, pnl.VARIANCE], name='reward')
@@ -1354,7 +1353,9 @@ class TestFiltering:
 
         return Input
 
-    def test_node_has_logged_sims(self, node_logged_in_simulation):
+    def test_node_has_logged_sims(self):
+        node_logged_in_simulation = self.create_node_logged_in_simulation()
+
         for logged_value, eid_dict in node_logged_in_simulation.log.logged_entries.items():
             for eid in eid_dict:
                 if pnl.EID_SIMULATION in str(eid):
@@ -1362,15 +1363,21 @@ class TestFiltering:
         else:
             assert False, 'No simulation execution_id found in log'
 
-    def test_nparray(self, node_logged_in_simulation):
+    def test_nparray(self):
+        node_logged_in_simulation = self.create_node_logged_in_simulation()
+
         for eid in node_logged_in_simulation.log.nparray(exclude_sims=True)[0]:
             assert pnl.EID_SIMULATION not in str(eid)
 
-    def test_nparray_dictionary(self, node_logged_in_simulation):
+    def test_nparray_dictionary(self):
+        node_logged_in_simulation = self.create_node_logged_in_simulation()
+
         for eid in node_logged_in_simulation.log.nparray_dictionary(exclude_sims=True):
             assert pnl.EID_SIMULATION not in str(eid)
 
-    def test_csv(self, node_logged_in_simulation):
+    def test_csv(self):
+        node_logged_in_simulation = self.create_node_logged_in_simulation()
+
         full_csv = node_logged_in_simulation.log.csv(exclude_sims=True)
 
         # get each row, excluding header

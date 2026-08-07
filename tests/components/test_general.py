@@ -80,10 +80,10 @@ def test_numeric_parameter_values_are_numpy_values(class_):
             _numeric_parameter_value_check(class_, parameter.name, v, f'.values[{eid}]')
 
 
-@pytest.fixture(scope='module')
-def nested_compositions():
+def create_nested_compositions():
     comp = pnl.Composition(name='comp')
     inner_comp = pnl.Composition(name='Inner Composition')
+
     A = pnl.TransferMechanism(
         function=pnl.Linear(slope=5.0, intercept=2.0),
         name='A'
@@ -111,7 +111,7 @@ def nested_compositions():
 
     inner_comp.add_projection(pnl.MappingProjection(), E, F)
 
-    yield comp, inner_comp
+    return comp, inner_comp
 
 
 @pytest.mark.parametrize(
@@ -127,12 +127,11 @@ def nested_compositions():
     ]
 )
 def test_all_dependent_parameters(
-    nested_compositions,
     filter_name,
     filter_regex,
     unknown_param_names
 ):
-    comp, inner_comp = nested_compositions
+    comp, inner_comp = create_nested_compositions()
 
     params_comp = comp.all_dependent_parameters(filter_name, filter_regex)
     params_inner_comp = inner_comp.all_dependent_parameters(
