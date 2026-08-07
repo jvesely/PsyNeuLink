@@ -2845,16 +2845,16 @@ class TestNestedLearning:
         outer_comp = pnl.Composition(name='outer_comp', nodes=[oa, ot, inner_comp])
         outer_comp.add_projection(pnl.MappingProjection(), sender=oa, receiver=ia)
 
-        try:
+        with pytest.raises(CompositionError) as error:
             outer_comp.learn({oa: 1, ot: 1})
-        except CompositionError as e:
-            assert str(e) == (
-                   f'Target mechanism {inner_comp_target.name} of nested Composition {inner_comp.name} is not being projected to '
-                    f'from its enclosing Composition {outer_comp.name}. For a call to {outer_comp.name}.learn, {inner_comp_target.name} '
-                    f'must have an afferent projection with a target value so that an error term may be computed. '
-                    f'A reference to {inner_comp_target.name}, with which you can create the needed projection, can be found '
-                    f'as the target attribute of the relevant pathway in {inner_comp.name}.pathways. '
-            )
+
+        assert str(error.value) == (
+               f'Target mechanism {inner_comp_target.name} of nested Composition {inner_comp.name} is not being projected to '
+                f'from its enclosing Composition {outer_comp.name}. For a call to {outer_comp.name}.learn, {inner_comp_target.name} '
+                f'must have an afferent projection with a target value so that an error term may be computed. '
+                f'A reference to {inner_comp_target.name}, with which you can create the needed projection, can be found '
+                f'as the target attribute of the relevant pathway in {inner_comp.name}.pathways. '
+        )
 
     def test_no_learning_of_spanning_nested_compositions(self):
         input_mech = pnl.ProcessingMechanism(name='input_mech', input_shapes=2)
