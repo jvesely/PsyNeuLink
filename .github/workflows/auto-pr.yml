@@ -8,7 +8,7 @@ on:
 jobs:
   create-pr:
     name: Create PR
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - name: Set PR head from dispatch value or default
         id: get_refs
