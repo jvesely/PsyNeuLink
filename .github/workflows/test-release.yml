@@ -7,7 +7,7 @@ on:
 
 jobs:
   create-python-dist:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     strategy:
       matrix:
         # Python version in matrix for easier reference
@@ -175,7 +175,7 @@ jobs:
         TWINE_REPOSITORY_URL: ${{ secrets.TWINE_REPOSITORY_URL }}
 
   publish-github:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     needs: [create-python-dist, test-release]
     environment: gh-release
     permissions:
