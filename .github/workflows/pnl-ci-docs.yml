@@ -134,7 +134,7 @@ jobs:
       matrix:
         # DOCS_PYTHON_VERSION and DOCS_OS
         python-version: ['3.11']
-        os: ['ubuntu-latest']
+        os: ['ubuntu-slim']
 
     runs-on: ${{ matrix.os }}
     permissions:
