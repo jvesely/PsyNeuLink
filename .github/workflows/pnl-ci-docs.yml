@@ -19,18 +19,18 @@ concurrency:
 
 jobs:
   docs-build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu, windows, macos]
         pnl-version: ['head']
         include:
           # include base version for push events. In other events it includes
           # an existing matrix configuration which is ignored.
           - python-version: '3.11'
-            os: 'ubuntu-latest'
+            os: 'ubuntu'
             pnl-version: ${{ (github.event_name == 'push') && 'head' || 'base' }}
 
     outputs:
@@ -134,9 +134,9 @@ jobs:
       matrix:
         # DOCS_PYTHON_VERSION and DOCS_OS
         python-version: ['3.11']
-        os: ['ubuntu-latest']
+        os: ['ubuntu']
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
     permissions:
       contents: write
     needs: [docs-build]
