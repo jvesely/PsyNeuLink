@@ -1602,6 +1602,11 @@ class Parameter(ParameterBase, metaclass=_ParameterMeta):
         else:
             return fallback_value
 
+    def get_value_for_codegen(self):
+        """Get value for latest context and mark as used in code generation."""
+        self._used_in_codegen = True
+        return self.get()
+
     @handle_external_context()
     def get(self, context=None, *, fallback_value=ParameterNoValueError, **kwargs):
         """
