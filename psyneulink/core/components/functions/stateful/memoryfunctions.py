@@ -2400,7 +2400,7 @@ class DictionaryMemory(MemoryFunction):  # -------------------------------------
         retr = builder.load(retr_ptr)
         with builder.if_then(retr, likely=True):
             # Determine distances
-            distance_f = ctx.import_llvm_function(self.distance_function)
+            distance_f = ctx.import_llvm_function(self.parameters.distance_function.get_value_for_codegen())
             distance_params, distance_state = ctx.get_param_or_state_ptr(builder,
                                                                          self,
                                                                          "distance_function",
@@ -2415,7 +2415,7 @@ class DictionaryMemory(MemoryFunction):  # -------------------------------------
                 distance_arg_out = b.gep(selection_arg_in, [ctx.int32_ty(0), idx])
                 b.call(distance_f, [distance_params, distance_state, distance_arg_in, distance_arg_out])
 
-            selection_f = ctx.import_llvm_function(self.selection_function)
+            selection_f = ctx.import_llvm_function(self.parameters.selection_function.get_value_for_codegen())
             selection_params, selection_state = ctx.get_param_or_state_ptr(builder,
                                                                            self,
                                                                            "selection_function",

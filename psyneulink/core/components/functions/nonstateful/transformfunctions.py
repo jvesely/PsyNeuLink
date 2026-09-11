@@ -128,6 +128,7 @@ class TransformFunction(Function_Base):
 
         with pnlvm.helpers.array_ptr_loop(builder, arg_out, "linear") as args:
             self._gen_llvm_combine(ctx=ctx, vi=arg_in, vo=arg_out, params=params, *args)
+
         return builder
 
 
@@ -963,14 +964,16 @@ class Reduce(TransformFunction):  # --------------------------------------------
         scale = self._gen_llvm_load_param(ctx, builder, params, SCALE, index, 1.0)
         offset = self._gen_llvm_load_param(ctx, builder, params, OFFSET, index, -0.0)
 
-        # assume operation does not change dynamically
-        operation = self.parameters.operation.get()
+        # TODO: Convert 'operation' to runtime param by using StrEnum
+        operation = self.parameters.operation.get_value_for_codegen()
         if operation == SUM:
             val = ctx.float_ty(-0.0)
             comb_op = "fadd"
+
         elif operation == PRODUCT:
             val = ctx.float_ty(1.0)
             comb_op = "fmul"
+
         else:
             assert False, "Unknown operation: {}".format(operation)
 
@@ -984,25 +987,24 @@ class Reduce(TransformFunction):  # --------------------------------------------
             ptri = b.gep(vi, [ctx.int32_ty(0), idx])
             in_val = b.load(ptri)
 
-            exponent = self._gen_llvm_load_param(ctx, b, params, EXPONENTS,
-                                                 index, 1.0)
+            exponent = self._gen_llvm_load_param(ctx, b, params, EXPONENTS, index, 1.0)
+
             # Vector of vectors (even 1-element vectors)
             if isinstance(exponent.type, pnlvm.ir.ArrayType):
                 assert len(exponent.type) == 1 # FIXME: Add support for matrix weights
                 exponent = b.extract_value(exponent, [0])
+
             # FIXME: Remove this micro-optimization,
             #        it should be handled by the compiler
             if not isinstance(exponent, pnlvm.ir.Constant) or exponent.constant != 1.0:
                 in_val = b.call(pow_f, [in_val, exponent])
 
             # Try per element weights first
-            weight = self._gen_llvm_load_param(ctx, b, params, WEIGHTS,
-                                               idx, 1.0)
+            weight = self._gen_llvm_load_param(ctx, b, params, WEIGHTS, idx, 1.0)
 
             # Vector of vectors (even 1-element vectors)
             if isinstance(weight.type, pnlvm.ir.ArrayType):
-                weight = self._gen_llvm_load_param(ctx, b, params, WEIGHTS,
-                                                   index, 1.0)
+                weight = self._gen_llvm_load_param(ctx, b, params, WEIGHTS, index, 1.0)
                 assert len(weight.type) == 1 # FIXME: Add support for matrix weights
                 weight = b.extract_value(weight, [0])
 
@@ -1555,6 +1557,7 @@ class LinearCombination(
             # Recursion on output array dimensions stops when pointing to scalar
             with pnlvm.helpers.array_ptr_loop(builder, ptro, f"combine_axis{len(vo_idx)}") as (b, idx):
                 self._gen_llvm_combine_body(b, ctx, vi, vo, val, pow_f, comb_op, params, [*vo_idx, idx])
+
         else:
             # val is the base value passed in according to the combination
             # operation (0 for sum, 1 for product)
@@ -1582,6 +1585,7 @@ class LinearCombination(
                     and not isinstance(exponent.type.element, pnlvm.ir.ArrayType)
                 ):
                     exponent = b.extract_value(exponent, [0])
+
                 else:
                     # variable (input) matching array specification
                     exponent = self._gen_llvm_load_param(ctx, b, params, EXPONENTS, in_idx, 1.0)
@@ -1599,6 +1603,7 @@ class LinearCombination(
                     and not isinstance(weight.type.element, pnlvm.ir.ArrayType)
                 ):
                     weight = b.extract_value(weight, [0])
+
                 else:
                     # variable (input) matching array specification
                     weight = self._gen_llvm_load_param(ctx, b, params, WEIGHTS, in_idx, 1.0)
@@ -1624,14 +1629,17 @@ class LinearCombination(
             builder.store(val, ptro)
 
     def _gen_llvm_combine(self, builder, ctx, vi, vo, params):
-        # assume operation does not change dynamically
-        operation = self.parameters.operation.get()
+        # TODO: Convert 'operation' to runtime param by using StrEnum
+        operation = self.parameters.operation.get_value_for_codegen()
+
         if operation == SUM:
             val = ctx.float_ty(-0.0)
             comb_op = "fadd"
+
         elif operation == PRODUCT:
             val = ctx.float_ty(1.0)
             comb_op = "fmul"
+
         elif operation == CROSS_ENTROPY:
             raise FunctionError(f"LinearCombination Function does not (yet) support CROSS_ENTROPY operation.")
             # FIX: THIS NEEDS TO BE REPLACED TO GENERATE A VECTOR WITH HADAMARD CROSS-ENTROPY OF vi AND vo
@@ -2170,13 +2178,12 @@ class MatrixTransform(TransformFunction):  # -----------------------------------
     def _gen_llvm_function_body(self, ctx, builder, params, state, arg_in, arg_out, *, tags:frozenset):
         # Restrict to 1d arrays
         if self.defaults.variable.ndim != 1:
-            warnings.warn("Shape mismatch: {} (in {}) got 2D input: {}".format(
-                          self, self.owner, self.defaults.variable),
+            warnings.warn("Shape mismatch: {} (in {}) got 2D input: {}".format(self, self.owner, self.defaults.variable),
                           pnlvm.PNLCompilerWarning)
             arg_in = builder.gep(arg_in, [ctx.int32_ty(0), ctx.int32_ty(0)])
+
         if self.defaults.value.ndim != 1:
-            warnings.warn("Shape mismatch: {} (in {}) has 2D output: {}".format(
-                          self, self.owner, self.defaults.value),
+            warnings.warn("Shape mismatch: {} (in {}) has 2D output: {}".format(self, self.owner, self.defaults.value),
                           pnlvm.PNLCompilerWarning)
             arg_out = builder.gep(arg_out, [ctx.int32_ty(0), ctx.int32_ty(0)])
 
