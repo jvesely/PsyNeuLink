@@ -2177,15 +2177,15 @@ class MatrixTransform(TransformFunction):  # -----------------------------------
 
     def _gen_llvm_function_body(self, ctx, builder, params, state, arg_in, arg_out, *, tags:frozenset):
         # Restrict to 1d arrays
-        if self.defaults.variable.ndim != 1:
+        if len(pnlvm.helpers.get_array_shape(arg_in)) > 1:
             warnings.warn("Shape mismatch: {} (in {}) got 2D input: {}".format(self, self.owner, self.defaults.variable),
                           pnlvm.PNLCompilerWarning)
-            arg_in = builder.gep(arg_in, [ctx.int32_ty(0), ctx.int32_ty(0)])
+            arg_in = pnlvm.helpers.unwrap_2d_array(builder, arg_in)
 
-        if self.defaults.value.ndim != 1:
+        if len(pnlvm.helpers.get_array_shape(arg_out)) > 1:
             warnings.warn("Shape mismatch: {} (in {}) has 2D output: {}".format(self, self.owner, self.defaults.value),
                           pnlvm.PNLCompilerWarning)
-            arg_out = builder.gep(arg_out, [ctx.int32_ty(0), ctx.int32_ty(0)])
+            arg_out = pnlvm.helpers.unwrap_2d_array(builder, arg_out)
 
         matrix = ctx.get_param_or_state_ptr(builder, self, MATRIX, param_struct_ptr=params, state_struct_ptr=state)
         normalize = ctx.get_param_or_state_ptr(builder, self, NORMALIZE, param_struct_ptr=params)
