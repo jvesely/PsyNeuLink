@@ -3052,8 +3052,7 @@ class Mechanism_Base(Mechanism):
         return builder
 
     def _gen_llvm_input_ports(self, ctx, builder, mech_params, mech_state, mech_input):
-        # Allocate temporary storage. We rely on the fact that series
-        # of InputPort results should match the main function input.
+        # We rely on the fact that series of InputPort results should match the main function input.
         ip_output_list = []
         for port in self.input_ports:
             ip_function = ctx.import_llvm_function(port)
@@ -3196,26 +3195,25 @@ class Mechanism_Base(Mechanism):
             elif param_name in self.function.llvm_state_ids or param_name in self.function.llvm_param_ids:
                 func_params, func_state = ctx.get_param_or_state_ptr(builder,
                                                                      self,
-                                                                     "function",
+                                                                     self.parameters.function,
                                                                      param_struct_ptr=mech_params,
                                                                      state_struct_ptr=mech_state)
                 base = ctx.get_param_or_state_ptr(builder,
-                                                  self.function,
+                                                  self.parameters.function.get_value_for_codegen(),
                                                   param_name,
                                                   param_struct_ptr=func_params,
                                                   state_struct_ptr=func_state)
 
             elif "integrator_function" in self.llvm_param_ids and (param_name in self.integrator_function.llvm_state_ids or
                                                                    param_name in self.integrator_function.llvm_param_ids):
-                assert "integrator_function" in self.llvm_param_ids
 
                 integrator_func_params, integrator_func_state = ctx.get_param_or_state_ptr(builder,
                                                                                            self,
-                                                                                           "integrator_function",
+                                                                                           self.parameters.integrator_function,
                                                                                            param_struct_ptr=mech_params,
                                                                                            state_struct_ptr=mech_state)
                 base = ctx.get_param_or_state_ptr(builder,
-                                                  self.integrator_function,
+                                                  self.parameters.integrator_function.get_value_for_codegen(),
                                                   param_name,
                                                   param_struct_ptr=integrator_func_params,
                                                   state_struct_ptr=integrator_func_state)
@@ -3228,7 +3226,7 @@ class Mechanism_Base(Mechanism):
 
             # Workaround:
             # "num_executions" are kept as int64, we need to convert the value
-            # to float first port inputs are also expected to be 1d arrays
+            # to float first. Port inputs are also expected to be 1d arrays
             if param_name == "num_executions":
                 count = builder.load(indexed)
                 count_fp = builder.uitofp(count, ctx.float_ty)
@@ -3323,11 +3321,12 @@ class Mechanism_Base(Mechanism):
                                                                m_base_params,
                                                                m_state,
                                                                m_in,
-                                                               obj=self.function,
+                                                               obj=self.parameters.function.get_value_for_codegen(),
                                                                params_in=f_base_params,
                                                                recursive=True)
 
-        return self._gen_llvm_invoke_function(ctx, builder, self.function, f_params, f_state, ip_output, m_val, tags=tags)
+        func = self.parameters.function.get_value_for_codegen()
+        return self._gen_llvm_invoke_function(ctx, builder, func, f_params, f_state, ip_output, m_val, tags=tags)
 
     def _gen_llvm_function_internal(self, ctx, builder, m_params, m_state, arg_in, arg_out, m_base_params, *, tags:frozenset):
 
@@ -3388,30 +3387,30 @@ class Mechanism_Base(Mechanism):
         # Composition.execute, so do not apply modulation.
         has_reinitializers_ptr = ctx.get_param_or_state_ptr(builder,
                                                             self,
-                                                            "has_initializers",
+                                                            self.parameters.has_initializers,
                                                             param_struct_ptr=m_base_params)
         has_initializers = builder.load(has_reinitializers_ptr)
         not_initializers = builder.fcmp_ordered("==", has_initializers, has_initializers.type(0))
         with builder.if_then(not_initializers):
             builder.ret_void()
 
-        if hasattr(self, "integrator_function") and getattr(self, "integrator_mode", False):
-            reinit_int_func = ctx.import_llvm_function(self.integrator_function, tags=tags)
+        if "integrator_function" in self.parameters and self.parameters.integrator_mode.get_value_for_codegen():
+            reinit_int_func = ctx.import_llvm_function(self.parameters.integrator_function.get_value_for_codegen(), tags=tags)
             reinit_int_in = builder.alloca(reinit_int_func.args[2].type.pointee, name="integrator_reinit_in")
             reinit_int_out = builder.alloca(reinit_int_func.args[3].type.pointee, name="integrator_reinit_out")
 
             reinit_int_base_params, reinit_int_state = ctx.get_param_or_state_ptr(builder,
-                                                                                      self,
-                                                                                      "integrator_function",
-                                                                                      param_struct_ptr=m_base_params,
-                                                                                      state_struct_ptr=m_state)
+                                                                                  self,
+                                                                                  self.parameters.integrator_function,
+                                                                                  param_struct_ptr=m_base_params,
+                                                                                  state_struct_ptr=m_state)
             reinit_int_params, builder = self._gen_llvm_param_ports_for_obj(ctx,
-                                                                              builder,
-                                                                              m_base_params,
-                                                                              m_state,
-                                                                              m_arg_in,
-                                                                              obj=self.integrator_function,
-                                                                              params_in=reinit_int_base_params)
+                                                                            builder,
+                                                                            m_base_params,
+                                                                            m_state,
+                                                                            m_arg_in,
+                                                                            obj=self.parameters.integrator_function.get_value_for_codegen(),
+                                                                            params_in=reinit_int_base_params)
 
             builder.call(reinit_int_func, [reinit_int_params, reinit_int_state, reinit_int_in, reinit_int_out])
 
@@ -3425,13 +3424,13 @@ class Mechanism_Base(Mechanism):
             reinit_in = None
 
 
-        reinit_func = ctx.import_llvm_function(self.function, tags=func_tags)
+        reinit_func = ctx.import_llvm_function(self.parameters.function.get_value_for_codegen(), tags=func_tags)
         reinit_in = builder.alloca(reinit_func.args[2].type.pointee, name="reinit_in") if reinit_in is None else reinit_in
         reinit_out = builder.alloca(reinit_func.args[3].type.pointee, name="reinit_out")
 
         reinit_base_params, reinit_state = ctx.get_param_or_state_ptr(builder,
                                                                       self,
-                                                                      "function",
+                                                                      self.parameters.function,
                                                                       param_struct_ptr=m_base_params,
                                                                       state_struct_ptr=m_state)
         reinit_params, builder = self._gen_llvm_param_ports_for_obj(ctx,
@@ -3439,7 +3438,7 @@ class Mechanism_Base(Mechanism):
                                                                     m_base_params,
                                                                     m_state,
                                                                     m_arg_in,
-                                                                    obj=self.function,
+                                                                    obj=self.parameters.function.get_value_for_codegen(),
                                                                     params_in=reinit_base_params)
 
         builder.call(reinit_func, [reinit_params, reinit_state, reinit_in, reinit_out])
@@ -3543,7 +3542,7 @@ class Mechanism_Base(Mechanism):
         max_reached = builder.fcmp_ordered(">=", is_finished_count, is_finished_max)
 
         # Check if execute until finished mode is enabled
-        exec_until_fin_ptr = ctx.get_param_or_state_ptr(builder, self, "execute_until_finished", param_struct_ptr=params)
+        exec_until_fin_ptr = ctx.get_param_or_state_ptr(builder, self, self.parameters.execute_until_finished, param_struct_ptr=params)
         exec_until_fin = builder.load(exec_until_fin_ptr)
         exec_until_off = builder.fcmp_ordered("==", exec_until_fin, exec_until_fin.type(0))
 
@@ -3551,9 +3550,9 @@ class Mechanism_Base(Mechanism):
         is_finished = builder.or_(is_finished_cond, max_reached)
         iter_end = builder.or_(is_finished, exec_until_off)
 
-        # Check if in integrator mode
-        if hasattr(self, "integrator_mode"):
-            int_mode_ptr = ctx.get_param_or_state_ptr(builder, self, "integrator_mode", param_struct_ptr=params)
+        # Check if in integrator mode (this is TransferMechanism specific)
+        if "integrator_mode" in self.parameters:
+            int_mode_ptr = ctx.get_param_or_state_ptr(builder, self, self.parameters.integrator_mode, param_struct_ptr=params)
             int_mode = builder.load(int_mode_ptr)
             int_mode_off = builder.fcmp_ordered("==", int_mode, int_mode.type(0))
             iter_end = builder.or_(iter_end, int_mode_off)
