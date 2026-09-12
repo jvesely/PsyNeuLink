@@ -3297,8 +3297,7 @@ class OptimizationControlMechanism(ControlMechanism):
             p.attributes.add('nonnull')
         _, state, objective_ptr, arg_out = llvm_func.args
 
-        op_states = pnlvm.helpers.get_state_ptr(builder, self, state,
-                                                "output_ports", None)
+        op_states = pnlvm.helpers.get_state_ptr(builder, self, state, "output_ports", None)
 
         # calculate cost function
         total_cost_ptr = builder.alloca(ctx.float_ty, name="total_cost")
@@ -3309,8 +3308,7 @@ class OptimizationControlMechanism(ControlMechanism):
             port_cost_ptr = builder.alloca(ctx.float_ty, name="port_{}_total_cost".format(i))
             builder.store(port_cost_ptr.type.pointee(-0.0), port_cost_ptr)
 
-            op_i_state = builder.gep(op_states, [ctx.int32_ty(0),
-                                                 ctx.int32_ty(i)])
+            op_i_state = builder.gep(op_states, [ctx.int32_ty(0), ctx.int32_ty(i)])
 
             # Python uses alias-ed Parameters on Signals, but here we must get
             # the function state values.
@@ -3342,7 +3340,8 @@ class OptimizationControlMechanism(ControlMechanism):
             port_cost = builder.select(ltz, port_cost.type(0), port_cost)
 
             # combine is not a PNL function
-            assert self.combine_costs is np.sum
+            assert self.parameters.combine_costs.get_value_for_codegen() is np.sum
+
             total_cost = builder.load(total_cost_ptr)
             total_cost = builder.fadd(total_cost, port_cost)
             builder.store(total_cost, total_cost_ptr)
@@ -3361,7 +3360,8 @@ class OptimizationControlMechanism(ControlMechanism):
         evaluate_f = ctx.import_llvm_function(self, tags=tags - {"alloc_range"})
 
         args = [*evaluate_f.type.pointee.args[:2],
-                ctx.int32_ty, ctx.int32_ty,
+                ctx.int32_ty,
+                ctx.int32_ty,
                 *evaluate_f.type.pointee.args[3:]]
         builder = ctx.create_llvm_function(args, self, str(self) + "_evaluate_range")
         llvm_func = builder.function
@@ -3371,28 +3371,29 @@ class OptimizationControlMechanism(ControlMechanism):
             if isinstance(p.type, (pnlvm.ir.PointerType)):
                 p.attributes.add('nonnull')
 
-        nodes_params = pnlvm.helpers.get_param_ptr(builder, self.composition,
-                                                   params, "nodes")
+        nodes_params = pnlvm.helpers.get_param_ptr(builder, self.composition, params, "nodes")
         controller_idx = self.composition._get_node_index(self)
-        controller_params = builder.gep(nodes_params,
-                                        [ctx.int32_ty(0), ctx.int32_ty(controller_idx)])
+        controller_params = builder.gep(nodes_params, [ctx.int32_ty(0), ctx.int32_ty(controller_idx)])
         num_trials_per_estimate_ptr = ctx.get_param_or_state_ptr(builder,
                                                                  self,
-                                                                 "num_trials_per_estimate",
+                                                                 self.parameters.num_trials_per_estimate,
                                                                  param_struct_ptr=controller_params)
-        func_params = pnlvm.helpers.get_param_ptr(builder, self,
-                                                  controller_params, "function")
-        search_space = pnlvm.helpers.get_param_ptr(builder, self.function,
-                                                   func_params, "search_space")
+        func_params = pnlvm.helpers.get_param_ptr(builder, self, controller_params, "function")
+        search_space = ctx.get_param_or_state_ptr(builder,
+                                                  self.parameters.function.get_value_for_codegen(),
+                                                  self.parameters.function.get_value_for_codegen().parameters.search_space,
+                                                  param_struct_ptr=func_params)
 
         allocation = builder.alloca(evaluate_f.args[2].type.pointee, name="allocation")
         with pnlvm.helpers.for_loop(builder, start, stop, stop.type(1), "alloc_loop") as (b, idx):
 
             if "evaluate_type_objective" in tags:
                 out_idx = idx
+
             elif "evaluate_type_all_results" in tags:
                 num_trials_per_estimate = builder.load(num_trials_per_estimate_ptr)
                 out_idx = builder.mul(idx, builder.trunc(num_trials_per_estimate, idx.type))
+
             else:
                 assert False, "Evaluation type not detected in tags, or unknown: {}".format(tags)
 
@@ -3445,16 +3446,12 @@ class OptimizationControlMechanism(ControlMechanism):
         # Evaluate is called on composition controller
         assert self.composition.controller is self
         assert self.composition is self.agent_rep
-        nodes_states = pnlvm.helpers.get_state_ptr(builder, self.composition,
-                                                   comp_state, "nodes")
-        nodes_params = pnlvm.helpers.get_param_ptr(builder, self.composition,
-                                                   comp_params, "nodes")
+        nodes_states = pnlvm.helpers.get_state_ptr(builder, self.composition, comp_state, "nodes")
+        nodes_params = pnlvm.helpers.get_param_ptr(builder, self.composition, comp_params, "nodes")
 
         controller_idx = self.composition._get_node_index(self)
-        controller_state = builder.gep(nodes_states, [ctx.int32_ty(0),
-                                                      ctx.int32_ty(controller_idx)])
-        controller_params = builder.gep(nodes_params, [ctx.int32_ty(0),
-                                                       ctx.int32_ty(controller_idx)])
+        controller_state = builder.gep(nodes_states, [ctx.int32_ty(0), ctx.int32_ty(controller_idx)])
+        controller_params = builder.gep(nodes_params, [ctx.int32_ty(0), ctx.int32_ty(controller_idx)])
 
         # Apply allocation sample to simulation data
         assert len(self.output_ports) == len(allocation_sample.type.pointee)
@@ -3487,6 +3484,7 @@ class OptimizationControlMechanism(ControlMechanism):
         agent_tags = {"run", "simulation"}
         if "evaluate_type_all_results" in tags:
             agent_tags.add("simulation_results")
+
         sim_f = ctx.import_llvm_function(self.agent_rep, tags=frozenset(agent_tags))
 
         if "const_input" in debug_env:
@@ -3500,11 +3498,10 @@ class OptimizationControlMechanism(ControlMechanism):
 
             builder.store(comp_input.type.pointee(input_init), comp_input)
 
-
         # Determine simulation counts
         num_trials_per_estimate_ptr = ctx.get_param_or_state_ptr(builder,
                                                                  self,
-                                                                 "num_trials_per_estimate",
+                                                                 self.parameters.num_trials_per_estimate,
                                                                  param_struct_ptr=controller_params)
 
         num_trials_per_estimate = builder.load(num_trials_per_estimate_ptr, "num_trials_per_estimate")
@@ -3524,8 +3521,10 @@ class OptimizationControlMechanism(ControlMechanism):
         # Simulations don't store output unless we run parameter fitting
         if 'evaluate_type_objective' in tags:
             comp_output = sim_f.args[4].type(None)
+
         elif 'evaluate_type_all_results' in tags:
             comp_output = arg_out
+
         else:
             assert False, "Evaluation type not detected in tags, or unknown: {}".format(tags)
 
@@ -3533,25 +3532,27 @@ class OptimizationControlMechanism(ControlMechanism):
 
         if "evaluate_type_objective" in tags:
             # Extract objective mechanism value
+            objective_mechanism = self.parameters.objective_mechanism.get_value_for_codegen()
 
-            assert self.objective_mechanism, \
+            assert objective_mechanism is not None, \
                 "objective_mechanism on OptimizationControlMechanism cannot be None in 'evaluate_type_objective'"
 
-            obj_idx = self.agent_rep._get_node_index(self.objective_mechanism)
             # Mechanisms' results are stored in the first substructure
-            objective_op_ptr = builder.gep(comp_data, [ctx.int32_ty(0),
-                                                       ctx.int32_ty(0),
-                                                       ctx.int32_ty(obj_idx)])
+            obj_idx = self.agent_rep._get_node_index(objective_mechanism)
+            objective_op_ptr = builder.gep(comp_data, [ctx.int32_ty(0), ctx.int32_ty(0), ctx.int32_ty(obj_idx)])
+
             # Objective mech output shape should be 1 single element 2d array
             objective_val_ptr = builder.gep(objective_op_ptr,
                                             [ctx.int32_ty(0), ctx.int32_ty(0), ctx.int32_ty(0)],
-                                            "obj_val_ptr")
+                                            name="obj_val_ptr")
 
             # Apply total cost to objective value
             net_outcome_f = ctx.import_llvm_function(self, tags=tags.union({"net_outcome"}))
             builder.call(net_outcome_f, [controller_params, controller_state, objective_val_ptr, arg_out])
+
         elif "evaluate_type_all_results" in tags:
             pass
+
         else:
             assert False, "Evaluation type not detected in tags, or unknown: {}".format(tags)
 
@@ -3562,8 +3563,10 @@ class OptimizationControlMechanism(ControlMechanism):
     def _gen_llvm_function(self, *, ctx:pnlvm.LLVMBuilderContext, tags:frozenset):
         if "net_outcome" in tags:
             return self._gen_llvm_net_outcome_function(ctx=ctx, tags=tags)
+
         if "evaluate" in tags and "alloc_range" in tags:
             return self._gen_llvm_evaluate_alloc_range_function(ctx=ctx, tags=tags)
+
         if "evaluate" in tags:
             return self._gen_llvm_evaluate_function(ctx=ctx, tags=tags)
 
