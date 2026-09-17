@@ -1106,10 +1106,10 @@ def _setup_philox_rand_int64(ctx, state_ty):
     cond = ctx.bool_ty(True)
     for i in range(len(counter_ptr.type.pointee)):
         counter_el_ptr = builder.gep(counter_ptr, [ctx.int32_ty(0), ctx.int32_ty(i)])
-        counter_el = builder.load(counter_el_ptr)
+        counter_el = builder.load(counter_el_ptr, align=4)
         new_counter = builder.add(counter_el, counter_el.type(1))
         with builder.if_then(cond):
-            builder.store(new_counter, counter_el_ptr)
+            builder.store(new_counter, counter_el_ptr, align=4)
 
         carry = builder.icmp_unsigned("==", new_counter, new_counter.type(0))
         cond = builder.and_(cond, carry)
