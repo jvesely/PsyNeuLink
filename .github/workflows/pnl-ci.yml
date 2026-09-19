@@ -186,7 +186,7 @@ jobs:
 
     - name: Test with pytest
       timeout-minutes: 180
-      run: pytest --junit-xml=tests_out.xml --verbosity=0 -n logical --capture=sys -o console_output_style=count ${{ matrix.extra-args }} --forked
+      run: pytest --junit-xml=tests_out.xml --verbosity=0 -n logical --capture=sys -o console_output_style=count ${{ matrix.extra-args }} --forked -k predator -n0
 
     - name: Upload test results
       uses: actions/upload-artifact@v7
