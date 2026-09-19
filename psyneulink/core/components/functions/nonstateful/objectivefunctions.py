@@ -406,7 +406,7 @@ class Stability(ObjectiveFunction):
 
     def _gen_llvm_function_body(self, ctx, builder, params, state, arg_in, arg_out, *, tags:frozenset):
         # Dot product
-        dot_out = builder.alloca(arg_in.type.pointee)
+        dot_out = builder.alloca(arg_in.type.pointee, name="dot_out")
         matrix = ctx.get_param_or_state_ptr(builder, self, MATRIX, param_struct_ptr=params, state_struct_ptr=state)
 
         # Convert array pointer to pointer to the fist element
@@ -421,12 +421,13 @@ class Stability(ObjectiveFunction):
 
         # Prepare metric function
         metric_fun = ctx.import_llvm_function(self.metric_fct)
-        metric_in = builder.alloca(metric_fun.args[2].type.pointee)
+        metric_in = builder.alloca(metric_fun.args[2].type.pointee, name="metric_function_in")
 
         # Transfer Function if configured
         if self.transfer_fct is not None:
             #FIXME: implement this
             assert False, "Support for transfer functions is not implemented"
+
         else:
             # Check that transfer_fct is absent from the compiled parameter
             # structure or represented by an empty structure
@@ -993,23 +994,27 @@ class Distance(ObjectiveFunction):
         v1 = builder.gep(arg_in, [ctx.int32_ty(0), ctx.int32_ty(0), ctx.int32_ty(0)])
         v2 = builder.gep(arg_in, [ctx.int32_ty(0), ctx.int32_ty(1), ctx.int32_ty(0)])
 
-        acc_ptr = builder.alloca(ctx.float_ty)
+        acc_ptr = builder.alloca(ctx.float_ty, name="accumulator")
         builder.store(acc_ptr.type.pointee(-0.0), acc_ptr)
 
         kwargs = {"ctx": ctx, "v1": v1, "v2": v2, "acc": acc_ptr}
         if self.metric == DIFFERENCE or self.metric == NORMED_L0_SIMILARITY:
             inner = functools.partial(self.__gen_llvm_sum_difference, **kwargs)
+
         elif self.metric == EUCLIDEAN:
             inner = functools.partial(self.__gen_llvm_sum_diff_squares, **kwargs)
+
         elif self.metric == ENERGY or self.metric == DOT_PRODUCT:
             inner = functools.partial(self.__gen_llvm_sum_product, **kwargs)
+
         elif self.metric == CROSS_ENTROPY:
             inner = functools.partial(self.__gen_llvm_cross_entropy, **kwargs)
+
         elif self.metric in {COSINE, COSINE_SIMILARITY}:
             del kwargs['acc']
-            numer_acc = builder.alloca(ctx.float_ty)
-            denom1_acc = builder.alloca(ctx.float_ty)
-            denom2_acc = builder.alloca(ctx.float_ty)
+            numer_acc = builder.alloca(ctx.float_ty, name="numerator_accumulator")
+            denom1_acc = builder.alloca(ctx.float_ty, name="denominator1_accumulator")
+            denom2_acc = builder.alloca(ctx.float_ty, name="denominator2_accumulator")
             for loc in numer_acc, denom1_acc, denom2_acc:
                 builder.store(loc.type.pointee(-0.0), loc)
 
@@ -1017,20 +1022,24 @@ class Distance(ObjectiveFunction):
             kwargs['denom1_acc'] = denom1_acc
             kwargs['denom2_acc'] = denom2_acc
             inner = functools.partial(self.__gen_llvm_cosine, **kwargs)
+
         elif self.metric == MAX_ABS_DIFF:
             del kwargs['acc']
-            max_diff_ptr = builder.alloca(ctx.float_ty)
+            max_diff_ptr = builder.alloca(ctx.float_ty, name="maximum_difference")
             builder.store(max_diff_ptr.type.pointee(float("NaN")), max_diff_ptr)
             kwargs['max_diff_ptr'] = max_diff_ptr
             inner = functools.partial(self.__gen_llvm_max_diff, **kwargs)
+
         elif self.metric == CORRELATION:
-            acc_x_ptr = builder.alloca(ctx.float_ty)
-            acc_y_ptr = builder.alloca(ctx.float_ty)
-            acc_xy_ptr = builder.alloca(ctx.float_ty)
-            acc_x2_ptr = builder.alloca(ctx.float_ty)
-            acc_y2_ptr = builder.alloca(ctx.float_ty)
+            acc_x_ptr = builder.alloca(ctx.float_ty, name="accumulator_x")
+            acc_y_ptr = builder.alloca(ctx.float_ty, name="accumulator_y")
+            acc_xy_ptr = builder.alloca(ctx.float_ty, name="accumulator_xy")
+            acc_x2_ptr = builder.alloca(ctx.float_ty, name="accumulator_x2")
+            acc_y2_ptr = builder.alloca(ctx.float_ty, name="accumulator_y2")
+
             for loc in [acc_x_ptr, acc_y_ptr, acc_xy_ptr, acc_x2_ptr, acc_y2_ptr]:
                 builder.store(loc.type.pointee(-0.0), loc)
+
             del kwargs['acc']
             kwargs['acc_x'] = acc_x_ptr
             kwargs['acc_y'] = acc_y_ptr
@@ -1038,6 +1047,7 @@ class Distance(ObjectiveFunction):
             kwargs['acc_x2'] = acc_x2_ptr
             kwargs['acc_y2'] = acc_y2_ptr
             inner = functools.partial(self.__gen_llvm_pearson, **kwargs)
+
         else:
             raise RuntimeError('Unsupported metric')
 
@@ -1527,8 +1537,8 @@ class LossFunction(ObjectiveFunction):
         sample_ptr = builder.gep(arg_in, [ctx.int32_ty(0), ctx.int32_ty(0)], name="input_array_ptr")
         target_ptr = builder.gep(arg_in, [ctx.int32_ty(0), ctx.int32_ty(1)], name="target_array_ptr")
 
-        accumulator_ptr = builder.alloca(ctx.float_ty)
-        counter_ptr = builder.alloca(ctx.float_ty)
+        accumulator_ptr = builder.alloca(ctx.float_ty, name="accumulator")
+        counter_ptr = builder.alloca(ctx.float_ty, name="counter")
         builder.store(accumulator_ptr.type.pointee(0), accumulator_ptr)
         builder.store(counter_ptr.type.pointee(0), counter_ptr)
 
@@ -1562,6 +1572,7 @@ class LossFunction(ObjectiveFunction):
                 count = builder.load(counter_ptr)
                 norm_result = builder.fdiv(result, count)
                 builder.store(norm_result, arg_out)
+
             with e:
                 builder.store(result, arg_out)
 

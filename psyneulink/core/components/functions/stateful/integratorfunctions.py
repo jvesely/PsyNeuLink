@@ -398,15 +398,17 @@ class IntegratorFunction(StatefulFunction):  # ---------------------------------
         if param == NOISE and isinstance(param_p, tuple):
             # This is a noise function so call it to get value
             noise_f = ctx.import_llvm_function(self.parameters.noise.get())
-            noise_in = builder.alloca(noise_f.args[2].type.pointee)
-            noise_out = builder.alloca(noise_f.args[3].type.pointee)
+            noise_in = builder.alloca(noise_f.args[2].type.pointee, name="noise_in")
+            noise_out = builder.alloca(noise_f.args[3].type.pointee, name="noise_out")
             builder.call(noise_f, [param_p[0], param_p[1], noise_in, noise_out])
             value_p = noise_out
 
         elif isinstance(param_p.type.pointee, pnlvm.ir.ArrayType) and param_p.type.pointee.count > 1:
             value_p = builder.gep(param_p, indices)
+
         else:
             value_p = param_p
+
         return pnlvm.helpers.load_extract_scalar_array_one(builder, value_p)
 
 

@@ -2109,7 +2109,7 @@ class Normalize(DeterministicTransferFunction):
         builder.store(val, ptro)
 
     def __gen_llvm_apply(self, ctx, builder, params, state, arg_in, arg_out, tags: frozenset):
-        sq_sum_ptr = builder.alloca(ctx.float_ty)
+        sq_sum_ptr = builder.alloca(ctx.float_ty, name="square_sum")
         builder.store(sq_sum_ptr.type.pointee(0), sq_sum_ptr)
 
         eps_ptr = ctx.get_param_or_state_ptr(builder, self, 'eps', param_struct_ptr=params)
@@ -2141,10 +2141,8 @@ class Normalize(DeterministicTransferFunction):
         if "derivative_out" in tags:
             all_out = arg_in
         else:
-            all_out = builder.alloca(arg_out.type.pointee)
-            builder = self._gen_llvm_function_body(
-                ctx, builder, params, state, arg_in, all_out, tags=forward_tags
-            )
+            all_out = builder.alloca(arg_out.type.pointee, name="all_out")
+            builder = self._gen_llvm_function_body(ctx, builder, params, state, arg_in, all_out, tags=forward_tags)
 
         if self.parameters.per_item.get():
             assert isinstance(arg_in.type.pointee.element, pnlvm.ir.ArrayType)
@@ -2169,7 +2167,7 @@ class Normalize(DeterministicTransferFunction):
         eps_ptr = ctx.get_param_or_state_ptr(builder, self, 'eps', param_struct_ptr=params)
         eps = pnlvm.helpers.load_extract_scalar_array_one(builder, eps_ptr)
 
-        out_sq_sum_ptr = builder.alloca(ctx.float_ty)
+        out_sq_sum_ptr = builder.alloca(ctx.float_ty, name="out_square_sum")
         builder.store(out_sq_sum_ptr.type.pointee(0), out_sq_sum_ptr)
 
         # Compute ||all_out||^2
@@ -2900,10 +2898,10 @@ class BinomialDistort(
         p_ptr = ctx.get_param_or_state_ptr(builder, self, 'p', param_struct_ptr=params)
         p = builder.load(p_ptr)
         mod_p = builder.fsub(p.type(1), p)
-        p_mod_ptr = builder.alloca(mod_p.type)
+        p_mod_ptr = builder.alloca(mod_p.type, name="binomial_modified_p")
         builder.store(mod_p, p_mod_ptr)
 
-        n_ptr = builder.alloca(ctx.int32_ty)
+        n_ptr = builder.alloca(ctx.int32_ty, name="binomial_n")
         builder.store(n_ptr.type.pointee(1), n_ptr)
 
         rand_state_ptr = ctx.get_random_state_ptr(builder, self, state, params)
@@ -3767,15 +3765,14 @@ class SoftMax(TransferFunction):
         builder.store(val, ptro)
 
     def __gen_llvm_apply(self, ctx, builder, params, state, arg_in, arg_out, output_type, tags: frozenset):
-        exp_sum_ptr = builder.alloca(ctx.float_ty)
+        exp_sum_ptr = builder.alloca(ctx.float_ty, name="exp_sum")
         builder.store(exp_sum_ptr.type.pointee(0), exp_sum_ptr)
 
         gain_ptr = ctx.get_param_or_state_ptr(builder, self, GAIN, param_struct_ptr=params)
         gain = pnlvm.helpers.load_extract_scalar_array_one(builder, gain_ptr)
 
         with pnlvm.helpers.array_ptr_loop(builder, arg_in, "exp_sum_max") as args:
-            self.__gen_llvm_exp_sum(*args, ctx=ctx, vi=arg_in, gain=gain,
-                                    exp_sum_ptr=exp_sum_ptr)
+            self.__gen_llvm_exp_sum(*args, ctx=ctx, vi=arg_in, gain=gain, exp_sum_ptr=exp_sum_ptr)
 
         exp_sum = builder.load(exp_sum_ptr)
 
@@ -3786,23 +3783,22 @@ class SoftMax(TransferFunction):
             # Derivative first gets the output_type == ALL result even if the selected output type is different.
             assert self.output != output_type or one_hot_p.type.pointee.elements == (), \
                 "OneHot parameter should be empty for output_type == ALL: {}".format(one_hot_p)
+
             with pnlvm.helpers.array_ptr_loop(builder, arg_in, "exp_div") as args:
-                self.__gen_llvm_exp_div(ctx=ctx, vi=arg_in, vo=arg_out,
-                                        gain=gain, exp_sum=exp_sum, *args)
+                self.__gen_llvm_exp_div(ctx=ctx, vi=arg_in, vo=arg_out, gain=gain, exp_sum=exp_sum, *args)
+
             return builder
 
-        one_hot_p, one_hot_s = ctx.get_param_or_state_ptr(builder, self, 'one_hot_function', param_struct_ptr=params,
-                                                          state_struct_ptr=state)
+        one_hot_p, one_hot_s = ctx.get_param_or_state_ptr(builder, self, 'one_hot_function', param_struct_ptr=params, state_struct_ptr=state)
         one_hot_f = ctx.import_llvm_function(self.one_hot_function, tags=tags)
 
         assert one_hot_f.args[3].type == arg_out.type
         one_hot_out = arg_out
-        one_hot_in = builder.alloca(one_hot_f.args[2].type.pointee)
+        one_hot_in = builder.alloca(one_hot_f.args[2].type.pointee, name="one_hot_input")
 
         if output_type in {ARG_MAX, ARG_MAX_INDICATOR, MAX_VAL, MAX_INDICATOR}:
             with pnlvm.helpers.array_ptr_loop(builder, arg_in, "exp_div") as (b, i):
-                self.__gen_llvm_exp_div(ctx=ctx, vi=arg_in, vo=one_hot_in,
-                                        gain=gain, exp_sum=exp_sum, builder=b, index=i)
+                self.__gen_llvm_exp_div(ctx=ctx, vi=arg_in, vo=one_hot_in, gain=gain, exp_sum=exp_sum, builder=b, index=i)
 
             builder.call(one_hot_f, [one_hot_p, one_hot_s, one_hot_in, one_hot_out])
 
@@ -3811,8 +3807,7 @@ class SoftMax(TransferFunction):
             one_hot_in_dist = builder.gep(one_hot_in, [ctx.int32_ty(0), ctx.int32_ty(1)])
 
             with pnlvm.helpers.array_ptr_loop(builder, arg_in, "exp_div") as (b, i):
-                self.__gen_llvm_exp_div(ctx=ctx, vi=arg_in, vo=one_hot_in_dist,
-                                        gain=gain, exp_sum=exp_sum, builder=b, index=i)
+                self.__gen_llvm_exp_div(ctx=ctx, vi=arg_in, vo=one_hot_in_dist, gain=gain, exp_sum=exp_sum, builder=b, index=i)
 
                 dist_in = b.gep(arg_in, [ctx.int32_ty(0), i])
                 dist_out = b.gep(one_hot_in_data, [ctx.int32_ty(0), i])
@@ -3833,9 +3828,8 @@ class SoftMax(TransferFunction):
         if "derivative_out" in tags:
             all_out = arg_in
         else:
-            all_out = builder.alloca(arg_out.type.pointee)
-            builder = self._gen_llvm_function_body(ctx, builder, params, state, arg_in, all_out, output_type=ALL,
-                                                   tags=forward_tags)
+            all_out = builder.alloca(arg_out.type.pointee, name="all_out")
+            builder = self._gen_llvm_function_body(ctx, builder, params, state, arg_in, all_out, output_type=ALL, tags=forward_tags)
 
         if self.parameters.per_item.get():
             assert isinstance(arg_in.type.pointee.element, pnlvm.ir.ArrayType)
@@ -3843,8 +3837,8 @@ class SoftMax(TransferFunction):
             for i in range(arg_in.type.pointee.count):
                 inner_all_out = builder.gep(all_out, [ctx.int32_ty(0), ctx.int32_ty(i)])
                 inner_out = builder.gep(arg_out, [ctx.int32_ty(0), ctx.int32_ty(i)])
-                builder = self.__gen_llvm_apply_derivative(ctx, builder, params, state, inner_all_out, inner_out,
-                                                           tags=tags)
+                builder = self.__gen_llvm_apply_derivative(ctx, builder, params, state, inner_all_out, inner_out, tags=tags)
+
             return builder
         else:
             return self.__gen_llvm_apply_derivative(ctx, builder, params, state, all_out, arg_out, tags=tags)
@@ -3855,9 +3849,9 @@ class SoftMax(TransferFunction):
             "Derivative of SoftMax is only implemented for ARG_MAX and ARG_MAX_INDICATOR "
             "in LLVM execution mode ({})".format(self.output))
 
-        max_pos_ptr = builder.alloca(ctx.int32_ty)
+        max_pos_ptr = builder.alloca(ctx.int32_ty, name="max_pos")
         builder.store(max_pos_ptr.type.pointee(-1), max_pos_ptr)
-        max_val_ptr = builder.alloca(arg_out.type.pointee.element)
+        max_val_ptr = builder.alloca(arg_out.type.pointee.element, name="max_val")
         builder.store(max_val_ptr.type.pointee(float("NaN")), max_val_ptr)
 
         with pnlvm.helpers.array_ptr_loop(builder, all_out, id="max") as (b, idx):
@@ -3886,8 +3880,7 @@ class SoftMax(TransferFunction):
 
         return builder
 
-    def _gen_llvm_function_body(self, ctx, builder, params, state, arg_in, arg_out, output_type=None, *,
-                                tags: frozenset):
+    def _gen_llvm_function_body(self, ctx, builder, params, state, arg_in, arg_out, output_type=None, *, tags: frozenset):
         output_type = self.output if output_type is None else output_type
         if "derivative" in tags or "derivative_out" in tags:
             return self._gen_llvm_function_derivative_body(ctx, builder, params, state, arg_in, arg_out, tags=tags)
@@ -4207,7 +4200,7 @@ class HypersphericalToCartesian(TransferFunction):
         builder.store(cos_val0, res0_ptr)
 
         # sin_prod = 1.0
-        sinprod_ptr = builder.alloca(fty)
+        sinprod_ptr = builder.alloca(fty, name="sin_product")
         builder.store(fty(1.0), sinprod_ptr)
 
         with pnlvm.helpers.for_loop(builder, one, n_angles, one, id="prefix_prod") as (b, j):
@@ -5212,7 +5205,7 @@ class TransferWithCosts(TransferFunction):
                     fabs_f = ctx.get_builtin("fabs", [adjustment.type])
                     adjustment = builder.call(fabs_f, [adjustment])
 
-                    cost_in = builder.alloca(cost_in.type.pointee)
+                    cost_in = builder.alloca(cost_in.type.pointee, name="adjustment_cost_in")
                     builder.store(adjustment, builder.gep(cost_in, [ctx.int32_ty(0), ctx.int32_ty(0)]))
 
                 builder.call(cost_f, [cost_p, cost_s, cost_in, cost_out])
@@ -5220,8 +5213,7 @@ class TransferWithCosts(TransferFunction):
                 # Intensity is [1] when the cost function is disabled but other cost functions are enabled
                 # https://github.com/PrincetonUniversity/PsyNeuLink/issues/2711
                 exp_out_len = 0 if self.parameters.enabled_cost_functions.get() == CostFunctions.NONE or flag != CostFunctions.INTENSITY else 1
-                assert len(cost_out.type.pointee) == exp_out_len, "Unexpected out sturct for {}: {}".format(flag,
-                                                                                                            cost_out.type.pointee)
+                assert len(cost_out.type.pointee) == exp_out_len, "Unexpected out sturct for {}: {}".format(flag, cost_out.type.pointee)
 
         # TODO: combine above costs via a call to combine_costs_fct
         # depends on: https://github.com/PrincetonUniversity/PsyNeuLink/issues/2712

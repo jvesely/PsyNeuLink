@@ -2360,9 +2360,9 @@ class Port_Base(Port):
             # Create a local copy of the function parameters only if
             # there are modulating projections of type other than OVERRIDE.
             # LLVM is not eliminating the redundant copy.
-            f_params = builder.alloca(port_f.args[0].type.pointee,
-                                      name="modulated_port_params")
+            f_params = builder.alloca(port_f.args[0].type.pointee, name="modulated_port_params")
             builder.store(builder.load(base_params), f_params)
+
         else:
             f_params = base_params
 
@@ -2381,10 +2381,13 @@ class Port_Base(Port):
             # Get name of the modulated parameter
             if afferent.sender.modulation == MULTIPLICATIVE:
                 name = self.function.parameters.multiplicative_param.source.name
+
             elif afferent.sender.modulation == ADDITIVE:
                 name = self.function.parameters.additive_param.source.name
+
             elif afferent.sender.modulation == DISABLE:
                 name = None
+
             elif afferent.sender.modulation == OVERRIDE:
                 assert f_mod_ptr.type == arg_out.type, \
                     "Shape mismatch: Value of '{}' for '{}' ({}) " \
@@ -2397,6 +2400,7 @@ class Port_Base(Port):
                 # Directly store the value in the output array
                 builder.store(builder.load(f_mod_ptr), arg_out)
                 return builder
+
             else:
                 assert False, "Unsupported modulation parameter: {}".format(afferent.sender.modulation)
 
@@ -2429,6 +2433,7 @@ class Port_Base(Port):
         # Extract the data part of input
         if len(self.mod_afferents) == 0:
             f_input = arg_in
+
         else:
             f_input = builder.gep(arg_in, [ctx.int32_ty(0), ctx.int32_ty(0)])
 
