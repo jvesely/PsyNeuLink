@@ -645,7 +645,7 @@ class AccumulatorIntegrator(IntegratorFunction):  # ----------------------------
         Returns
         -------
 
-        updated value of integral : 2d array
+        updated value of integral : np.ndarray
 
         """
         self._accumulator_check_args(variable, context=context, params=params)
@@ -881,7 +881,7 @@ class SimpleIntegrator(IntegratorFunction):  # ---------------------------------
         Returns
         -------
 
-        updated value of integral : 2d array
+        updated value of integral : np.ndarray
 
         """
         rate = np.array(self._get_current_parameter_value(RATE, context)).astype(float)
@@ -1728,7 +1728,7 @@ class DualAdaptiveIntegrator(IntegratorFunction):  # ---------------------------
         Returns
         -------
 
-        updated value of integral : 2d array
+        updated value of integral : np.ndarray
 
         """
         # rate = np.array(self._get_current_parameter_value(RATE, context)).astype(float)
@@ -2115,7 +2115,7 @@ class InteractiveActivationIntegrator(IntegratorFunction):  # ------------------
         Returns
         -------
 
-        updated value of integral : 2d array
+        updated value of integral : np.ndarray
 
         """
         rate = np.array(self._get_current_parameter_value(RATE, context)).astype(float)
@@ -2530,7 +2530,7 @@ class DriftDiffusionIntegrator(IntegratorFunction):  # -------------------------
         Returns
         -------
 
-        updated value of integral : 2d array
+        updated value of integral : np.ndarray
 
         """
         rate = np.array(self._get_current_parameter_value(RATE, context)).astype(float)
@@ -3626,7 +3626,7 @@ class OrnsteinUhlenbeckIntegrator(IntegratorFunction):  # ----------------------
         Returns
         -------
 
-        updated value of integral : 2d array
+        updated value of integral : np.ndarray
 
         """
         rate = np.array(self._get_current_parameter_value(RATE, context)).astype(float)
@@ -3907,7 +3907,7 @@ class LeakyCompetingIntegrator(IntegratorFunction):  # -------------------------
         Returns
         -------
 
-        updated value of integral : 2d array
+        updated value of integral : np.ndarray
 
         """
         rate = np.atleast_1d(self._get_current_parameter_value(RATE, context))
