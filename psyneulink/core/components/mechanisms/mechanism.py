@@ -2960,7 +2960,7 @@ class Mechanism_Base(Mechanism):
         return (port_state_init, *mech_state_init)
 
     def _get_output_struct_type(self, ctx):
-        output_type_list = (ctx.get_output_struct_type(port) for port in self.output_ports)
+        output_type_list = (ctx.get_output_struct_type(port) for port in self.parameters.output_ports.get_value_for_codegen())
         return pnlvm.ir.LiteralStructType(output_type_list)
 
     def _get_input_struct_type(self, ctx):
@@ -2969,7 +2969,7 @@ class Mechanism_Base(Mechanism):
             struct_ty = ctx.get_input_struct_type(p)
             return struct_ty.elements[0] if len(p.mod_afferents) > 0 else struct_ty
 
-        input_type_list = [_get_data_part_of_input_struct(port) for port in self.input_ports]
+        input_type_list = [_get_data_part_of_input_struct(port) for port in self.parameters.input_ports.get_value_for_codegen()]
 
 
         # Get modulatory inputs
@@ -2984,10 +2984,13 @@ class Mechanism_Base(Mechanism):
 
         return pnlvm.ir.LiteralStructType(input_type_list)
 
-    def _gen_llvm_ports(self, ctx, builder, ports, group,
-                        get_output_ptr, get_input_data_ptr,
-                        mech_params, mech_state, mech_input):
-        group_ports = getattr(self, group)
+    def _gen_llvm_ports(self, ctx, builder, ports, group, get_output_ptr, get_input_data_ptr, mech_params, mech_state, mech_input):
+        if group == '_parameter_ports':
+            group_ports = self._parameter_ports
+
+        else:
+            group_ports = getattr(self.parameters, group).get_value_for_codegen()
+
         ports_param, ports_state = ctx.get_param_or_state_ptr(builder,
                                                               self,
                                                               group,
@@ -3033,7 +3036,7 @@ class Mechanism_Base(Mechanism):
                                                p_function.args[2].type,
                                                "input",
                                                self._parameter_ports,
-                                               self.output_ports)
+                                               self.parameters.output_ports.get_value_for_codegen())
 
             else:
                 # Port input structure is: (data, [modulations]),
@@ -3049,7 +3052,7 @@ class Mechanism_Base(Mechanism):
                 for idx, p_mod in enumerate(port.mod_afferents):
                     mech_mod_afferent_idx = mod_afferents.index(p_mod)
                     mod_in_ptr = builder.gep(mech_input, [ctx.int32_ty(0),
-                                                          ctx.int32_ty(len(self.input_ports)),
+                                                          ctx.int32_ty(len(self.parameters.input_ports.get_value_for_codegen())),
                                                           ctx.int32_ty(mech_mod_afferent_idx)])
                     mod_out_ptr = builder.gep(p_input, [ctx.int32_ty(0), ctx.int32_ty(1 + idx)])
                     afferent_val = builder.load(mod_in_ptr)
@@ -3062,13 +3065,16 @@ class Mechanism_Base(Mechanism):
     def _gen_llvm_input_ports(self, ctx, builder, mech_params, mech_state, mech_input):
         # We rely on the fact that series of InputPort results should match the main function input.
         ip_output_list = []
-        for port in self.input_ports:
+        input_ports = self.parameters.input_ports.get_value_for_codegen()
+
+        for port in input_ports:
             ip_function = ctx.import_llvm_function(port)
             ip_output_list.append(ip_function.args[3].type.pointee)
 
         # Check if all elements are the same. Function argument will be array type if yes.
         if len(set(ip_output_list)) == 1:
             ip_output_type = pnlvm.ir.ArrayType(ip_output_list[0], len(ip_output_list))
+
         else:
             ip_output_type = pnlvm.ir.LiteralStructType(ip_output_list)
 
@@ -3084,7 +3090,7 @@ class Mechanism_Base(Mechanism):
 
         builder = self._gen_llvm_ports(ctx,
                                        builder,
-                                       self.input_ports,
+                                       input_ports,
                                        "input_ports",
                                        _get_input_port_value_ptr,
                                        _get_input_port_variable_ptr,
@@ -3126,13 +3132,13 @@ class Mechanism_Base(Mechanism):
             # subcomponent, or a list of subcomponents
             if p in mutable_parameters:
                 if recursive:
-                    nested_obj = getattr(obj.parameters, p).get()
+                    nested_component = getattr(obj.parameters, p).get_value_for_codegen()
                     nested_params, builder = self._gen_llvm_param_ports_for_obj(ctx,
                                                                                 builder,
                                                                                 mech_params,
                                                                                 mech_state,
                                                                                 mech_input,
-                                                                                obj=nested_obj,
+                                                                                obj=nested_component,
                                                                                 params_in=src,
                                                                                 params_out=dst,
                                                                                 recursive=True)
@@ -3140,11 +3146,12 @@ class Mechanism_Base(Mechanism):
 
                 continue
 
-            # Get corresponding parameter port
             if (parameter := getattr(obj.parameters, p, None)) not in self._parameter_ports:
+                # Copy values that do not have a parameter port
                 builder = pnlvm.helpers.memcpy(builder, dst, src)
 
             else:
+                # Run parameter port on the base value
                 assert self._parameter_ports[parameter].source == parameter, \
                     "Unexpected parameter ({}) {} source {}".format(p, parameter, self._parameter_ports[parameter].source)
 
@@ -3270,6 +3277,8 @@ class Mechanism_Base(Mechanism):
 
 
     def _gen_llvm_output_ports(self, ctx, builder, value, mech_params, mech_state, mech_in, mech_out):
+        output_ports = self.parameters.output_ports.get_value_for_codegen()
+
         def _get_output_port_value_ptr(b, i):
             ptr = b.gep(mech_out, [ctx.int32_ty(0), ctx.int32_ty(i)])
             return b, ptr
@@ -3281,12 +3290,12 @@ class Mechanism_Base(Mechanism):
                                                             mech_params,
                                                             mech_state,
                                                             value,
-                                                            self.output_ports[i])
+                                                            output_ports[i])
             return b, ptr
 
         builder = self._gen_llvm_ports(ctx,
                                        builder,
-                                       self.output_ports,
+                                       output_ports,
                                        "output_ports",
                                        _get_output_port_value_ptr,
                                        _get_output_port_variable_ptr,

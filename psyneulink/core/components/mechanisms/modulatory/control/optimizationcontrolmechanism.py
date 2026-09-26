@@ -3314,7 +3314,7 @@ class OptimizationControlMechanism(ControlMechanism):
         total_cost_ptr = builder.alloca(ctx.float_ty, name="total_cost")
         builder.store(total_cost_ptr.type.pointee(-0.0), total_cost_ptr)
 
-        for i, op in enumerate(self.output_ports):
+        for i, op in enumerate(self.parameters.output_ports.get_value_for_codegen()):
             # FIXME Issue #2712: Use port total cost here
             port_cost_ptr = builder.alloca(ctx.float_ty, name="port_{}_total_cost".format(i))
             builder.store(port_cost_ptr.type.pointee(-0.0), port_cost_ptr)
@@ -3445,6 +3445,7 @@ class OptimizationControlMechanism(ControlMechanism):
         if "const_state" in debug_env:
             const_state = agent_rep._get_state_initializer(None)
             builder.store(comp_state.type.pointee(const_state), comp_state)
+
         else:
             builder = pnlvm.helpers.memcpy(builder, comp_state, base_comp_state)
 
@@ -3453,6 +3454,7 @@ class OptimizationControlMechanism(ControlMechanism):
         if "const_data" in debug_env:
             const_data = agent_rep._get_data_initializer(None)
             builder.store(comp_data.type.pointee(const_data), comp_data)
+
         else:
             builder = pnlvm.helpers.memcpy(builder, comp_data, base_comp_data)
 
@@ -3467,15 +3469,14 @@ class OptimizationControlMechanism(ControlMechanism):
         controller_params = builder.gep(nodes_params, [ctx.int32_ty(0), ctx.int32_ty(controller_idx)])
 
         # Apply allocation sample to simulation data
-        assert len(self.output_ports) == len(allocation_sample.type.pointee)
-        controller_out = builder.gep(comp_data, [ctx.int32_ty(0), ctx.int32_ty(0),
-                                                 ctx.int32_ty(controller_idx)])
+        assert len(self.parameters.output_ports.get_value_for_codegen()) == len(allocation_sample.type.pointee)
+        controller_out = builder.gep(comp_data, [ctx.int32_ty(0), ctx.int32_ty(0), ctx.int32_ty(controller_idx)])
         all_op_params, all_op_states = ctx.get_param_or_state_ptr(builder,
                                                                   self,
-                                                                  "output_ports",
+                                                                  self.parameters.output_ports,
                                                                   param_struct_ptr=controller_params,
                                                                   state_struct_ptr=controller_state)
-        for i, op in enumerate(self.output_ports):
+        for i, op in enumerate(self.parameters.output_ports.get_value_for_codegen()):
             op_idx = ctx.int32_ty(i)
 
             op_f = ctx.import_llvm_function(op, tags=frozenset({"simulation"}))
@@ -3491,7 +3492,6 @@ class OptimizationControlMechanism(ControlMechanism):
 
             builder.store(builder.load(sample_ptr), sample_dst)
             builder.call(op_f, [op_params, op_state, op_in, op_out])
-
 
         # Get simulation function
         agent_tags = {"run", "simulation"}
