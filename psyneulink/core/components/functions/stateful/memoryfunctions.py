@@ -2342,16 +2342,16 @@ class DictionaryMemory(MemoryFunction):  # -------------------------------------
 
     def _get_state_struct_type(self, ctx):
         # Construct a ring buffer
-        max_entries = self.parameters.max_entries.get()
+        max_entries = self.parameters.max_entries.get_value_for_codegen()
+
         key_type = ctx.convert_python_struct_to_llvm_ir(self.defaults.variable[0])
         keys_struct = pnlvm.ir.ArrayType(key_type, max_entries)
         val_type = ctx.convert_python_struct_to_llvm_ir(self.defaults.variable[1])
         vals_struct = pnlvm.ir.ArrayType(val_type, max_entries)
-        ring_buffer_struct = pnlvm.ir.LiteralStructType((
-            keys_struct, vals_struct, ctx.int32_ty, ctx.int32_ty))
+
+        ring_buffer_struct = pnlvm.ir.LiteralStructType((keys_struct, vals_struct, ctx.int32_ty, ctx.int32_ty))
         generic_struct = ctx.get_state_struct_type(super())
-        return pnlvm.ir.LiteralStructType((*generic_struct,
-                                           ring_buffer_struct))
+        return pnlvm.ir.LiteralStructType((*generic_struct, ring_buffer_struct))
 
     def _get_state_initializer(self, context):
         memory = self.parameters.previous_value._get(context)
