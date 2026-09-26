@@ -1661,17 +1661,7 @@ class TransferMechanism(ProcessingMechanism_Base):
                 b.store(max_val, cmp_val_ptr)
 
         elif is_in_params and is_in_state:
-            # Termination measure is a PNL Function (e.g. Distance)
-            expected = np.empty_like([self.defaults.value[0], self.defaults.value[0]])
-            got = np.empty_like(self.termination_measure.defaults.variable)
-            if expected.shape != got.shape:
-                warnings.warn("Shape mismatch: Termination measure input: "
-                              "{} should be {}.".format(self.termination_measure.defaults.variable, expected.shape),
-                              pnlvm.PNLCompilerWarning)
-
-                # FIXME: HACK: the distance function is not initialized
-                self.termination_measure.defaults.variable = expected
-
+            # Components are present in both, so this is a termination measure function
             func = ctx.import_llvm_function(self.parameters.termination_measure.get_value_for_codegen())
             func_params, func_state = measure_ptrs
             func_in = builder.alloca(func.args[2].type.pointee, name="termination_func_in")
@@ -1683,17 +1673,13 @@ class TransferMechanism(ProcessingMechanism_Base):
             current_mech_value_ptr = ctx.get_param_or_state_ptr(builder, self, "value", state_struct_ptr=m_state)
             prev_mech_value_ptr = ctx.get_param_or_state_ptr(builder, self, "value", state_struct_ptr=m_state, history=1)
 
-            # Remove second dimension from 'value' and 'previous_value'
-            current_ptr = builder.gep(current_mech_value_ptr, [ctx.int32_ty(0), ctx.int32_ty(0)])
-            prev_ptr = builder.gep(prev_mech_value_ptr, [ctx.int32_ty(0), ctx.int32_ty(0)])
-
-            builder.store(builder.load(current_ptr), func_in_current_ptr)
-            builder.store(builder.load(prev_ptr), func_in_prev_ptr)
+            builder.store(builder.load(current_mech_value_ptr), func_in_current_ptr)
+            builder.store(builder.load(prev_mech_value_ptr), func_in_prev_ptr)
 
             builder.call(func, [func_params, func_state, func_in, cmp_val_ptr])
 
         elif is_in_params and not is_in_state:
-            # Index to num_executions to be compared directly
+            # Base param only means an index to the num_executions array
             num_executions_array_ptr = ctx.get_param_or_state_ptr(builder, self, "num_executions", state_struct_ptr=m_state)
             index = pnlvm.helpers.load_extract_scalar_array_one(builder, measure_ptrs)
             elem_ptr = builder.gep(num_executions_array_ptr, [ctx.int32_ty(0), index])
