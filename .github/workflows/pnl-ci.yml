@@ -52,17 +52,17 @@ jobs:
         version-restrict: ['']
         torch: ['']
         include:
+          # run without pytorch on windows python 3.14
+          - python-version: '3.14'
+            os: windows
+            arch: 'arm64'
+            torch: 'notorch'
+
           # code-coverage run on macos python 3.12
           - python-version: '3.12'
             os: macos
             arch: 'default'
             extra-args: '--cov=psyneulink'
-
-          # run without pytorch on windows python 3.12
-          - python-version: '3.12'
-            os: windows
-            arch: 'default'
-            torch: 'notorch'
 
           # fp32 run on linux arm64 python 3.12
           - python-version: '3.12'
