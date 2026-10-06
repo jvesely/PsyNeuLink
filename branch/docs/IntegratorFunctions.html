@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>IntegratorFunctions &mdash; PsyNeuLink 0.19.0.0+10.g5bd38728b documentation</title>
+  <title>IntegratorFunctions &mdash; PsyNeuLink 0.20.2.0+167.g82e1c1f8b documentation</title>
   
 
   
@@ -99,7 +99,7 @@
               
               
                 <div class="version">
-                  0.19.0.0+10
+                  0.20.2.0+167
                 </div>
               
             
@@ -376,7 +376,7 @@ arguments of the constructor.</p></li>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li></li>
-<li><p><strong>updated value of integral</strong> (<em>2d array</em>)</p></li>
+<li><p><strong>updated value of integral</strong> (<em>np.ndarray</em>)</p></li>
 </ul>
 </p>
 </dd>
@@ -387,7 +387,7 @@ arguments of the constructor.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="psyneulink.core.components.functions.stateful.integratorfunctions.AdaptiveIntegrator">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">psyneulink.core.components.functions.stateful.integratorfunctions.</span></span><span class="sig-name descname"><span class="pre">AdaptiveIntegrator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initializer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.functions.stateful.integratorfunctions.AdaptiveIntegrator" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">psyneulink.core.components.functions.stateful.integratorfunctions.</span></span><span class="sig-name descname"><span class="pre">AdaptiveIntegrator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initializer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.functions.stateful.integratorfunctions.AdaptiveIntegrator" title="Link to this definition">¶</a></dt>
 <dd><p id="adaptiveintegrator"><a class="reference internal" href="#psyneulink.core.components.functions.stateful.integratorfunctions.AdaptiveIntegrator._function" title="psyneulink.core.components.functions.stateful.integratorfunctions.AdaptiveIntegrator._function"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">function</span></code></a> returns <a class="reference external" href="https://en.wikipedia.org/wiki/Moving_average#Exponential_moving_average">exponentially weighted moving average (EWMA)</a> of input:</p>
 <div class="math notranslate nohighlight">
 \[((1-rate) * previous\_value) + (rate * variable)  + noise + offset\]</div>
@@ -835,7 +835,7 @@ arguments of the constructor.</p></li>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li></li>
-<li><p><strong>updated value of integral</strong> (<em>2d array</em>)</p></li>
+<li><p><strong>updated value of integral</strong> (<em>np.ndarray</em>)</p></li>
 </ul>
 </p>
 </dd>
@@ -1300,7 +1300,7 @@ arguments of the constructor.</p></li>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li></li>
-<li><p><strong>updated value of integral</strong> (<em>2d array</em>)</p></li>
+<li><p><strong>updated value of integral</strong> (<em>np.ndarray</em>)</p></li>
 </ul>
 </p>
 </dd>
@@ -2275,7 +2275,7 @@ for details).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="psyneulink.core.components.functions.stateful.integratorfunctions.AccumulatorIntegrator._accumulator_check_args">
 <span class="sig-name descname"><span class="pre">_accumulator_check_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.components.functions.stateful.integratorfunctions.AccumulatorIntegrator._accumulator_check_args" title="Link to this definition">¶</a></dt>
-<dd><p>Validate params and assign any runtime params.</p>
+<dd><p>validate params and assign any runtime params.</p>
 <p>Called by AccumulatorIntegrator to validate params
 Validation can be suppressed by turning parameter_validation attribute off
 target_set is a params dictionary to which params should be assigned;</p>
@@ -2307,7 +2307,7 @@ arguments of the constructor.</p>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li></li>
-<li><p><strong>updated value of integral</strong> (<em>2d array</em>)</p></li>
+<li><p><strong>updated value of integral</strong> (<em>np.ndarray</em>)</p></li>
 </ul>
 </p>
 </dd>
@@ -2528,7 +2528,7 @@ arguments of the constructor.</p></li>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li></li>
-<li><p><strong>updated value of integral</strong> (<em>2d array</em>)</p></li>
+<li><p><strong>updated value of integral</strong> (<em>np.ndarray</em>)</p></li>
 </ul>
 </p>
 </dd>
@@ -2823,7 +2823,7 @@ arguments of the constructor.</p></li>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li></li>
-<li><p><strong>updated value of integral</strong> (<em>2d array</em>)</p></li>
+<li><p><strong>updated value of integral</strong> (<em>np.ndarray</em>)</p></li>
 </ul>
 </p>
 </dd>
@@ -3075,7 +3075,7 @@ arguments of the constructor.</p></li>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li></li>
-<li><p><strong>updated value of integral</strong> (<em>2d array</em>)</p></li>
+<li><p><strong>updated value of integral</strong> (<em>np.ndarray</em>)</p></li>
 </ul>
 </p>
 </dd>
@@ -3520,7 +3520,7 @@ _instantiate_attributes_before_function below</p></li>
        <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
          <script src="_static/jquery.js?v=5d32c60e"></script>
          <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-         <script src="_static/documentation_options.js?v=d27d9922"></script>
+         <script src="_static/documentation_options.js?v=ef42f630"></script>
          <script src="_static/doctools.js?v=9bcbadda"></script>
          <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
          <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>

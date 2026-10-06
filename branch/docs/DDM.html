@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>DDM &mdash; PsyNeuLink 0.19.0.0+10.g5bd38728b documentation</title>
+  <title>DDM &mdash; PsyNeuLink 0.20.2.0+167.g82e1c1f8b documentation</title>
   
 
   
@@ -101,7 +101,7 @@
               
               
                 <div class="version">
-                  0.19.0.0+10
+                  0.20.2.0+167
                 </div>
               
             
@@ -389,7 +389,7 @@ correct responses  (<a class="reference internal" href="#ddm-rt-correct-mean"><s
 <span class="gp">... </span>        <span class="n">noise</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
 <span class="gp">... </span>        <span class="n">non_decision_time</span><span class="o">=</span><span class="mf">0.15</span>
 <span class="gp">... </span>    <span class="p">),</span>
-<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;my_DDM_DriftDiffusionAnalytical&#39;</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s1">'my_DDM_DriftDiffusionAnalytical'</span>
 <span class="gp">... </span><span class="p">)</span>
 </pre></div>
 </div>
@@ -407,7 +407,7 @@ mode, only the <a class="reference internal" href="#ddm-decision-variable"><span
 <span class="gp">... </span>        <span class="n">non_decision_time</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
 <span class="gp">... </span>        <span class="n">rate</span><span class="o">=</span><span class="mf">3.0</span>
 <span class="gp">... </span>    <span class="p">),</span>
-<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;my_DDM_path_integrator&#39;</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s1">'my_DDM_path_integrator'</span>
 <span class="gp">... </span><span class="p">)</span>
 </pre></div>
 </div>
@@ -499,7 +499,7 @@ an <a class="reference internal" href="IntegratorFunctions.html#psyneulink.core.
 their interpretation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>2d np.array[array(float64),array(float64),array(float64),array(float64)]</p>
+<dd class="field-odd"><p>np.ndarray[array(float64),array(float64),array(float64),array(float64)]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -750,7 +750,7 @@ Remove when MULTIPROCESS DDM is implemented.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="psyneulink.library.components.mechanisms.processing.integrator.ddm.DDM._validate_params">
 <span class="sig-name descname"><span class="pre">_validate_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.library.components.mechanisms.processing.integrator.ddm.DDM._validate_params" title="Link to this definition">¶</a></dt>
-<dd><p>Validate TimeScale, INPUT_PORTS, FUNCTION_PARAMS, OUTPUT_PORTS and MONITOR_FOR_CONTROL</p>
+<dd><p>validate TimeScale, INPUT_PORTS, FUNCTION_PARAMS, OUTPUT_PORTS and MONITOR_FOR_CONTROL</p>
 <dl>
 <dt>Go through target_set params (populated by Component._validate_params) and validate values for:</dt><dd><ul>
 <li><dl class="simple">
@@ -828,7 +828,7 @@ variable (float): set to self.value (= self.input_value)
 <li><p>context (str)</p></li>
 </ul>
 <dl class="simple">
-<dt>Returns the following values in self.value (2D np.array) and in</dt><dd><p>the value of the corresponding outputPort in the self.output_ports dict:
+<dt>Returns the following values in self.value (&gt;=2D np.array) and in</dt><dd><p>the value of the corresponding outputPort in the self.output_ports dict:
 - decision variable (float)
 - mean error rate (float)
 - mean RT (float)
@@ -868,14 +868,14 @@ reset method</p></li>
 </ol>
 </div></blockquote>
 <p>If the mechanism has an <a class="reference internal" href="TransferMechanism.html#psyneulink.core.components.mechanisms.processing.transfermechanism.TransferMechanism.integrator_function" title="psyneulink.core.components.mechanisms.processing.transfermechanism.TransferMechanism.integrator_function"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">integrator_function</span></code></a>, its <a class="reference internal" href="Mechanism.html#psyneulink.core.components.mechanisms.mechanism.Mechanism_Base.reset" title="psyneulink.core.components.mechanisms.mechanism.Mechanism_Base.reset"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">reset</span></code></a> method:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(1) Calls the `integrator_function&#39;s &lt;TransferMechanism.integrator_function&gt;` own `reset
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(1) Calls the `integrator_function's &lt;TransferMechanism.integrator_function&gt;` own `reset
     &lt;IntegratorFunction.reset&gt;` method (see Note below for details)
 
-(2) Executes its `function &lt;Mechanism_Base.function&gt;` using the output of the `integrator_function&#39;s
+(2) Executes its `function &lt;Mechanism_Base.function&gt;` using the output of the `integrator_function's
     &lt;TransferMechanism.integrator_function&gt;` `reset &lt;IntegratorFunction.reset&gt;` method as
-    the function&#39;s variable
+    the function's variable
 
-(3) Sets the mechanism&#39;s `value &lt;Mechanism_Base.value&gt;` to the output of its function
+(3) Sets the mechanism's `value &lt;Mechanism_Base.value&gt;` to the output of its function
 
 (4) Updates its `output ports &lt;Mechanism_Base.output_port&gt;` based on its new `value
     &lt;Mechanism_Base.value&gt;`
@@ -1004,7 +1004,7 @@ execution of one or more other Components on a Component.</p>
        <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
          <script src="_static/jquery.js?v=5d32c60e"></script>
          <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-         <script src="_static/documentation_options.js?v=d27d9922"></script>
+         <script src="_static/documentation_options.js?v=ef42f630"></script>
          <script src="_static/doctools.js?v=9bcbadda"></script>
          <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
      

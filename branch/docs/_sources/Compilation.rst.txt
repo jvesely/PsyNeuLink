@@ -15,16 +15,16 @@ Overview
 
 The PsyNeuLink runtime compiler works in several steps when invoked via `run` or `execute`:
 *Compilation*:
- #. The model is initialized. This is step is identical to non-compiled execution.
- #. Data structures (input/output/parameters) are flattened and converted to LLVM IR form.
- #. LLVM IR code is generated to match to semantics of individual components and the used scheduling rules.
- #. Host CPU compatible binary code is generated
- #. The resulting function is saved as `ctypes` function and the parameter types are converted to `ctypes` binary structures.
+#. The model is initialized. This is step is identical to non-compiled execution.
+#. Data structures (input/output/parameters) are flattened and converted to LLVM IR form.
+#. LLVM IR code is generated to match to semantics of individual components and the used scheduling rules.
+#. Host CPU compatible binary code is generated
+#. The resulting function is saved as `ctypes` function and the parameter types are converted to `ctypes` binary structures.
 
 *Execution*:
- #. parameter structures are populated with the data from `Composition` based on the provided `execution_id`. These structures are preserved between invocations so executions with the same `execution_id` will reuse the same binary structures.
- #. `ctype` function from step 5. is executed
- #. Results are extracted from the binary structures and converted to Python format.
+#. parameter structures are populated with the data from `Composition` based on the provided `execution_id`. These structures are preserved between invocations so executions with the same `execution_id` will reuse the same binary structures.
+#. `ctype` function from step 5. is executed
+#. Results are extracted from the binary structures and converted to Python format.
 
 
 Use

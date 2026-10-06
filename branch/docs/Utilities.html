@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Utilities &mdash; PsyNeuLink 0.19.0.0+10.g5bd38728b documentation</title>
+  <title>Utilities &mdash; PsyNeuLink 0.20.2.0+167.g82e1c1f8b documentation</title>
   
 
   
@@ -99,7 +99,7 @@
               
               
                 <div class="version">
-                  0.19.0.0+10
+                  0.20.2.0+167
                 </div>
               
             
@@ -314,11 +314,11 @@ of a <a class="reference internal" href="Mechanism.html"><span class="doc">Mecha
 their names.  Therefore, <code class="docutils literal notranslate"><span class="pre">my_mech.output_ports.names</span></code> returns the names of all of the Mechanism’s OutputPorts:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">psyneulink</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pnl</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pnl</span><span class="o">.</span><span class="n">DDM</span><span class="p">()</span><span class="o">.</span><span class="n">output_ports</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
-<span class="go">[&#39;DECISION_VARIABLE&#39;, &#39;RESPONSE_TIME&#39;]</span>
+<span class="go">['DECISION_VARIABLE', 'RESPONSE_TIME']</span>
 </pre></div>
 </div>
 <p>The keyed attribute can also be used to access an item of the list.  For examples:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pnl</span><span class="o">.</span><span class="n">DDM</span><span class="p">()</span><span class="o">.</span><span class="n">output_ports</span><span class="p">[</span><span class="s1">&#39;DECISION_VARIABLE&#39;</span><span class="p">])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pnl</span><span class="o">.</span><span class="n">DDM</span><span class="p">()</span><span class="o">.</span><span class="n">output_ports</span><span class="p">[</span><span class="s1">'DECISION_VARIABLE'</span><span class="p">])</span>
 <span class="go">(OutputPort DECISION_VARIABLE)</span>
 </pre></div>
 </div>
@@ -472,43 +472,31 @@ all of the items must be of type <strong>component_type</strong> and have the <s
 <dl class="py property">
 <dt class="sig sig-object py" id="id0">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">names</span></span><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
-<dd><p>Return list of <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.value" title="psyneulink.core.components.component.Component.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">values</span></code></a> of the name attribute of components in the list.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>names</strong> – list of the values of the <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.name" title="psyneulink.core.components.component.Component.name"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">name</span></code></a> attributes of components in the list.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list</p>
-</dd>
-</dl>
+<dd><p>Return list of <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.value" title="psyneulink.core.components.component.Component.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">values</span></code></a> of the name attribute of components in the list.
+:returns: <strong>names</strong> – list of the values of the <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.name" title="psyneulink.core.components.component.Component.name"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">name</span></code></a> attributes of components in the list.
+:rtype: list</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="id1">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">key_values</span></span><a class="headerlink" href="#id1" title="Link to this definition">¶</a></dt>
-<dd><p>Return list of <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.value" title="psyneulink.core.components.component.Component.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">values</span></code></a> of the keyed attribute of components in the list.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key_values</strong> – list of the values of the <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.name" title="psyneulink.core.components.component.Component.name"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">keyed</span></code></a> attributes of components in the list.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list</p>
-</dd>
-</dl>
+<dd><p>Return list of <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.value" title="psyneulink.core.components.component.Component.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">values</span></code></a> of the keyed attribute of components in the list.
+:returns: <strong>key_values</strong> – list of the values of the <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.name" title="psyneulink.core.components.component.Component.name"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">keyed</span></code></a> attributes of components in the list.
+:rtype: list</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="psyneulink.core.globals.utilities.ContentAddressableList.get_key_values">
 <span class="sig-name descname"><span class="pre">get_key_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.globals.utilities.ContentAddressableList.get_key_values" title="Link to this definition">¶</a></dt>
 <dd><p>Return list of <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.value" title="psyneulink.core.components.component.Component.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">values</span></code></a> of the keyed
-parameter of components in the list.</p>
+parameter of components in the list.
+:returns: <strong>key_values</strong> – list of the values of the <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.name" title="psyneulink.core.components.component.Component.name"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">keyed</span></code></a></p>
+<blockquote>
+<div><p>parameter of components in the list  for <strong>context</strong></p>
+</div></blockquote>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key_values</strong> – list of the values of the <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.name" title="psyneulink.core.components.component.Component.name"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">keyed</span></code></a>
-parameter of components in the list  for <strong>context</strong></p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
 </dd>
 </dl>
 </dd></dl>
@@ -516,28 +504,22 @@ parameter of components in the list  for <strong>context</strong></p>
 <dl class="py property">
 <dt class="sig sig-object py" id="id2">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">values</span></span><a class="headerlink" href="#id2" title="Link to this definition">¶</a></dt>
-<dd><p>Return list of values of components in the list.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>values</strong> – list of the values of the <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.value" title="psyneulink.core.components.component.Component.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> attributes of components in the list.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list</p>
-</dd>
-</dl>
+<dd><p>Return list of values of components in the list.
+:returns: <strong>values</strong> – list of the values of the <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.value" title="psyneulink.core.components.component.Component.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> attributes of components in the list.
+:rtype: list</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="psyneulink.core.globals.utilities.ContentAddressableList.get_values">
 <span class="sig-name descname"><span class="pre">get_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.globals.utilities.ContentAddressableList.get_values" title="Link to this definition">¶</a></dt>
-<dd><p>Return list of values of components in the list.</p>
+<dd><p>Return list of values of components in the list.
+:returns: <strong>values</strong> – list of the values of the <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.value" title="psyneulink.core.components.component.Component.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">value</span></code></a></p>
+<blockquote>
+<div><p>parameter of components in the list  for <strong>context</strong></p>
+</div></blockquote>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>values</strong> – list of the values of the <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.value" title="psyneulink.core.components.component.Component.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">value</span></code></a>
-parameter of components in the list  for <strong>context</strong></p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
 </dd>
 </dl>
 </dd></dl>
@@ -545,29 +527,17 @@ parameter of components in the list  for <strong>context</strong></p>
 <dl class="py property">
 <dt class="sig sig-object py" id="psyneulink.core.globals.utilities.ContentAddressableList.values_as_lists">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">values_as_lists</span></span><a class="headerlink" href="#psyneulink.core.globals.utilities.ContentAddressableList.values_as_lists" title="Link to this definition">¶</a></dt>
-<dd><p>Return list of values of components in the list, each converted to a list.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>values</strong> – list of list values of the <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.value" title="psyneulink.core.components.component.Component.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> attributes of components in the list,</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list</p>
-</dd>
-</dl>
+<dd><p>Return list of values of components in the list, each converted to a list.
+:returns: <strong>values</strong> – list of list values of the <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.value" title="psyneulink.core.components.component.Component.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> attributes of components in the list,
+:rtype: list</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="psyneulink.core.globals.utilities.ContentAddressableList.get_values_as_lists">
 <span class="sig-name descname"><span class="pre">get_values_as_lists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.globals.utilities.ContentAddressableList.get_values_as_lists" title="Link to this definition">¶</a></dt>
-<dd><p>Return list of values of components in the list, each converted to a list.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>values</strong> – list of list values of the <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.value" title="psyneulink.core.components.component.Component.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> attributes of components in the list,</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list</p>
-</dd>
-</dl>
+<dd><p>Return list of values of components in the list, each converted to a list.
+:returns: <strong>values</strong> – list of list values of the <a class="reference internal" href="Component.html#psyneulink.core.components.component.Component.value" title="psyneulink.core.components.component.Component.value"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> attributes of components in the list,
+:rtype: list</p>
 </dd></dl>
 
 </dd></dl>
@@ -670,7 +640,7 @@ False - otherwise</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="psyneulink.core.globals.utilities.tensor_power">
 <span class="sig-prename descclassname"><span class="pre">psyneulink.core.globals.utilities.</span></span><span class="sig-name descname"><span class="pre">tensor_power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">levels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psyneulink.core.globals.utilities.tensor_power" title="Link to this definition">¶</a></dt>
-<dd><p>Return tensor product for all members of powerset of items</p>
+<dd><p>return tensor product for all members of powerset of items</p>
 <p>levels specifies a range of set levels to return;  1=first order terms, 2=2nd order terms, etc.
 if None, all terms will be returned</p>
 <p>if flat=False, returns list of 1d arrays with tensor product for each member of the powerset
@@ -801,7 +771,7 @@ From: <a class="reference external" href="https://stackoverflow.com/questions/32
        <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
          <script src="_static/jquery.js?v=5d32c60e"></script>
          <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-         <script src="_static/documentation_options.js?v=d27d9922"></script>
+         <script src="_static/documentation_options.js?v=ef42f630"></script>
          <script src="_static/doctools.js?v=9bcbadda"></script>
          <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
      

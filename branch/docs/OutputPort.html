@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>OutputPort &mdash; PsyNeuLink 0.19.0.0+10.g5bd38728b documentation</title>
+  <title>OutputPort &mdash; PsyNeuLink 0.20.2.0+167.g82e1c1f8b documentation</title>
   
 
   
@@ -99,7 +99,7 @@
               
               
                 <div class="version">
-                  0.19.0.0+10
+                  0.20.2.0+167
                 </div>
               
             
@@ -557,7 +557,7 @@ OutputPort’s <a class="reference internal" href="#psyneulink.core.components.p
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_mech</span> <span class="o">=</span> <span class="n">pnl</span><span class="o">.</span><span class="n">DDM</span><span class="p">(</span><span class="n">function</span><span class="o">=</span><span class="n">pnl</span><span class="o">.</span><span class="n">DriftDiffusionAnalytical</span><span class="p">(),</span>
 <span class="gp">... </span>                  <span class="n">output_ports</span><span class="o">=</span><span class="p">[</span><span class="n">pnl</span><span class="o">.</span><span class="n">DECISION_VARIABLE</span><span class="p">,</span>
 <span class="gp">... </span>                                 <span class="n">pnl</span><span class="o">.</span><span class="n">PROBABILITY_UPPER_THRESHOLD</span><span class="p">,</span>
-<span class="gp">... </span>                                 <span class="p">{</span><span class="n">pnl</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="s1">&#39;DECISION ENTROPY&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                 <span class="p">{</span><span class="n">pnl</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="s1">'DECISION ENTROPY'</span><span class="p">,</span>
 <span class="gp">... </span>                                  <span class="n">pnl</span><span class="o">.</span><span class="n">VARIABLE</span><span class="p">:</span> <span class="p">(</span><span class="n">pnl</span><span class="o">.</span><span class="n">OWNER_VALUE</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
 <span class="gp">... </span>                                  <span class="n">pnl</span><span class="o">.</span><span class="n">FUNCTION</span><span class="p">:</span> <span class="n">pnl</span><span class="o">.</span><span class="n">Stability</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="n">pnl</span><span class="o">.</span><span class="n">ENTROPY</span><span class="p">)</span> <span class="p">}])</span>
 </pre></div>
@@ -572,7 +572,7 @@ will be assigned as items in its <a class="reference internal" href="Mechanism.h
 are listed in the <strong>output_ports</strong> argument of the constructor for <code class="docutils literal notranslate"><span class="pre">my_mech</span></code>.</p>
 <p>Custom OutputPorts can also be created on their own, and separately assigned or added to a Mechanism.  For example,
 the <code class="docutils literal notranslate"><span class="pre">DECISION</span> <span class="pre">ENTROPY</span></code> OutputPort could be created as follows:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">decision_entropy_output_port</span> <span class="o">=</span> <span class="n">pnl</span><span class="o">.</span><span class="n">OutputPort</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;DECISION ENTROPY&#39;</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">decision_entropy_output_port</span> <span class="o">=</span> <span class="n">pnl</span><span class="o">.</span><span class="n">OutputPort</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'DECISION ENTROPY'</span><span class="p">,</span>
 <span class="gp">... </span>                                                <span class="n">variable</span><span class="o">=</span><span class="p">(</span><span class="n">OWNER_VALUE</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
 <span class="gp">... </span>                                                <span class="n">function</span><span class="o">=</span><span class="n">pnl</span><span class="o">.</span><span class="n">Stability</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="n">pnl</span><span class="o">.</span><span class="n">ENTROPY</span><span class="p">))</span>
 </pre></div>
@@ -585,7 +585,7 @@ the <code class="docutils literal notranslate"><span class="pre">DECISION</span>
 </pre></div>
 </div>
 <p>or:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">another_decision_entropy_output_port</span> <span class="o">=</span> <span class="n">pnl</span><span class="o">.</span><span class="n">OutputPort</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;DECISION ENTROPY&#39;</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">another_decision_entropy_output_port</span> <span class="o">=</span> <span class="n">pnl</span><span class="o">.</span><span class="n">OutputPort</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'DECISION ENTROPY'</span><span class="p">,</span>
 <span class="gp">... </span>                                               <span class="n">variable</span><span class="o">=</span><span class="p">(</span><span class="n">OWNER_VALUE</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
 <span class="gp">... </span>                                               <span class="n">function</span><span class="o">=</span><span class="n">pnl</span><span class="o">.</span><span class="n">Stability</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="n">pnl</span><span class="o">.</span><span class="n">ENTROPY</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">my_mech2</span> <span class="o">=</span> <span class="n">pnl</span><span class="o">.</span><span class="n">DDM</span><span class="p">(</span><span class="n">function</span><span class="o">=</span><span class="n">pnl</span><span class="o">.</span><span class="n">DriftDiffusionAnalytical</span><span class="p">(),</span>
@@ -869,6 +869,28 @@ Used primarily during validation, when the function may not have been fully inst
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="psyneulink.core.components.ports.outputport.OutputPort.socket_shape">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">socket_shape</span></span><a class="headerlink" href="#psyneulink.core.components.ports.outputport.OutputPort.socket_shape" title="Link to this definition">¶</a></dt>
+<dd><p>The expected shape of the input to an outgoing Projection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="psyneulink.core.components.ports.outputport.OutputPort.socket_template">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">socket_template</span></span><a class="headerlink" href="#psyneulink.core.components.ports.outputport.OutputPort.socket_template" title="Link to this definition">¶</a></dt>
+<dd><p>An array of zeros in the shape of the input to an outgoing Projection (<a class="reference internal" href="#psyneulink.core.components.ports.outputport.OutputPort.socket_shape" title="psyneulink.core.components.ports.outputport.OutputPort.socket_shape"><code class="xref any py py-attr docutils literal notranslate"><span class="pre">socket_shape</span></code></a>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="psyneulink.core.components.ports.outputport.OutputPort.owner_value_index">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">owner_value_index</span></span><a class="headerlink" href="#psyneulink.core.components.ports.outputport.OutputPort.owner_value_index" title="Link to this definition">¶</a></dt>
 <dd><p>Return index or indices of items of owner.value for any to which OutputPort’s variable has been assigned
@@ -1059,6 +1081,8 @@ ignoring any VARIABLE entries previously specified for individual OutputPorts;</
 <li><a class="reference internal" href="#psyneulink.core.components.ports.outputport.OutputPort._parse_port_specific_specs"><code class="docutils literal notranslate"><span class="pre">OutputPort._parse_port_specific_specs()</span></code></a></li>
 <li><a class="reference internal" href="#psyneulink.core.components.ports.outputport.OutputPort._get_variable_from_projections"><code class="docutils literal notranslate"><span class="pre">OutputPort._get_variable_from_projections()</span></code></a></li>
 <li><a class="reference internal" href="#psyneulink.core.components.ports.outputport.OutputPort._get_port_function_value"><code class="docutils literal notranslate"><span class="pre">OutputPort._get_port_function_value()</span></code></a></li>
+<li><a class="reference internal" href="#psyneulink.core.components.ports.outputport.OutputPort.socket_shape"><code class="docutils literal notranslate"><span class="pre">OutputPort.socket_shape</span></code></a></li>
+<li><a class="reference internal" href="#psyneulink.core.components.ports.outputport.OutputPort.socket_template"><code class="docutils literal notranslate"><span class="pre">OutputPort.socket_template</span></code></a></li>
 <li><a class="reference internal" href="#psyneulink.core.components.ports.outputport.OutputPort.owner_value_index"><code class="docutils literal notranslate"><span class="pre">OutputPort.owner_value_index</span></code></a></li>
 </ul>
 </li>
@@ -1091,7 +1115,7 @@ ignoring any VARIABLE entries previously specified for individual OutputPorts;</
        <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
          <script src="_static/jquery.js?v=5d32c60e"></script>
          <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-         <script src="_static/documentation_options.js?v=d27d9922"></script>
+         <script src="_static/documentation_options.js?v=ef42f630"></script>
          <script src="_static/doctools.js?v=9bcbadda"></script>
          <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
      
