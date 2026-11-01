@@ -419,7 +419,7 @@ def unaryAddParam(variable, param):
 @pytest.mark.parametrize("variable", [
                     1,
                     np.ones(2),
-                    np.ones((2)),
+                    np.ones((2,)),
                     np.ones((2, 2))
                     ], ids=["scalar", "vec", "vec-2d", "mat"])
 @pytest.mark.parametrize("func", [unarySubVar, unarySubParam, unaryAddVar, unaryAddParam])
