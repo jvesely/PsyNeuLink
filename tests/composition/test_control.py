@@ -227,45 +227,31 @@ class TestControlSpecification:
         else:
             assert False, f"TEST ERROR: unrecognized state_features_arg '{state_features_arg}'"
 
+        # Don't specify in order to test default assignment
+        state_features_param = {} if 'default_none' in state_features_arg else {'state_features': state_features}
+
         with pytest.warns(UserWarning, match=re.escape(expected_warning)):
             # add the controller to the Composition before adding the relevant Mechanisms
-            if 'default_none' in state_features_arg:
-                comp.add_controller(controller=pnl.OptimizationControlMechanism(
-                    agent_rep=comp,
-                    # state_features = state_features, # Don't specify in order to test default assignments
-                    state_feature_default=state_feature_default,
-                    state_feature_function=pnl.AdaptiveIntegrator(rate=0.5),
-                    objective_mechanism=pnl.ObjectiveMechanism(
-                        function=pnl.LinearCombination(operation=pnl.PRODUCT),
-                        monitor=[reward,
-                                 Decision.output_ports[pnl.PROBABILITY_UPPER_THRESHOLD],
-                                 (Decision.output_ports[pnl.RESPONSE_TIME], -1, 1)]),
-                    function=pnl.GridSearch(),
-                    control_signals=[{control_spec: ("drift_rate", Decision),
-                                      ALLOCATION_SAMPLES: np.arange(0.1, 1.01, 0.3)},
-                                     {control_spec: ("threshold", Decision),
-                                      ALLOCATION_SAMPLES: np.arange(0.1, 1.01, 0.3)}])
-                )
-            else:
-                comp.add_controller(controller=pnl.OptimizationControlMechanism(
-                    agent_rep=comp,
-                    state_features=state_features,
-                    state_feature_default=state_feature_default,
-                    state_feature_function=pnl.AdaptiveIntegrator(rate=0.5),
-                    objective_mechanism=pnl.ObjectiveMechanism(
-                        function=pnl.LinearCombination(operation=pnl.PRODUCT),
-                        monitor=[reward,
-                                 Decision.output_ports[pnl.PROBABILITY_UPPER_THRESHOLD],
-                                 (Decision.output_ports[pnl.RESPONSE_TIME], -1, 1)]),
-                    function=pnl.GridSearch(),
-                    control_signals=[{control_spec: ("drift_rate", Decision),
-                                      ALLOCATION_SAMPLES: np.arange(0.1, 1.01, 0.3)},
-                                     {control_spec: ("threshold", Decision),
-                                      ALLOCATION_SAMPLES: np.arange(0.1, 1.01, 0.3)}])
-                )
-            drift_control_signal = comp.controller.control_signals['Decision[drift_rate] ControlSignal']
-            drift_previous_value = drift_control_signal.function.duration_cost_fct.previous_value
-            np.testing.assert_array_equal(drift_previous_value, [0])
+            comp.add_controller(controller=pnl.OptimizationControlMechanism(
+                agent_rep=comp,
+                **state_features_param, # Don't specify in order to test default assignments
+                state_feature_default=state_feature_default,
+                state_feature_function=pnl.AdaptiveIntegrator(rate=0.5),
+                objective_mechanism=pnl.ObjectiveMechanism(
+                    function=pnl.LinearCombination(operation=pnl.PRODUCT),
+                    monitor=[reward,
+                             Decision.output_ports[pnl.PROBABILITY_UPPER_THRESHOLD],
+                             (Decision.output_ports[pnl.RESPONSE_TIME], -1, 1)]),
+                function=pnl.GridSearch(),
+                control_signals=[{control_spec: ("drift_rate", Decision),
+                                  ALLOCATION_SAMPLES: np.arange(0.1, 1.01, 0.3)},
+                                 {control_spec: ("threshold", Decision),
+                                  ALLOCATION_SAMPLES: np.arange(0.1, 1.01, 0.3)}])
+            )
+
+        drift_control_signal = comp.controller.control_signals['Decision[drift_rate] ControlSignal']
+        drift_previous_value = drift_control_signal.function.duration_cost_fct.previous_value
+        np.testing.assert_array_equal(drift_previous_value, [0])
 
         deferred_reward_input_port = _deferred_state_feature_spec_msg('reward[InputPort-0]', 'evc')
         deferred_Input_input_port = _deferred_state_feature_spec_msg('Input[InputPort-0]', 'evc')
@@ -737,9 +723,11 @@ class TestControlSpecification:
         ctlr = pnl.ControlMechanism()
         comp = pnl.Composition()
         comp.add_node(mech)
+
+        comp.enable_controller = True
+
         expected_warning = 'ControlMechanism-0 for Composition-0 is enabled but has no inputs.'
         with pytest.warns(UserWarning, match=re.escape(expected_warning)):
-            comp.enable_controller = True
             comp.add_controller(ctlr)
 
     def test_agent_rep_assignment_as_controller_and_replacement(self):
@@ -2412,6 +2400,9 @@ class TestControlMechanisms:
     def test_add_node_with_controller_spec_and_control_mech_but_not_a_controller(self):
         mech = pnl.ProcessingMechanism(name='MECH', function=pnl.Linear(slope=(2, pnl.CONTROL)))
         ctl = pnl.ControlMechanism(name='CONTROL MECHANISM')
+        comp = pnl.Composition(name='COMPOSITION', pathways=[ctl])
+        comp.add_node(mech)
+        comp.verbosePref = pnl.PreferenceEntry(True, pnl.PreferenceLevel.INSTANCE)
 
         warning_msg_1 = "OutputPort ('ControlSignal-0') of 'CONTROL MECHANISM' doesn't have any efferent " \
                         "Projections in 'COMPOSITION'."
@@ -2420,13 +2411,12 @@ class TestControlMechanisms:
                         "the control specification will be ignored."
         warning_msg_3 = "\nThe following Projections were specified but are not being used by Nodes in " \
                         "'COMPOSITION':\n\tControlProjection for MECH[slope]"
+        warning_msg_4 = "No inputs provided in call to COMPOSITION.run()"
 
         with pytest.warns(UserWarning, match=re.escape(warning_msg_1)), \
              pytest.warns(UserWarning, match=re.escape(warning_msg_2)), \
-             pytest.warns(UserWarning, match=re.escape(warning_msg_3)):
-            comp = pnl.Composition(name='COMPOSITION', pathways=[ctl])
-            comp.add_node(mech)
-            comp.verbosePref = pnl.PreferenceEntry(True, pnl.PreferenceLevel.INSTANCE)
+             pytest.warns(UserWarning, match=re.escape(warning_msg_3)), \
+             pytest.warns(UserWarning, match=re.escape(warning_msg_4)):
             comp.run()
 
     @pytest.mark.control

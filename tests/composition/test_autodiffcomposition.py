@@ -155,12 +155,11 @@ class TestAutodiffConstructor:
             autodiff_comp.show_graph(show_pytorch=True)
 
         # Test for warning on nested SINGELTON without any learnable projections on show_graph(show_pytorch=True)
+        nested_comp = AutodiffComposition([solo_mech], name="NESTED COMP")
+        autodiff_comp = AutodiffComposition(name="AUTODIFF COMP_7", pathways=[nested_comp])
         warning_message = ("No learnable pathways were found in 'AUTODIFF COMP_7'; therefore, no "
                              "pytorch_representation will be constructed, and learning will not be possible.")
         with pytest.warns(UserWarning, match=re.escape(warning_message)):
-            nested_comp = AutodiffComposition([solo_mech], name="NESTED COMP")
-            autodiff_comp = AutodiffComposition(name="AUTODIFF COMP_7",
-                                                pathways=[nested_comp])
             autodiff_comp.show_graph(show_pytorch=True, output_fmt='source')
 
         # Test for error on nested SINGELTON without any learnable projections on learn()
@@ -3337,10 +3336,14 @@ class TestNestedLearning:
         return _execute_learning
 
     def test_warning_for_no_learning_in_solo_nested_comp(self):
-        warning = "'autodiff_composition-1' contains no Projections, so it has no params for Pytorch to learn."
-        with pytest.warns(UserWarning, match=re.escape(warning)):
-            inner = pnl.AutodiffComposition([pnl.ProcessingMechanism()])
-            outer = pnl.AutodiffComposition([inner])
+        inner = pnl.AutodiffComposition([pnl.ProcessingMechanism()])
+        outer = pnl.AutodiffComposition([inner])
+
+        warning1 = "No learnable pathways were found in 'autodiff_composition-1'; therefore, " \
+                   "no pytorch_representation will be constructed, and learning will not be possible."
+        warning2 = "'autodiff_composition-1' contains no Projections, so it has no params for Pytorch to learn."
+        with pytest.warns(UserWarning, match=re.escape(warning1)), \
+             pytest.warns(UserWarning, match=re.escape(warning2)):
             outer._build_pytorch_representation()
 
     def test_1_nested_hidden(self, nodes_for_testing_nested_comps, execute_learning):

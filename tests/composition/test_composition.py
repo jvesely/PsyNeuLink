@@ -603,21 +603,22 @@ comp.add_node(B)
         icomp = Composition(name='iCOMP', pathways=[A, B])
         comp1 = Composition(name='COMP_1', pathways=[icomp])
         comp2 = Composition(name='COMP_2', pathways=[C, D])
+        ocomp = Composition(name='OUTER COMPOSITION',pathways=[comp1, comp2])
+        icomp.verbosePref = PreferenceEntry(True, PreferenceLevel.INSTANCE)
+        comp1.verbosePref = PreferenceEntry(True, PreferenceLevel.INSTANCE)
+        comp2.verbosePref = PreferenceEntry(True, PreferenceLevel.INSTANCE)
 
-        error_msg_1 = ("\nThe following Projections were specified but are not being used by Nodes "
-                       "in 'iCOMP':\n\tMappingProjection from A[OutputPort-0] to C[InputPort-0] "
-                       "(from 'A' to 'C').")
-        error_msg_2 = ("\nThe following Projections were specified but are not being used by Nodes "
-                       "in 'COMP_2':\n\tMappingProjection from A[OutputPort-0] to C[InputPort-0] "
-                       "(to 'C' from 'A').")
+        warning_1 = ("\nThe following Projections were specified but are not being used by Nodes "
+                     "in 'iCOMP':\n\tMappingProjection from A[OutputPort-0] to C[InputPort-0] "
+                     "(from 'A' to 'C').")
+        warning_2 = ("\nThe following Projections were specified but are not being used by Nodes "
+                     "in 'COMP_2':\n\tMappingProjection from A[OutputPort-0] to C[InputPort-0] "
+                     "(to 'C' from 'A').")
 
-        with pytest.warns(UserWarning, match=re.escape(error_msg_1)), \
-             pytest.warns(UserWarning, match=re.escape(error_msg_2)):
-            ocomp = Composition(name='OUTER COMPOSITION',pathways=[comp1, comp2])
-            icomp.verbosePref = PreferenceEntry(True, PreferenceLevel.INSTANCE)
-            comp1.verbosePref = PreferenceEntry(True, PreferenceLevel.INSTANCE)
-            comp2.verbosePref = PreferenceEntry(True, PreferenceLevel.INSTANCE)
-            ocomp.run()
+        with pytest.warns(UserWarning, match=re.escape(warning_1)), \
+             pytest.warns(UserWarning, match=re.escape(warning_2)):
+
+            ocomp.run([0])
 
     def test_multiple_projections_between_mechs(self):
         """Tests the addining of multiple legal Projections between two Mechanisms to Composition."""

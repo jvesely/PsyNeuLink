@@ -448,6 +448,8 @@ class TestDictionaryMemory:
                                  equidistant_keys_select=RANDOM,
                                  retrieval_prob=1.0,
                                  seed=module_seed)
+
+        with pytest.warns(UserWarning, match=re.escape(text)):
             em = EpisodicMemoryMechanism(name='EPISODIC MEMORY MECH', content_size=3, assoc_size=3, function=f)
 
         np.testing.assert_allclose(em.memory, np.array([[[1, 2, 3], [4, 5, 6]]]))

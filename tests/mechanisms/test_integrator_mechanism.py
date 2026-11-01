@@ -191,9 +191,10 @@ class TestReset:
         np.testing.assert_allclose(I.output_ports[0].value, 0.0)
 
     def test_Accumulator_warning(self):
+        I = AccumulatorIntegrator()
+
         regexp = r"AccumulatorIntegrator does not use its variable;  value passed .* will be ignored"
         with pytest.warns(UserWarning, match=regexp):
-            I = AccumulatorIntegrator()
             I(1000)
 
     def test_Accumulator_valid(self):
