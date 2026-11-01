@@ -38,7 +38,7 @@ graphviz_executables = {
 """These test various elaborate forms of Composition configuration and nesting, in addition to show_graph itself"""
 
 
-@pytest.fixture()
+@pytest.fixture
 def render_show_graph(tmp_path):
     def _render(comp, directory=tmp_path, view=False, **kwargs):
         comp.show_graph(directory=directory, view=view, **kwargs)
