@@ -1,5 +1,6 @@
 import os
 import pathlib
+import re
 import sys
 import uuid
 
@@ -339,35 +340,39 @@ class TestNested:
         else:
             input_mech = ProcessingMechanism(name='INPUT MECH', input_shapes=3)
             output_mech = ProcessingMechanism(name='OUTPUT MECH', input_shapes=5)
-            outer_comp = AutodiffComposition(name='OUTER COMP',
-                                             pathways=[input_mech, em_comp, output_mech])
+            outer_comp = AutodiffComposition(name='OUTER COMP', pathways=[input_mech, em_comp, output_mech])
+
         show_pytorch = True if 'PyTorch' in mode else False
         show_learning = True if 'learning' in mode else False
 
         if nesting == 'nested' and show_learning and not show_pytorch:
-            with pytest.raises(AutodiffCompositionError) as error:
+            error_msg = (f"'EM COMP' has a nested Composition, so PyTorch mode must be used for learning; "
+                         f"use 'show_pytorch=True' in the call to show_graph().")
+            with pytest.raises(AutodiffCompositionError, match=re.escape(error_msg)):
                 gv = outer_comp.show_graph(show_pytorch=show_pytorch, show_learning=show_learning, output_fmt='source')
-            assert (f"'EM COMP' has a nested Composition, so PyTorch mode must be used for learning; "
-                    f"use 'show_pytorch=True' in the call to show_graph().") in str(error.value)
+
         elif nesting == 'unnested' and (show_learning or show_pytorch):
-            with pytest.warns(UserWarning) as warning:
+            warning_msg = (f"No learnable pathways were found in '{outer_comp.name}'; therefore, no pytorch_representation "
+                           f"will be constructed, and learning will not be possible.")
+
+            with pytest.warns(UserWarning, match=re.escape(warning_msg)) as warning:
                 gv = outer_comp.show_graph(show_pytorch=show_pytorch, show_learning=show_learning, output_fmt='source')
+
             if show_learning:
                 assert (("The 'show_learning' argument in the call to show_graph() for 'EM COMP' is unnecessary since "
                         "learning components are shown for an AutodiffComposition only when 'show_pytorch' is used.")
                         in str(warning[0].message))
-            n = 1 if show_learning else 0
-            assert (f"No learnable pathways were found in '{outer_comp.name}'; therefore, no pytorch_representation "
-                    f"will be constructed, and learning will not be possible." in str(warning[n].message))
+
         elif show_pytorch and show_learning:
-            with pytest.warns(UserWarning) as warning:
-                gv = outer_comp.show_graph(show_pytorch=show_pytorch, show_learning=show_learning, output_fmt='source')
             comp_name = 'OUTER COMP' if nesting == 'nested' else 'EM COMP'
-            assert (f"The 'show_learning' argument in the call to show_graph() for '{comp_name}' is unnecessary since "
-                    f"learning components are shown for an AutodiffComposition only when 'show_pytorch' is used."
-                    in str(warning[0].message))
+            warning_msg = (f"The 'show_learning' argument in the call to show_graph() for '{comp_name}' is unnecessary since "
+                           f"learning components are shown for an AutodiffComposition only when 'show_pytorch' is used.")
+            with pytest.warns(UserWarning, match=re.escape(warning_msg)):
+                gv = outer_comp.show_graph(show_pytorch=show_pytorch, show_learning=show_learning, output_fmt='source')
+
         else:
             gv = outer_comp.show_graph(show_pytorch=show_pytorch, show_learning=show_learning, output_fmt='source')
+
         assert gv == expected
         render_show_graph(outer_comp, show_pytorch=show_pytorch, show_learning=show_learning)
 
@@ -399,35 +404,40 @@ class TestNested:
         else:
             input_mech = ProcessingMechanism(name='INPUT MECH', input_shapes=3)
             output_mech = ProcessingMechanism(name='OUTPUT MECH', input_shapes=5)
-            outer_comp = AutodiffComposition(name='OUTER COMP',
-                                             pathways=[input_mech, em_comp, output_mech])
+            outer_comp = AutodiffComposition(name='OUTER COMP', pathways=[input_mech, em_comp, output_mech])
+
         show_pytorch = True if 'PyTorch' in mode else False
         show_learning = True if 'learning' in mode else False
 
         if nesting == 'nested' and show_learning and not show_pytorch:
-            with pytest.raises(AutodiffCompositionError) as error:
+            error_msg = (f"'EM COMP' has a nested Composition, so PyTorch mode must be used for learning; "
+                         f"use 'show_pytorch=True' in the call to show_graph().")
+            with pytest.raises(AutodiffCompositionError, match=re.escape(error_msg)):
                 gv = outer_comp.show_graph(show_pytorch=show_pytorch, show_learning=show_learning, output_fmt='source')
-            assert (f"'EM COMP' has a nested Composition, so PyTorch mode must be used for learning; "
-                    f"use 'show_pytorch=True' in the call to show_graph().") in str(error.value)
+
         elif nesting == 'unnested' and (show_learning or show_pytorch):
-            with pytest.warns(UserWarning) as warning:
+
+            warning_msg = (f"No learnable pathways were found in '{outer_comp.name}'; therefore, no pytorch_representation "
+                           f"will be constructed, and learning will not be possible.")
+
+            with pytest.warns(UserWarning, match=re.escape(warning_msg)) as warning:
                 gv = outer_comp.show_graph(show_pytorch=show_pytorch, show_learning=show_learning, output_fmt='source')
+
             if show_learning:
                 assert (("The 'show_learning' argument in the call to show_graph() for 'EM COMP' is unnecessary since "
                         "learning components are shown for an AutodiffComposition only when 'show_pytorch' is used.")
                         in str(warning[0].message))
-            n = 1 if show_learning else 0
-            assert (f"No learnable pathways were found in '{outer_comp.name}'; therefore, no pytorch_representation "
-                    f"will be constructed, and learning will not be possible." in str(warning[n].message))
+
         elif show_pytorch and show_learning:
-            with pytest.warns(UserWarning) as warning:
-                gv = outer_comp.show_graph(show_pytorch=show_pytorch, show_learning=show_learning, output_fmt='source')
             comp_name = 'OUTER COMP' if nesting == 'nested' else 'EM COMP'
-            assert (f"The 'show_learning' argument in the call to show_graph() for '{comp_name}' is unnecessary since "
-                    f"learning components are shown for an AutodiffComposition only when 'show_pytorch' is used."
-                    in str(warning[0].message))
+            warning_msg = (f"The 'show_learning' argument in the call to show_graph() for '{comp_name}' is unnecessary since "
+                           f"learning components are shown for an AutodiffComposition only when 'show_pytorch' is used.")
+            with pytest.warns(UserWarning, match=re.escape(warning_msg)):
+                gv = outer_comp.show_graph(show_pytorch=show_pytorch, show_learning=show_learning, output_fmt='source')
+
         else:
             gv = outer_comp.show_graph(show_pytorch=show_pytorch, show_learning=show_learning, output_fmt='source')
+
         assert gv == expected
         render_show_graph(outer_comp, show_pytorch=show_pytorch, show_learning=show_learning)
 
