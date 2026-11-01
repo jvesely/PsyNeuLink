@@ -501,21 +501,18 @@ def test_DDM_rate(benchmark, rate, expected, mech_mode):
 
 
 def test_DDM_rate_fn():
-    with pytest.raises(ValueError) as error_text:
-        stim = [10]
+    stim = [10]
+    with pytest.raises(ValueError, match="incompatible value") as error_text:
         T = DDM(
             name='DDM',
             default_variable=[0],
             function=DriftDiffusionIntegrator(
-
                 noise=0.0,
                 rate=NormalDist().function,
                 time_step_size=1.0
             ),
             execute_until_finished=False,
         )
-        T.execute(stim)
-    assert "incompatible value" in str(error_text.value)
 
 # ------------------------------------------------------------------------------------------------
 

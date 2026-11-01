@@ -1,3 +1,4 @@
+import re
 import sys
 import warnings
 from collections.abc import Iterable
@@ -158,18 +159,18 @@ def test_update_array_in_place(target, source):
 
 
 @pytest.mark.parametrize(
-    'target, source',
+    'target, source, error_message',
     [
-        ([[0], [0, 0]], [[1], [1, 1, 1]]),
-        ([0, [0, 0]], [[1], [1, 1]]),
+        ([[0], [0, 0]], [[1], [1, 1, 1]], "shapes (2,) and (3,) differ"),
+        ([0, [0, 0]], [[1], [1, 1]], "0 is not a numpy.ndarray"),
     ]
 )
-def test_update_array_in_place_failures(target, source):
+def test_update_array_in_place_failures(target, source, error_message):
     target = convert_all_elements_to_np_array(target)
     source = convert_all_elements_to_np_array(source)
     old_target = target
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=re.escape(error_message)):
         update_array_in_place(target, source)
 
     len_target = len(target)

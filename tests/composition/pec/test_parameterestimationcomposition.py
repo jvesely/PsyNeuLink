@@ -2,6 +2,7 @@ import numpy as np
 import optuna
 import pandas as pd
 import pytest
+import re
 import scipy
 import contextlib
 
@@ -730,7 +731,7 @@ def test_pec_bad_outcome_var_spec():
         ("threshold", decision): np.linspace(0.5, 1.0, 1000),
     }
 
-    with pytest.raises(KeyError) as ex:
+    with pytest.raises(KeyError, match=re.escape("Could not find outcome variable")):
         pnl.ParameterEstimationComposition(
             name="pec",
             nodes=[comp],
@@ -744,9 +745,8 @@ def test_pec_bad_outcome_var_spec():
             num_estimates=20,
             num_trials_per_estimate=10,
         )
-    assert "Could not find outcome variable" in str(ex)
 
-    with pytest.raises(ValueError) as ex:
+    with pytest.raises(ValueError, match=re.escape("The number of columns in the data to fit must match")):
         pnl.ParameterEstimationComposition(
             name="pec",
             nodes=[comp],
@@ -757,13 +757,12 @@ def test_pec_bad_outcome_var_spec():
             num_estimates=20,
             num_trials_per_estimate=10,
         )
-    assert "The number of columns in the data to fit must match" in str(ex)
 
 
 @pytest.mark.composition
 def test_pec_controller_specified():
     """Test that an exception is raised if a controller is specified for the PEC."""
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=re.escape("controller argument cannot be specified in a ParameterEstimationComposition.")):
         pnl.ParameterEstimationComposition(
             parameters={},
             outcome_variables=[],

@@ -1864,7 +1864,7 @@ class TestControlMechanisms:
                 assert lvoc.input_ports[i].function.offset == 10.0
 
         else:
-            with pytest.raises(ValueError):
+            with pytest.raises(ValueError, match=re.escape("torch.func.grad not found. PyTorch version is probably too old")):
                 pnl.OptimizationControlMechanism(**ocm_kwargs)
 
 

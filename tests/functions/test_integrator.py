@@ -1,3 +1,4 @@
+import re
 import numpy as np
 import pytest
 
@@ -537,7 +538,7 @@ def test_target_mode_rate1_dt1_reaches_target(start, end):
 def test_target_mode_length_mismatch_error():
     f = Functions.DriftOnASphereIntegrator(dimension=4)
     wrong = np.zeros(10)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception, match=re.escape("'variable' length must be 1, 3 (tangent), or 4 (target). Got 10.")):
         f(variable=wrong)
 
 
