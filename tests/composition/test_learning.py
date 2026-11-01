@@ -3429,6 +3429,7 @@ class TestBackPropLearning:
                            hidden_to_out_comp.get_mod_matrix(xor_comp))
         np.testing.assert_allclose(result_comp, result_autodiff)
 
+    @pytest.mark.parametrize('show_graph', [False])
     @pytest.mark.parametrize('configuration', [
         'Y UP',
         'BRANCH UP',
@@ -3442,7 +3443,7 @@ class TestBackPropLearning:
         'COMPLEX',
         'JOIN BY TERMINAL'
     ])
-    def test_backprop_with_various_intersecting_pathway_configurations(self, configuration, show_graph=False):
+    def test_backprop_with_various_intersecting_pathway_configurations(self, configuration, show_graph):
         '''Test add_backpropgation using various configuration of intersecting pathways
 
         References in description are to attachment point of added pathway (always A)
