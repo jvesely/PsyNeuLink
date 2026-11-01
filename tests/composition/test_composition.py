@@ -5683,7 +5683,7 @@ class TestNestedCompositions:
         assert result == [4500]
 
     @pytest.mark.control
-    @pytest.mark.parametrize('nesting', ("unnested","nested"))
+    @pytest.mark.parametrize('nesting', ["unnested","nested"])
     def test_partially_overlapping_local_and_control_mech_control_specs_in_unnested_and_nested_comp(self, nesting):
         pnl.clear_registry()
         samples = np.arange(0.1, 1.01, 0.3)

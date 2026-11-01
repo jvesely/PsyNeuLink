@@ -434,9 +434,9 @@ class TestConstruction:
             for proj in field.projections:
                 assert em._field_index_map[proj] == field.index
 
-    @pytest.mark.parametrize('field_weight_1', ([None], [0], [1]),  ids=['None', '0', '1'])
-    @pytest.mark.parametrize('field_weight_2', ([None], [0], [1]),  ids=['None', '0', '1'])
-    @pytest.mark.parametrize('field_weight_3', ([None], [0], [1]),  ids=['None', '0', '1'])
+    @pytest.mark.parametrize('field_weight_1', [[None], [0], [1]],  ids=['None', '0', '1'])
+    @pytest.mark.parametrize('field_weight_2', [[None], [0], [1]],  ids=['None', '0', '1'])
+    @pytest.mark.parametrize('field_weight_3', [[None], [0], [1]],  ids=['None', '0', '1'])
     def test_order_fields_in_memory(self, field_weight_1, field_weight_2, field_weight_3):
         """Test that order of keys and values doesn't matter"""
 
@@ -723,7 +723,7 @@ class TestExecution:
                 assert all(elem == memory_fill for elem in em.memory[-1])
 
     @pytest.mark.parametrize('test_field_weights_0_vs_None_data',
-                             (([[[5], [0], [10]],       # 1d memory template
+                             [([[[5], [0], [10]],       # 1d memory template
                                 [[0], [5], [10]],
                                 [[0.1], [0.1], [10]],
                                 [[0.1], [0.1], [10]]],
@@ -735,7 +735,7 @@ class TestExecution:
                                 [[0.1, 0.1], [0.1, 0.1], [0.1, 0.1]]],
                                 [[5,0], [5,0], [10,10]],  # 2d query
                                pnl.DOT_PRODUCT),          # 2d retrieval operation
-                               ),
+                               ],
                              ids=['1d', '2d'])
     @pytest.mark.parametrize('field_weights', [[.75, .25, 0], [.75, .25, None]], ids=['0','None'])
     @pytest.mark.parametrize('softmax_choice', [pnl.MAX_VAL, pnl.ARG_MAX], ids=['MAX_VAL','ARG_MAX'])

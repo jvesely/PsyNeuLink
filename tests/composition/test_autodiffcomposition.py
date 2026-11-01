@@ -6137,7 +6137,7 @@ class TestBatching:
         assert a[0] == 4
 
     @pytest.mark.parametrize(
-        'eps', (1, 5, 10, 100)
+        'eps', [1, 5, 10, 100]
     )
     def test_batching_with_epochs_specified(self, eps):
         # SET UP MECHANISMS FOR COMPOSITION

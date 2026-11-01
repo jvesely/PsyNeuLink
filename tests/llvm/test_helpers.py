@@ -99,10 +99,10 @@ def test_helper_fclamp_const(mode):
 
 @pytest.mark.llvm
 @pytest.mark.parametrize('mode', ['CPU', pytest.helpers.cuda_param('PTX')])
-@pytest.mark.parametrize('rtol,atol', [[0, 0], [None, None], [None, 100], [2, None]])
+@pytest.mark.parametrize('rtol,atol', [(0, 0), (None, None), (None, 100), (2, None)])
 @pytest.mark.parametrize('var1,var2',
-                         [[1, 1], [1, 100], [1,2], [-4,5], [0, -100], [-1,-2],
-                          [[1,1,1,-4,0,-1], [1,100,2,5,-100,-2]]
+                         [(1, 1), (1, 100), (1,2), (-4,5), (0, -100), (-1,-2),
+                          ([1,1,1,-4,0,-1], [1,100,2,5,-100,-2])
                          ])
 @pytest.mark.parametrize('fp_type', [ir.DoubleType, ir.FloatType])
 def test_helper_is_close(mode, var1, var2, rtol, atol, fp_type):
@@ -161,10 +161,10 @@ def test_helper_is_close(mode, var1, var2, rtol, atol, fp_type):
 
 @pytest.mark.llvm
 @pytest.mark.parametrize('mode', ['CPU', pytest.helpers.cuda_param('PTX')])
-@pytest.mark.parametrize('rtol,atol', [[0, 0], [None, None], [None, 100], [2, None]])
+@pytest.mark.parametrize('rtol,atol', [(0, 0), (None, None), (None, 100), (2, None)])
 @pytest.mark.parametrize('var1,var2',
-                         [[1, 1], [1, 100], [1, 2], [-4, 5], [0, -100], [-1, -2],
-                          [[1, 1, 1, -4, 0, -1], [1, 100, 2, 5, -100, -2]]
+                         [(1, 1), (1, 100), (1, 2), (-4, 5), (0, -100), (-1, -2),
+                          ([1, 1, 1, -4, 0, -1], [1, 100, 2, 5, -100, -2])
                          ])
 def test_helper_all_close(mode, var1, var2, atol, rtol):
 

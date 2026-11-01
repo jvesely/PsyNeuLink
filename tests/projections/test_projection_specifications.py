@@ -153,9 +153,9 @@ class TestProjectionSpecificationFormats:
 
     @pytest.mark.parametrize("control_spec, gating_spec, extra_spec",
                              [
-                                 [pnl.CONTROL, pnl.GATE, ''],
-                                 [pnl.PROJECTIONS, pnl.PROJECTIONS, ''],
-                                 [pnl.CONTROL, pnl.GATE, pnl.PROJECTIONS]
+                                 (pnl.CONTROL, pnl.GATE, ''),
+                                 (pnl.PROJECTIONS, pnl.PROJECTIONS, ''),
+                                 (pnl.CONTROL, pnl.GATE, pnl.PROJECTIONS)
                              ]
                              )
     @pytest.mark.control
