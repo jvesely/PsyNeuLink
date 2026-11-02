@@ -17,16 +17,6 @@ if torch_available:
     # All tests are set to run. If you need to skip certain tests,
     # see http://doc.pytest.org/en/latest/skipping.html
 
-    # @pytest.mark.pytorch
-    # @pytest.fixture(scope='module')
-    # def global_torch_dtype():
-    #     import torch
-    #     torch_dtype = torch.float64
-    #     entry_torch_dtype = torch.get_default_dtype()
-    #     torch.set_default_dtype(torch_dtype)
-    #     yield torch_dtype
-    #     torch.set_default_dtype(entry_torch_dtype)
-
     # ---------------------
     # HOOK FOR torch.GRU module for use in debugging internal calculations
 
