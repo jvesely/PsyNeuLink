@@ -189,15 +189,15 @@ class TestModParams:
 
 
 class TestParameterPortList:
-    @pytest.fixture
-    def transfer_mech(self):
-        return TransferMechanism(function=pnl.Logistic)
+    def test_duplicate(self):
+        transfer_mech = TransferMechanism(function=pnl.Logistic)
 
-    def test_duplicate(self, transfer_mech):
         assert 'offset-function' in transfer_mech.parameter_ports
         assert 'offset-integrator_function' in transfer_mech.parameter_ports
 
-    def test_duplicate_base_access_fails(self, transfer_mech):
+    def test_duplicate_base_access_fails(self):
+        transfer_mech = TransferMechanism(function=pnl.Logistic)
+
         with pytest.raises(
             pnl.ParameterPortError,
             match='Did you want offset-function or offset-integrator_function'
@@ -246,14 +246,18 @@ class TestParameterPortList:
         assert mech.parameter_ports['low-func_b-func_a'].source is mech.func_b.func_a.parameters.low
         assert mech.parameter_ports['low-noise'].source is mech.noise.parameters.low
 
-    def test_duplicate_sources(self, transfer_mech):
+    def test_duplicate_sources(self):
+        transfer_mech = TransferMechanism(function=pnl.Logistic)
+
         assert transfer_mech.parameter_ports['offset-function'].source is transfer_mech.function.parameters.offset
         assert transfer_mech.parameter_ports[transfer_mech.function.parameters.offset].source is transfer_mech.function.parameters.offset
 
         assert transfer_mech.parameter_ports['offset-integrator_function'].source is transfer_mech.integrator_function.parameters.offset
         assert transfer_mech.parameter_ports[transfer_mech.integrator_function.parameters.offset].source is transfer_mech.integrator_function.parameters.offset
 
-    def test_sharedparameter_different_name(self, transfer_mech):
+    def test_sharedparameter_different_name(self):
+        transfer_mech = TransferMechanism(function=pnl.Logistic)
+
         assert transfer_mech.parameter_ports['integration_rate'] is transfer_mech.parameter_ports['rate']
         assert transfer_mech.parameter_ports['integration_rate'].source is transfer_mech.integrator_function.parameters.rate
         assert transfer_mech.parameter_ports[transfer_mech.integrator_function.parameters.rate].source is transfer_mech.integrator_function.parameters.rate
@@ -303,7 +307,9 @@ class TestParameterPortList:
         ],
         ids=lambda x: '' if isinstance(x, str) else x  # test ids are complicated with format strs, aren't needed
     )
-    def test_error_if_no_port(self, transfer_mech, param_name, param_as_str, err_type, err_msg_fmt):
+    def test_error_if_no_port(self, param_name, param_as_str, err_type, err_msg_fmt):
+        transfer_mech = TransferMechanism(function=pnl.Logistic)
+
         parameter = param_name
         if not param_as_str:
             parameter = getattr(transfer_mech.parameters, param_name)
