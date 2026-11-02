@@ -24,8 +24,8 @@ def setify_expected_output(expected_output):
     return expected_output
 
 
-@pytest.fixture
-def three_node_linear_composition():
+@pytest.helpers.register
+def create_three_node_linear_composition():
     A = pnl.TransferMechanism(name='A')
     B = pnl.TransferMechanism(name='B')
     C = pnl.TransferMechanism(name='C')
@@ -50,7 +50,9 @@ def composition_from_string_pathways(pathways):
             except KeyError:
                 mech = pnl.ProcessingMechanism(name=m)
                 mechanisms[m] = mech
+
             p_as_mechs.append(mech)
+
         pathways_as_mechs.append(p_as_mechs)
 
     comp = pnl.Composition(pathways=pathways_as_mechs)
