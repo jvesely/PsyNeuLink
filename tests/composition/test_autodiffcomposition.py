@@ -182,124 +182,124 @@ class TestAutodiffConstructor:
         autodiff_comp.learn(inputs={input_mech: [[1.0]]},
                             targets={solo_mech: [[2.0]]})
 
-    @pytest.fixture
-    def copy_test_components(self):
+    def _get_copy_test_components(self, use_slice, proj_spec):
         import torch
-        def _get_copy_test_components(use_slice, proj_spec):
-            if use_slice is True:
-                # GRU uses sets of weights defined as slices within a single Parameter
-                torch_module = torch.nn.GRU(input_size=3, hidden_size=5, bias=False)
-                torch_parameter = list(torch_module.parameters())[0]
-                torch_tensor = torch_module.state_dict()['weight_ih_l0'][slice(0,5)]
-                autodiff = pnl.GRUComposition(input_size=3, hidden_size=5, bias=False)
-                proj_name = 'INPUT TO NEW WEIGHTS'
-                proj = autodiff.projections[proj_name]
-                proj_spec = proj if proj_spec == PROJ else proj_name
-                torch_param_specs = {#  name: proj_spec, torch_param, torch_module, slice, error_msg
-                    'tensor_slice':(proj_spec, torch_module.state_dict()['weight_ih_l0'], None, slice(0,5), None),
-                    'param_slice':(proj_spec, torch_parameter, None, slice(0,5), None),
-                    'module_with_param_name_and_slice':(proj_spec, 'weight_ih_l0', torch_module, slice(0,5), None),
-                    'shape_mismatch': (proj_spec, 'weight_hh_l0', torch_module,slice(0,5),
-                                       f"Shape of torch parameter (5, 5) in copy_torch_param_to_projection_matrix() "
-                                       f"does not match shape of matrix for 'INPUT TO NEW WEIGHTS' (3, 5)."),
-                    'tensor_with_bad_slice':(proj_spec,torch_module.state_dict()['weight_ih_l0'],None, 'SLICE OF PI',
-                                             "Specification of 'torch_slice' arg in "
-                                             "copy_torch_param_to_projection_matrix() (SLICE OF PI) must be a slice."),
-                    'param_with_bad_slice':(proj_spec, torch_parameter, None, 'SLICE OF PI',
-                                            f"Specification of 'torch_slice' arg in "
-                                            f"copy_torch_param_to_projection_matrix() (SLICE OF PI) must be a slice."),
-                    'module_with_param_name_and_bad_slice':(proj_spec, 'weight_hh_l0', torch_module, 'SLICE OF PI',
-                                                            f"Specification of 'torch_slice' arg in "
-                                                            f"copy_torch_param_to_projection_matrix() ('SLICE OF PI') "
-                                                            f"for Parameter 'weight_hh_l0' of GRU(3, 5, bias=False) "
-                                                            f"must be a slice."),
-                    'module_with_param_index_and_bad_slice':(proj_spec, 0, torch_module, 'SLICE OF PI',
-                                                             f"Specification of 'torch_slice' arg in "
-                                                             f"copy_torch_param_to_projection_matrix() "
-                                                             f"('SLICE OF PI') for Parameter 0 of "
-                                                             f"GRU(3, 5, bias=False) must be a slice.")
-                }
-            elif use_slice is False:
-                # No slices
-                torch_module = torch.nn.Linear(3, 5, bias=False)
-                torch_parameter = list(torch_module.parameters())[0]
-                torch_tensor = torch_module.state_dict()['weight']
-                autodiff = pnl.AutodiffComposition([pnl.ProcessingMechanism(input_shapes=3),
-                                                    pnl.MappingProjection(name='PROJECTION'),
-                                                    pnl.ProcessingMechanism(input_shapes=5)])
-                proj_name = 'PROJECTION'
-                proj = autodiff.projections[proj_name]
-                proj_spec = proj if proj_spec == PROJ else proj_name
+        if use_slice is True:
+            # GRU uses sets of weights defined as slices within a single Parameter
+            torch_module = torch.nn.GRU(input_size=3, hidden_size=5, bias=False)
+            torch_parameter = list(torch_module.parameters())[0]
+            torch_tensor = torch_module.state_dict()['weight_ih_l0'][slice(0,5)]
+            autodiff = pnl.GRUComposition(input_size=3, hidden_size=5, bias=False)
+            proj_name = 'INPUT TO NEW WEIGHTS'
+            proj = autodiff.projections[proj_name]
+            proj_spec = proj if proj_spec == PROJ else proj_name
+            torch_param_specs = {#  name: proj_spec, torch_param, torch_module, slice, error_msg
+                'tensor_slice':(proj_spec, torch_module.state_dict()['weight_ih_l0'], None, slice(0,5), None),
+                'param_slice':(proj_spec, torch_parameter, None, slice(0,5), None),
+                'module_with_param_name_and_slice':(proj_spec, 'weight_ih_l0', torch_module, slice(0,5), None),
+                'shape_mismatch': (proj_spec, 'weight_hh_l0', torch_module,slice(0,5),
+                                   f"Shape of torch parameter (5, 5) in copy_torch_param_to_projection_matrix() "
+                                   f"does not match shape of matrix for 'INPUT TO NEW WEIGHTS' (3, 5)."),
+                'tensor_with_bad_slice':(proj_spec,torch_module.state_dict()['weight_ih_l0'],None, 'SLICE OF PI',
+                                         "Specification of 'torch_slice' arg in "
+                                         "copy_torch_param_to_projection_matrix() (SLICE OF PI) must be a slice."),
+                'param_with_bad_slice':(proj_spec, torch_parameter, None, 'SLICE OF PI',
+                                        f"Specification of 'torch_slice' arg in "
+                                        f"copy_torch_param_to_projection_matrix() (SLICE OF PI) must be a slice."),
+                'module_with_param_name_and_bad_slice':(proj_spec, 'weight_hh_l0', torch_module, 'SLICE OF PI',
+                                                        f"Specification of 'torch_slice' arg in "
+                                                        f"copy_torch_param_to_projection_matrix() ('SLICE OF PI') "
+                                                        f"for Parameter 'weight_hh_l0' of GRU(3, 5, bias=False) "
+                                                        f"must be a slice."),
+                'module_with_param_index_and_bad_slice':(proj_spec, 0, torch_module, 'SLICE OF PI',
+                                                         f"Specification of 'torch_slice' arg in "
+                                                         f"copy_torch_param_to_projection_matrix() "
+                                                         f"('SLICE OF PI') for Parameter 0 of "
+                                                         f"GRU(3, 5, bias=False) must be a slice.")
+            }
 
-                torch_param_specs = {#  name: proj_spec, torch_param, torch_module, slice, error_msg
-                    'tensor': (proj_spec, torch_tensor, None, None, None),
-                    'param': (proj_spec, torch_parameter, None, None, None),
-                    'module_with_param_name': (proj_spec, 'weight', torch_module, None, None),
-                    'module_with_param_index': (proj_spec, 0, torch_module, None, None),
-                    'shape_mismatch': (proj_spec, torch.zeros(4), None, None,
-                                       f"Shape of torch parameter (1, 4) in copy_torch_param_to_projection_matrix() "
-                                       f"does not match shape of matrix for 'PROJECTION' (3, 5). [Note: torch biases, "
-                                       f"usually 1d, have already been converted to 2d to match "
-                                       f"PsyNeuLink BIAS Nodes Projections.]"),
-                    'bad_param_spec': (proj_spec, set(), None, None,
-                                       f"Specification of 'torch_param' arg in copy_torch_param_to_projection_matrix() "
-                                       f"(set()) must be a torch.nn.Parameter, torch.Tensor, str or int."),
-                    'module_in_param_spec': (proj_spec, torch_module, None, None,
-                                             f"Specification of 'torch_param' arg in "
-                                             f"copy_torch_param_to_projection_matrix() (Linear(in_features=3, "
-                                             f"out_features=5, bias=False)) is a Module, but must be a "
-                                             f"torch.nn.Parameter, torch.Tensor, str or int; if a Module is intended, "
-                                             f"use the 'torch_module' arg, and specify the Parameter name or index in "
-                                             f"the 'torch_param' arg."),
-                    'param_str_without_module_spec': (proj_spec, "'STRING'", None, None,
-                                                      f"Specifying of the 'torch_param' arg in "
-                                                      f"copy_torch_param_to_projection_matrix() with a "
-                                                      f"string or int ('STRING') requires the 'torch_module' arg "
-                                                      f"to be specified as well."),
-                    'param_int_without_module_spec': (proj_spec, 3, None, None,
-                                                      f"Specifying of the 'torch_param' arg in "
-                                                      f"copy_torch_param_to_projection_matrix() with a "
-                                                      f"string or int (3) requires the 'torch_module' arg "
-                                                      f"to be specified as well."),
-                    'param_none_spec': (proj_spec, None, "'I DON'T MATTER'", None,
-                                        f"The 'torch_param' arg in copy_torch_param_to_projection_matrix() (None) "
-                                        f"must be specified, using either a torch.nn.Parameter or torch.Tensor, or a "
-                                        f"str or int paired with specification of a torch.nn.Module in the "
-                                        f"'torch_module' arg."),
-                    'param_in_module_spec': (proj_spec, None, torch_parameter, None,
-                                             f"Specification of 'torch_module' arg in "
-                                             f"copy_torch_param_to_projection_matrix() is a torch Parameter or Tensor; "
-                                             f"this should be specified using the 'torch_para' arg."),
-                    'bad_module_spec': (proj_spec, 3, "'I BE BAD MODULE'", None,
-                                        f"Specification of 'torch_module' arg in "
-                                        f"copy_torch_param_to_projection_matrix() "
-                                        f"('I BE BAD MODULE') must be a torch.nn.Module."),
-                    'module_without_param_spec': (proj_spec, None, torch_module, None,
-                                                  f"The 'torch_param' arg in copy_torch_param_to_projection_matrix() "
-                                                  f"(None) must be specified, using either a torch.nn.Parameter or "
-                                                  f"torch.Tensor, or a str or int paired with specification of a "
-                                                  f"torch.nn.Module in the 'torch_module' arg."),
-                    'param_not_in_state_dict': (proj_spec, "I'M IN A BAD STATE", torch_module, None,
-                                                f"'I'M IN A BAD STATE' specified in 'torch_param' arg of "
-                                                f"copy_torch_param_to_projection_matrix() is not the name of a "
-                                                f"Parameter in the state_dict() for "
-                                                f"'Linear(in_features=3, out_features=5, bias=False)'."),
-                    'param_index_out_of_range': (proj_spec, 3, torch_module, None,
-                                                 f"The value (3) specified in the 'torch_param' arg of "
-                                                 f"copy_torch_param_to_projection_matrix() is not an index within "
-                                                 f"the range of the ParameterList specified for the Module "
-                                                 f"('Linear(in_features=3, out_features=5, bias=False)')."),
-                    'bad_projection_name': ("BAD NAME", torch_tensor, None, None,
-                                            f"'BAD NAME' in copy_torch_param_to_projection_matrix() "
-                                            f"is not the name of a Projection in 'autodiff_composition'."),
-                    'bad_projection': (MappingProjection(), torch_tensor, None, None,
-                                       f"'Deferred Init MappingProjection' in copy_torch_param_to_projection_matrix() "
-                                       f"is not a Projection in 'autodiff_composition'.")
-                }
-            else:
-                assert False, f"Invalid use_slice value: {use_slice}"
-            return torch_tensor, torch_param_specs, autodiff, proj
-        return _get_copy_test_components
+        elif use_slice is False:
+            # No slices
+            torch_module = torch.nn.Linear(3, 5, bias=False)
+            torch_parameter = list(torch_module.parameters())[0]
+            torch_tensor = torch_module.state_dict()['weight']
+            autodiff = pnl.AutodiffComposition([pnl.ProcessingMechanism(input_shapes=3),
+                                                pnl.MappingProjection(name='PROJECTION'),
+                                                pnl.ProcessingMechanism(input_shapes=5)])
+            proj_name = 'PROJECTION'
+            proj = autodiff.projections[proj_name]
+            proj_spec = proj if proj_spec == PROJ else proj_name
+
+            torch_param_specs = {#  name: proj_spec, torch_param, torch_module, slice, error_msg
+                'tensor': (proj_spec, torch_tensor, None, None, None),
+                'param': (proj_spec, torch_parameter, None, None, None),
+                'module_with_param_name': (proj_spec, 'weight', torch_module, None, None),
+                'module_with_param_index': (proj_spec, 0, torch_module, None, None),
+                'shape_mismatch': (proj_spec, torch.zeros(4), None, None,
+                                   f"Shape of torch parameter (1, 4) in copy_torch_param_to_projection_matrix() "
+                                   f"does not match shape of matrix for 'PROJECTION' (3, 5). [Note: torch biases, "
+                                   f"usually 1d, have already been converted to 2d to match "
+                                   f"PsyNeuLink BIAS Nodes Projections.]"),
+                'bad_param_spec': (proj_spec, set(), None, None,
+                                   f"Specification of 'torch_param' arg in copy_torch_param_to_projection_matrix() "
+                                   f"(set()) must be a torch.nn.Parameter, torch.Tensor, str or int."),
+                'module_in_param_spec': (proj_spec, torch_module, None, None,
+                                         f"Specification of 'torch_param' arg in "
+                                         f"copy_torch_param_to_projection_matrix() (Linear(in_features=3, "
+                                         f"out_features=5, bias=False)) is a Module, but must be a "
+                                         f"torch.nn.Parameter, torch.Tensor, str or int; if a Module is intended, "
+                                         f"use the 'torch_module' arg, and specify the Parameter name or index in "
+                                         f"the 'torch_param' arg."),
+                'param_str_without_module_spec': (proj_spec, "'STRING'", None, None,
+                                                  f"Specifying of the 'torch_param' arg in "
+                                                  f"copy_torch_param_to_projection_matrix() with a "
+                                                  f"string or int ('STRING') requires the 'torch_module' arg "
+                                                  f"to be specified as well."),
+                'param_int_without_module_spec': (proj_spec, 3, None, None,
+                                                  f"Specifying of the 'torch_param' arg in "
+                                                  f"copy_torch_param_to_projection_matrix() with a "
+                                                  f"string or int (3) requires the 'torch_module' arg "
+                                                  f"to be specified as well."),
+                'param_none_spec': (proj_spec, None, "'I DON'T MATTER'", None,
+                                    f"The 'torch_param' arg in copy_torch_param_to_projection_matrix() (None) "
+                                    f"must be specified, using either a torch.nn.Parameter or torch.Tensor, or a "
+                                    f"str or int paired with specification of a torch.nn.Module in the "
+                                    f"'torch_module' arg."),
+                'param_in_module_spec': (proj_spec, None, torch_parameter, None,
+                                         f"Specification of 'torch_module' arg in "
+                                         f"copy_torch_param_to_projection_matrix() is a torch Parameter or Tensor; "
+                                         f"this should be specified using the 'torch_para' arg."),
+                'bad_module_spec': (proj_spec, 3, "'I BE BAD MODULE'", None,
+                                    f"Specification of 'torch_module' arg in "
+                                    f"copy_torch_param_to_projection_matrix() "
+                                    f"('I BE BAD MODULE') must be a torch.nn.Module."),
+                'module_without_param_spec': (proj_spec, None, torch_module, None,
+                                              f"The 'torch_param' arg in copy_torch_param_to_projection_matrix() "
+                                              f"(None) must be specified, using either a torch.nn.Parameter or "
+                                              f"torch.Tensor, or a str or int paired with specification of a "
+                                              f"torch.nn.Module in the 'torch_module' arg."),
+                'param_not_in_state_dict': (proj_spec, "I'M IN A BAD STATE", torch_module, None,
+                                            f"'I'M IN A BAD STATE' specified in 'torch_param' arg of "
+                                            f"copy_torch_param_to_projection_matrix() is not the name of a "
+                                            f"Parameter in the state_dict() for "
+                                            f"'Linear(in_features=3, out_features=5, bias=False)'."),
+                'param_index_out_of_range': (proj_spec, 3, torch_module, None,
+                                             f"The value (3) specified in the 'torch_param' arg of "
+                                             f"copy_torch_param_to_projection_matrix() is not an index within "
+                                             f"the range of the ParameterList specified for the Module "
+                                             f"('Linear(in_features=3, out_features=5, bias=False)')."),
+                'bad_projection_name': ("BAD NAME", torch_tensor, None, None,
+                                        f"'BAD NAME' in copy_torch_param_to_projection_matrix() "
+                                        f"is not the name of a Projection in 'autodiff_composition'."),
+                'bad_projection': (MappingProjection(), torch_tensor, None, None,
+                                   f"'Deferred Init MappingProjection' in copy_torch_param_to_projection_matrix() "
+                                   f"is not a Projection in 'autodiff_composition'.")
+            }
+
+        else:
+            assert False, f"Invalid use_slice value: {use_slice}"
+
+        return torch_tensor, torch_param_specs, autodiff, proj
 
     # Test cases for copy_torch_param_to_projection_matrix()
     #                              (test, use_slice, proj_spec)
@@ -348,9 +348,8 @@ class TestAutodiffConstructor:
                                                             use_slice,
                                                             validate,
                                                             proj_spec,
-                                                            method,
-                                                            copy_test_components):
-        torch_tensor, torch_param_specs, autodiff, proj = copy_test_components(use_slice, proj_spec)
+                                                            method):
+        torch_tensor, torch_param_specs, autodiff, proj = self._get_copy_test_components(use_slice, proj_spec)
         proj_spec, torch_param, torch_module, torch_slice, error_msg = torch_param_specs[test_condition]
 
         if method == 'torch_to_pnl':
@@ -3295,8 +3294,7 @@ class TestNestedNoLearning:
 class TestNestedLearning:
     """Test learning with nested AutodiffCompositions benchmarked against unnested versions using Composition"""
 
-    @pytest.fixture
-    def nodes_for_testing_nested_comps(self):
+    def nodes_for_testing_nested_comps(self, num_input_nodes, num_hidden_nodes, num_output_nodes):
         input_nodes = [pnl.ProcessingMechanism(name='input_1', input_shapes=2),
                        pnl.ProcessingMechanism(name='input_2', input_shapes=3),
                        pnl.ProcessingMechanism(name='input_3', input_shapes=3)]
@@ -3306,35 +3304,29 @@ class TestNestedLearning:
                         pnl.ProcessingMechanism(name='hidden_4', input_shapes=6)]
         output_nodes = [pnl.ProcessingMechanism(name='output_1', input_shapes=3),
                         pnl.ProcessingMechanism(name='output_2', input_shapes=5)]
-        def _get_nodes(num_input_nodes, num_hidden_nodes, num_output_nodes):
-            return (input_nodes[0:num_input_nodes],
-                    hidden_nodes[0:num_hidden_nodes],
-                    output_nodes[0:num_output_nodes])
-        return _get_nodes
 
-    @pytest.fixture
-    def execute_learning(self):
-        def _execute_learning(comp_type, execution_mode, pathways, inputs, learning_rate=.01, num_trials=5):
+        return (input_nodes[0:num_input_nodes], hidden_nodes[0:num_hidden_nodes], output_nodes[0:num_output_nodes])
 
-            if comp_type == 'composition':
-                comp = Composition(name='comp')
-                for p in pathways:
-                    comp.add_backpropagation_learning_pathway(p)
+    def execute_learning(self, comp_type, execution_mode, pathways, inputs, learning_rate=.01, num_trials=5):
 
-            elif comp_type == 'autodiff':
-                comp = AutodiffComposition(pathways, name='autodiff_comp')
+        if comp_type == 'composition':
+            comp = Composition(name='comp')
+            for p in pathways:
+                comp.add_backpropagation_learning_pathway(p)
 
-            else:
-                assert False, f'Invalid comp_type: {comp_type}'
+        elif comp_type == 'autodiff':
+            comp = AutodiffComposition(pathways, name='autodiff_comp')
 
-            targets = {target: target.value for target in comp.target_input_mechanisms}
-            comp.learn(inputs=inputs,
-                       targets=targets,
-                       learning_rate = learning_rate,
-                       num_trials=num_trials,
-                       execution_mode=execution_mode)
-            return comp.results
-        return _execute_learning
+        else:
+            assert False, f'Invalid comp_type: {comp_type}'
+
+        targets = {target: target.value for target in comp.target_input_mechanisms}
+        comp.learn(inputs=inputs,
+                   targets=targets,
+                   learning_rate = learning_rate,
+                   num_trials=num_trials,
+                   execution_mode=execution_mode)
+        return comp.results
 
     def test_warning_for_no_learning_in_solo_nested_comp(self):
         warning = "'autodiff_composition-1' contains no Projections, so it has no params for Pytorch to learn."
@@ -3343,84 +3335,78 @@ class TestNestedLearning:
             outer = pnl.AutodiffComposition([inner])
             outer._build_pytorch_representation()
 
-    def test_1_nested_hidden(self, nodes_for_testing_nested_comps, execute_learning):
-        nodes = nodes_for_testing_nested_comps(1, 1, 1)
-        input_nodes, hidden_nodes, output_nodes = nodes
+    def test_1_nested_hidden(self):
+        input_nodes, hidden_nodes, output_nodes = self.nodes_for_testing_nested_comps(1, 1, 1)
 
         nested_hidden_1 = AutodiffComposition(name='nested', nodes=[hidden_nodes[0]])
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        autodiff_results = execute_learning(comp_type='autodiff',
-                                            execution_mode=pnl.ExecutionMode.PyTorch,
-                                            pathways=[input_nodes[0], nested_hidden_1, output_nodes[0]],
-                                            inputs=inputs)
+        autodiff_results = self.execute_learning(comp_type='autodiff',
+                                                 execution_mode=pnl.ExecutionMode.PyTorch,
+                                                 pathways=[input_nodes[0], nested_hidden_1, output_nodes[0]],
+                                                 inputs=inputs)
 
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        comp_results = execute_learning(comp_type='composition',
-                                        execution_mode=pnl.ExecutionMode.Python,
-                                        pathways=[[input_nodes[0],hidden_nodes[0], output_nodes[0]]],
-                                        inputs=inputs)
+        comp_results = self.execute_learning(comp_type='composition',
+                                             execution_mode=pnl.ExecutionMode.Python,
+                                             pathways=[[input_nodes[0],hidden_nodes[0], output_nodes[0]]],
+                                             inputs=inputs)
 
         np.testing.assert_allclose(comp_results, autodiff_results,  rtol=1e-8, atol=1e-8)
 
-    def test_2_sequential_nested_hidden(self, nodes_for_testing_nested_comps, execute_learning):
-        nodes = nodes_for_testing_nested_comps(1, 2, 1)
-        input_nodes, hidden_nodes, output_nodes = nodes
+    def test_2_sequential_nested_hidden(self):
+        input_nodes, hidden_nodes, output_nodes = self.nodes_for_testing_nested_comps(1, 2, 1)
         nested_hiddens = AutodiffComposition(name='nested', pathways=[hidden_nodes[0], hidden_nodes[1]])
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        autodiff_results = execute_learning(comp_type='autodiff',
-                                            execution_mode=pnl.ExecutionMode.PyTorch,
-                                            pathways=[input_nodes[0], nested_hiddens, output_nodes[0]],
-                                            inputs=inputs)
+        autodiff_results = self.execute_learning(comp_type='autodiff',
+                                                 execution_mode=pnl.ExecutionMode.PyTorch,
+                                                 pathways=[input_nodes[0], nested_hiddens, output_nodes[0]],
+                                                 inputs=inputs)
 
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        comp_results = execute_learning(comp_type='composition',
-                                        execution_mode=pnl.ExecutionMode.Python,
-                                        pathways=[[input_nodes[0],
-                                                   hidden_nodes[0],
-                                                   hidden_nodes[1],
-                                                   output_nodes[0]]],
-                                        inputs=inputs)
+        comp_results = self.execute_learning(comp_type='composition',
+                                             execution_mode=pnl.ExecutionMode.Python,
+                                             pathways=[[input_nodes[0],
+                                                        hidden_nodes[0],
+                                                        hidden_nodes[1],
+                                                        output_nodes[0]]],
+                                             inputs=inputs)
 
         np.testing.assert_allclose(comp_results, autodiff_results)
 
-    def test_2_level_nested(self, nodes_for_testing_nested_comps, execute_learning):
+    def test_2_level_nested(self):
+        input_nodes, hidden_nodes, output_nodes = self.nodes_for_testing_nested_comps(1, 4, 1)
 
-        nodes = nodes_for_testing_nested_comps(1, 4, 1)
-        input_nodes, hidden_nodes, output_nodes = nodes
-
-        nested_b = AutodiffComposition(name='nested_b', pathways=[hidden_nodes[1],
-                                                                  hidden_nodes[2]])
+        nested_b = AutodiffComposition(name='nested_b', pathways=[hidden_nodes[1], hidden_nodes[2]])
         nested_a = AutodiffComposition(name='nested_a', pathways=[hidden_nodes[0],
                                                                   nested_b,
                                                                   hidden_nodes[3]])
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        autodiff_results = execute_learning(comp_type='autodiff',
-                                            execution_mode=pnl.ExecutionMode.PyTorch,
-                                            pathways=[input_nodes[0], nested_a, output_nodes[0]],
-                                            inputs=inputs)
+        autodiff_results = self.execute_learning(comp_type='autodiff',
+                                                 execution_mode=pnl.ExecutionMode.PyTorch,
+                                                 pathways=[input_nodes[0], nested_a, output_nodes[0]],
+                                                 inputs=inputs)
 
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        comp_results = execute_learning(comp_type='composition',
-                                        execution_mode=pnl.ExecutionMode.Python,
-                                        pathways=[[input_nodes[0],
-                                                   hidden_nodes[0],
-                                                   hidden_nodes[1],
-                                                   hidden_nodes[2],
-                                                   hidden_nodes[3],
-                                                   output_nodes[0]]],
-                                        inputs=inputs)
+        comp_results = self.execute_learning(comp_type='composition',
+                                             execution_mode=pnl.ExecutionMode.Python,
+                                             pathways=[[input_nodes[0],
+                                                        hidden_nodes[0],
+                                                        hidden_nodes[1],
+                                                        hidden_nodes[2],
+                                                        hidden_nodes[3],
+                                                        output_nodes[0]]],
+                                             inputs=inputs)
 
         np.testing.assert_allclose(comp_results, autodiff_results)
 
-    def test_1_input_to_1_nested_hidden_with_2_output_ports(self, nodes_for_testing_nested_comps, execute_learning):
+    def test_1_input_to_1_nested_hidden_with_2_output_ports(self):
         #                           / node
         # node -> [node -> node -< ]
         #                           \ node
         #
         # Note: inputs provided for only one of the INPUT Nodes; other uses default inputs
 
-        nodes = nodes_for_testing_nested_comps(1, 1, 2)
-        input_nodes, hidden_nodes, output_nodes = nodes
+        input_nodes, hidden_nodes, output_nodes = self.nodes_for_testing_nested_comps(1, 1, 2)
         hidden_with_two_output_ports = pnl.ProcessingMechanism(input_shapes=3, output_ports=['FIRST', 'SECOND'])
 
         nested = AutodiffComposition([hidden_nodes[0], hidden_with_two_output_ports], name='nested')
@@ -3433,10 +3419,10 @@ class TestNestedLearning:
                      MappingProjection(hidden_with_two_output_ports.output_ports[1], output_nodes[1]),
                      output_nodes[1]]
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        autodiff_results = execute_learning(comp_type='autodiff',
-                                            execution_mode=pnl.ExecutionMode.PyTorch,
-                                            pathways=[pathway_a, pathway_b],
-                                            inputs=inputs)
+        autodiff_results = self.execute_learning(comp_type='autodiff',
+                                                 execution_mode=pnl.ExecutionMode.PyTorch,
+                                                 pathways=[pathway_a, pathway_b],
+                                                 inputs=inputs)
 
         # Note:
         #  the MappingProjections are not needed, as they were actually implemented in the autodiff version
@@ -3444,34 +3430,33 @@ class TestNestedLearning:
         pathway_a = [input_nodes[0], hidden_nodes[0], hidden_with_two_output_ports, output_nodes[0]]
         pathway_b = [input_nodes[0], hidden_nodes[0], hidden_with_two_output_ports, output_nodes[1]]
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        comp_results = execute_learning(comp_type='composition',
-                                        execution_mode=pnl.ExecutionMode.Python,
-                                        pathways=[pathway_a, pathway_b],
-                                        inputs=inputs)
+        comp_results = self.execute_learning(comp_type='composition',
+                                             execution_mode=pnl.ExecutionMode.Python,
+                                             pathways=[pathway_a, pathway_b],
+                                             inputs=inputs)
 
         for i in range(len(autodiff_results)):
             for j in range(len(autodiff_results[i])):
                 np.testing.assert_allclose(comp_results[i][j], autodiff_results[i][j])
 
-    def test_1_input_to_1_nested_hidden_one_to_many_2_outputs(self, nodes_for_testing_nested_comps, execute_learning):
+    def test_1_input_to_1_nested_hidden_one_to_many_2_outputs(self):
         #                    / node
         # node -> [node -< ]
         #                    \ node
         #
         # Note: inputs provided for only one of the INPUT Nodes; other uses default inputs
 
-        nodes = nodes_for_testing_nested_comps(1, 1, 2)
-        input_nodes, hidden_nodes, output_nodes = nodes
+        input_nodes, hidden_nodes, output_nodes = self.nodes_for_testing_nested_comps(1, 1, 2)
 
         nested = AutodiffComposition([hidden_nodes[0]],name='nested')
         pathway_a = [input_nodes[0], nested, output_nodes[0]]
         pathway_b = [input_nodes[0], nested, output_nodes[1]]
 
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        autodiff_results = execute_learning(comp_type='autodiff',
-                                            execution_mode=pnl.ExecutionMode.PyTorch,
-                                            pathways=[pathway_a, pathway_b],
-                                            inputs=inputs)
+        autodiff_results = self.execute_learning(comp_type='autodiff',
+                                                 execution_mode=pnl.ExecutionMode.PyTorch,
+                                                 pathways=[pathway_a, pathway_b],
+                                                 inputs=inputs)
 
         # Note:
         #  the MappingProjections are not needed, as they were actualy implemented in the autodiff version
@@ -3480,24 +3465,23 @@ class TestNestedLearning:
         pathway_b = [input_nodes[0], hidden_nodes[0], output_nodes[1]]
 
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        comp_results = execute_learning(comp_type='composition',
-                                        execution_mode=pnl.ExecutionMode.Python,
-                                        pathways=[pathway_a, pathway_b],
-                                        inputs=inputs)
+        comp_results = self.execute_learning(comp_type='composition',
+                                             execution_mode=pnl.ExecutionMode.Python,
+                                             pathways=[pathway_a, pathway_b],
+                                             inputs=inputs)
 
         for i in range(len(autodiff_results)):
             for j in range(len(autodiff_results[i])):
                 np.testing.assert_allclose(comp_results[i][j], autodiff_results[i][j])
 
-    def test_1_input_to_2_nested_hidden_to_2_outputs(self, nodes_for_testing_nested_comps, execute_learning):
+    def test_1_input_to_2_nested_hidden_to_2_outputs(self):
         #         [ / node ] -> node
         # node -< |        |
         #         [ \ node ] -> node
         #
         # Note: inputs provided for only one of the INPUT Nodes; other uses default inputs
 
-        nodes = nodes_for_testing_nested_comps(1, 2, 2)
-        input_nodes, hidden_nodes, output_nodes = nodes
+        input_nodes, hidden_nodes, output_nodes = self.nodes_for_testing_nested_comps(1, 2, 2)
 
         nested = AutodiffComposition(nodes=[hidden_nodes[0], hidden_nodes[1]], name='nested')
         pathway_a = [input_nodes[0],
@@ -3511,10 +3495,10 @@ class TestNestedLearning:
                      MappingProjection(hidden_nodes[1],output_nodes[1]),
                      output_nodes[1]]
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        autodiff_results = execute_learning(comp_type='autodiff',
-                                            execution_mode=pnl.ExecutionMode.PyTorch,
-                                            pathways=[pathway_a, pathway_b],
-                                            inputs=inputs)
+        autodiff_results = self.execute_learning(comp_type='autodiff',
+                                                 execution_mode=pnl.ExecutionMode.PyTorch,
+                                                 pathways=[pathway_a, pathway_b],
+                                                 inputs=inputs)
 
         # Note:
         #  the MappingProjections are not needed, as they were actualy implemented in the autodiff version
@@ -3522,26 +3506,25 @@ class TestNestedLearning:
         pathway_a = [input_nodes[0], hidden_nodes[0], output_nodes[0]]
         pathway_b = [input_nodes[0], hidden_nodes[1], output_nodes[1]]
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        comp_results = execute_learning(comp_type='composition',
-                                        execution_mode=pnl.ExecutionMode.Python,
-                                        pathways=[pathway_a, pathway_b],
-                                        inputs=inputs)
+        comp_results = self.execute_learning(comp_type='composition',
+                                             execution_mode=pnl.ExecutionMode.Python,
+                                             pathways=[pathway_a, pathway_b],
+                                             inputs=inputs)
 
         for i in range(len(autodiff_results)):
             for j in range(len(autodiff_results[i])):
                 np.testing.assert_allclose(comp_results[i][j], autodiff_results[i][j])
 
-    def test_2_inputs_to_2_input_ports_of_single_nested_hidden(self, nodes_for_testing_nested_comps, execute_learning):
+    def test_2_inputs_to_2_input_ports_of_single_nested_hidden(self):
         # node \
         #        [ >  node ] -> node
         # node /
         #
         # Note: inputs provided for only one of the INPUT Nodes; other uses default inputs
 
-        nodes = nodes_for_testing_nested_comps(2, 0, 1)
-        input_nodes, hidden_nodes, output_nodes = nodes
-        hidden_with_2_inputs = pnl.ProcessingMechanism(name='hidden_x', input_shapes=(3, 3), function=pnl.LinearCombination)
+        input_nodes, hidden_nodes, output_nodes = self.nodes_for_testing_nested_comps(2, 0, 1)
 
+        hidden_with_2_inputs = pnl.ProcessingMechanism(name='hidden_x', input_shapes=(3, 3), function=pnl.LinearCombination)
 
         nested = AutodiffComposition([hidden_with_2_inputs],name='nested')
         pathway_a = [input_nodes[0],
@@ -3553,10 +3536,10 @@ class TestNestedLearning:
                      nested,
                      output_nodes[0]]
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        autodiff_results = execute_learning(comp_type='autodiff',
-                                            execution_mode=pnl.ExecutionMode.PyTorch,
-                                            pathways=[pathway_a, pathway_b],
-                                            inputs=inputs)
+        autodiff_results = self.execute_learning(comp_type='autodiff',
+                                                 execution_mode=pnl.ExecutionMode.PyTorch,
+                                                 pathways=[pathway_a, pathway_b],
+                                                 inputs=inputs)
 
         # Note:
         #  the MappingProjections are not needed, as they were actualy implemented in the autodiff version
@@ -3570,32 +3553,32 @@ class TestNestedLearning:
                      hidden_with_2_inputs,
                      output_nodes[0]]
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        comp_results = execute_learning(comp_type='composition',
-                                        execution_mode=pnl.ExecutionMode.Python,
-                                        pathways=[pathway_a, pathway_b],
-                                        inputs=inputs)
+        comp_results = self.execute_learning(comp_type='composition',
+                                             execution_mode=pnl.ExecutionMode.Python,
+                                             pathways=[pathway_a, pathway_b],
+                                             inputs=inputs)
 
         np.testing.assert_allclose(comp_results, autodiff_results)
 
-    def test_2_inputs_one_to_one_to_2_nested_hidden_to_1_hidden(self, nodes_for_testing_nested_comps,execute_learning):
+    def test_2_inputs_one_to_one_to_2_nested_hidden_to_1_hidden(self):
         # node \
         #        [ >  node ] -> node
         # node /
         #
         # Note: inputs provided for only one of the INPUT Nodes; other uses default inputs
 
-        nodes = nodes_for_testing_nested_comps(2, 3, 1)
-        input_nodes, hidden_nodes, output_nodes = nodes
+        input_nodes, hidden_nodes, output_nodes = self.nodes_for_testing_nested_comps(2, 3, 1)
+
         nested = AutodiffComposition([[hidden_nodes[0], hidden_nodes[2]],
                                       [hidden_nodes[1], hidden_nodes[2]]],
                                      name='nested')
         pathway_a = [input_nodes[0], MappingProjection(input_nodes[0], hidden_nodes[0]), nested, output_nodes[0]]
         pathway_b = [input_nodes[1], MappingProjection(input_nodes[1], hidden_nodes[1]), nested, output_nodes[0]]
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        autodiff_results = execute_learning(comp_type='autodiff',
-                                            execution_mode=pnl.ExecutionMode.PyTorch,
-                                            pathways=[pathway_a, pathway_b],
-                                            inputs=inputs)
+        autodiff_results = self.execute_learning(comp_type='autodiff',
+                                                 execution_mode=pnl.ExecutionMode.PyTorch,
+                                                 pathways=[pathway_a, pathway_b],
+                                                 inputs=inputs)
 
         # Note:
         #  the MappingProjections are not needed, as they were actualy implemented in the autodiff version
@@ -3603,22 +3586,21 @@ class TestNestedLearning:
         pathway_a = [input_nodes[0], hidden_nodes[0], hidden_nodes[2], output_nodes[0]]
         pathway_b = [input_nodes[1], hidden_nodes[1], hidden_nodes[2], output_nodes[0]]
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        comp_results = execute_learning(comp_type='composition',
-                                        execution_mode=pnl.ExecutionMode.Python,
-                                        pathways=[pathway_a, pathway_b],
-                                        inputs=inputs)
+        comp_results = self.execute_learning(comp_type='composition',
+                                             execution_mode=pnl.ExecutionMode.Python,
+                                             pathways=[pathway_a, pathway_b],
+                                             inputs=inputs)
 
         np.testing.assert_allclose(comp_results, autodiff_results)
 
-    def test_2_inputs_all_to_all_to_2_nested_hidden_to_1_hidden(self, nodes_for_testing_nested_comps, execute_learning):
+    def test_2_inputs_all_to_all_to_2_nested_hidden_to_1_hidden(self):
         # node \ [   / node \        ]
         #        | X          > node | -> node
         # node / [   \ node /        ]
         #
         # Note: inputs provided for only one of the INPUT Nodes; other uses default inputs
 
-        nodes = nodes_for_testing_nested_comps(2, 3, 1)
-        input_nodes, hidden_nodes, output_nodes = nodes
+        input_nodes, hidden_nodes, output_nodes = self.nodes_for_testing_nested_comps(2, 3, 1)
 
         nested = AutodiffComposition([[hidden_nodes[0], hidden_nodes[2]],
                                       [hidden_nodes[1], hidden_nodes[2]]],
@@ -3626,10 +3608,10 @@ class TestNestedLearning:
         pathway_a = [input_nodes[0], nested, output_nodes[0]]
         pathway_b = [input_nodes[1], nested, output_nodes[0]]
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        autodiff_results = execute_learning(comp_type='autodiff',
-                                            execution_mode=pnl.ExecutionMode.PyTorch,
-                                            pathways=[pathway_a, pathway_b],
-                                            inputs=inputs)
+        autodiff_results = self.execute_learning(comp_type='autodiff',
+                                                 execution_mode=pnl.ExecutionMode.PyTorch,
+                                                 pathways=[pathway_a, pathway_b],
+                                                 inputs=inputs)
 
         # Note:
         #  the MappingProjections are not needed, as they were actualy implemented in the autodiff version
@@ -3639,22 +3621,21 @@ class TestNestedLearning:
         pathway_c = [input_nodes[1], hidden_nodes[0], hidden_nodes[2], output_nodes[0]]
         pathway_d = [input_nodes[1], hidden_nodes[1], hidden_nodes[2], output_nodes[0]]
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        comp_results = execute_learning(comp_type='composition',
-                                        execution_mode=pnl.ExecutionMode.Python,
-                                        pathways=[pathway_a, pathway_b, pathway_c, pathway_d],
-                                        inputs=inputs)
+        comp_results = self.execute_learning(comp_type='composition',
+                                             execution_mode=pnl.ExecutionMode.Python,
+                                             pathways=[pathway_a, pathway_b, pathway_c, pathway_d],
+                                             inputs=inputs)
 
         np.testing.assert_allclose(comp_results, autodiff_results)
 
-    def test_2_inputs_to_2_parallel_nested_and_output_pathways(self, nodes_for_testing_nested_comps, execute_learning):
+    def test_2_inputs_to_2_parallel_nested_and_output_pathways(self):
         # node - [ -> node ] -> node
         #        |         |
         # node - [ -> node ] -> node
         #
         # Note: inputs provided for only one of the INPUT Nodes; other uses default inputs
 
-        nodes = nodes_for_testing_nested_comps(2, 2, 2)
-        input_nodes, hidden_nodes, output_nodes = nodes
+        input_nodes, hidden_nodes, output_nodes = self.nodes_for_testing_nested_comps(2, 2, 2)
 
         nested = AutodiffComposition(nodes=[hidden_nodes[0], hidden_nodes[1]], name='nested')
         pathway_a = [input_nodes[0],
@@ -3668,10 +3649,10 @@ class TestNestedLearning:
                      MappingProjection(hidden_nodes[1], output_nodes[1]),
                      output_nodes[1]]
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        autodiff_results = execute_learning(comp_type='autodiff',
-                                            execution_mode=pnl.ExecutionMode.PyTorch,
-                                            pathways=[pathway_a, pathway_b],
-                                            inputs=inputs)
+        autodiff_results = self.execute_learning(comp_type='autodiff',
+                                                 execution_mode=pnl.ExecutionMode.PyTorch,
+                                                 pathways=[pathway_a, pathway_b],
+                                                 inputs=inputs)
 
         # Note:
         #  the MappingProjections are not needed, as they were actualy implemented in the autodiff version
@@ -3679,45 +3660,41 @@ class TestNestedLearning:
         pathway_a = [input_nodes[0], hidden_nodes[0], output_nodes[0]]
         pathway_b = [input_nodes[1], hidden_nodes[1], output_nodes[1]]
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        comp_results = execute_learning(comp_type='composition',
-                                        execution_mode=pnl.ExecutionMode.Python,
-                                        pathways=[pathway_a, pathway_b],
-                                        inputs=inputs)
+        comp_results = self.execute_learning(comp_type='composition',
+                                             execution_mode=pnl.ExecutionMode.Python,
+                                             pathways=[pathway_a, pathway_b],
+                                             inputs=inputs)
 
         for i in range(len(autodiff_results)):
             for j in range(len(autodiff_results[i])):
                 np.testing.assert_allclose(comp_results[i][j], autodiff_results[i][j])
 
-    def test_direct_input_to_nested(self, nodes_for_testing_nested_comps, execute_learning):
+    def test_direct_input_to_nested(self):
         # - [ -> node -> node ] -> node
 
-        nodes = nodes_for_testing_nested_comps(1, 1, 1)
-        input_nodes, hidden_nodes, output_nodes = nodes
+        input_nodes, hidden_nodes, output_nodes = self.nodes_for_testing_nested_comps(1, 1, 1)
 
         nested = AutodiffComposition([input_nodes[0], hidden_nodes[0]],name='nested')
         auto_diff_inputs = {nested:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        autodiff_results = execute_learning(comp_type='autodiff',
-                                            execution_mode=pnl.ExecutionMode.PyTorch,
-                                            pathways=[nested, output_nodes[0]],
-                                            inputs=auto_diff_inputs)
+        autodiff_results = self.execute_learning(comp_type='autodiff',
+                                                 execution_mode=pnl.ExecutionMode.PyTorch,
+                                                 pathways=[nested, output_nodes[0]],
+                                                 inputs=auto_diff_inputs)
 
         comp_inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        comp_results = execute_learning(comp_type='composition',
-                                        execution_mode=pnl.ExecutionMode.Python,
-                                        pathways=[[input_nodes[0],hidden_nodes[0], output_nodes[0]]],
-                                        inputs=comp_inputs)
+        comp_results = self.execute_learning(comp_type='composition',
+                                             execution_mode=pnl.ExecutionMode.Python,
+                                             pathways=[[input_nodes[0],hidden_nodes[0], output_nodes[0]]],
+                                             inputs=comp_inputs)
 
         np.testing.assert_allclose(comp_results, autodiff_results)
 
-    def test_asymmetric_inputs_to_nested_nodes_one_direct_one_via_node_in_outer_comp(self,
-                                                                                     nodes_for_testing_nested_comps,
-                                                                                     execute_learning):
+    def test_asymmetric_inputs_to_nested_nodes_one_direct_one_via_node_in_outer_comp(self):
         # node - [ -> node ] -> node
         #        |         |
         #      - [ -> node ] -> node
 
-        nodes = nodes_for_testing_nested_comps(1, 2, 2)
-        input_nodes, hidden_nodes, output_nodes = nodes
+        input_nodes, hidden_nodes, output_nodes = self.nodes_for_testing_nested_comps(1, 2, 2)
 
         nested = AutodiffComposition(nodes=[hidden_nodes[0],hidden_nodes[1]],name='nested')
         indirect = [input_nodes[0],
@@ -3730,23 +3707,23 @@ class TestNestedLearning:
                   output_nodes[1]]
 
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        autodiff_results = execute_learning(comp_type='autodiff',
-                                            execution_mode=pnl.ExecutionMode.PyTorch,
-                                            pathways=[indirect, direct],
-                                            inputs=inputs)
+        autodiff_results = self.execute_learning(comp_type='autodiff',
+                                                 execution_mode=pnl.ExecutionMode.PyTorch,
+                                                 pathways=[indirect, direct],
+                                                 inputs=inputs)
 
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        comp_results = execute_learning(comp_type='composition',
-                                        execution_mode=pnl.ExecutionMode.Python,
-                                        pathways=[[input_nodes[0],hidden_nodes[0], output_nodes[0]],
-                                                  [hidden_nodes[1], output_nodes[1]]],
-                                        inputs=inputs)
+        comp_results = self.execute_learning(comp_type='composition',
+                                             execution_mode=pnl.ExecutionMode.Python,
+                                             pathways=[[input_nodes[0],hidden_nodes[0], output_nodes[0]],
+                                                       [hidden_nodes[1], output_nodes[1]]],
+                                             inputs=inputs)
 
         for i in range(len(autodiff_results)):
             for j in range(len(autodiff_results[i])):
                 np.testing.assert_allclose(comp_results[i][j], autodiff_results[i][j])
 
-    def test_inputs_to_multiple_input_ports_and_INPUT_nodes(self, nodes_for_testing_nested_comps, execute_learning):
+    def test_inputs_to_multiple_input_ports_and_INPUT_nodes(self):
         """Test asymmetric inputs to INPUT Nodes of a nested Composition
         One direct input to one input_port of an INPUT Node of nested Composition,
         One indirect (via Node in outer Composition) input to the other input_port of the nested INPUT Node
@@ -3756,8 +3733,8 @@ class TestNestedLearning:
         #        | /       |
         #    - < [ -> node ] -> node
 
-        nodes = nodes_for_testing_nested_comps(2, 1, 2)
-        input_nodes, hidden_nodes, output_nodes = nodes
+        input_nodes, hidden_nodes, output_nodes = self.nodes_for_testing_nested_comps(2, 1, 2)
+
         hidden_node_x = pnl.ComparatorMechanism(name='hidden_node_x')
 
         nested = AutodiffComposition(nodes=[hidden_nodes[0],hidden_node_x],name='nested')
@@ -3774,35 +3751,34 @@ class TestNestedLearning:
 
         inputs = {input_nodes[0]: np.array([[0, 0], [0, 1], [1, 0], [1, 1]]),
                   hidden_node_x.input_ports[0]: [[1], [1], [0], [0]]}
-        autodiff_results = execute_learning(comp_type='autodiff',
-                                            execution_mode=pnl.ExecutionMode.PyTorch,
-                                            pathways=[indirect, direct_1, direct_2],
-                                            inputs=inputs)
+        autodiff_results = self.execute_learning(comp_type='autodiff',
+                                                 execution_mode=pnl.ExecutionMode.PyTorch,
+                                                 pathways=[indirect, direct_1, direct_2],
+                                                 inputs=inputs)
 
         inputs = {input_nodes[0]: np.array([[0, 0], [0, 1], [1, 0], [1, 1]]),
                   hidden_node_x.input_ports[0]: [[1], [1], [0], [0]]}
-        comp_results = execute_learning(comp_type='composition',
-                                        execution_mode=pnl.ExecutionMode.Python,
-                                        pathways=[[hidden_nodes[0], output_nodes[0]],
-                                                  [input_nodes[0],
-                                                   # MappingProjection(input_nodes[0], hidden_node_x.input_ports[1]),
-                                                   (hidden_node_x, pnl.NodeRole.INPUT),
-                                                   output_nodes[1]]],
-                                        inputs=inputs)
+        comp_results = self.execute_learning(comp_type='composition',
+                                             execution_mode=pnl.ExecutionMode.Python,
+                                             pathways=[[hidden_nodes[0], output_nodes[0]],
+                                                       [input_nodes[0],
+                                                       # MappingProjection(input_nodes[0], hidden_node_x.input_ports[1]),
+                                                       (hidden_node_x, pnl.NodeRole.INPUT),
+                                                       output_nodes[1]]],
+                                             inputs=inputs)
 
         for i in range(len(autodiff_results)):
             for j in range(len(autodiff_results[i])):
                 np.testing.assert_allclose(comp_results[i][j], autodiff_results[i][j])
 
-    # def test_output_from_multiple_output_ports_and_OUTPUT_nodes(self, nodes_for_testing_nested_comps, execute_learning):
+    # def test_output_from_multiple_output_ports_and_OUTPUT_nodes(self):
     #     #            [ / hidden_1  ] -> output_2
     #     # input_1 -< |             | /
     #     #            [ \ hidden 2d ] -> output_1
     #     # FIX:  1) No input assigned to hidden_2d.input_port[1]
     #     #       2) Output from hidden_2d.output_port[0] erroneously projects to output_nodes[1]
     #     #          in addition to correctly projecting to output_nodes[0]
-    #     nodes = nodes_for_testing_nested_comps(1, 1, 2)
-    #     input_nodes, hidden_nodes, output_nodes = nodes
+    #     input_nodes, hidden_nodes, output_nodes = self.nodes_for_testing_nested_comps(1, 1, 2)
     #     inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
     #
     #     hidden_2d = pnl.ProcessingMechanism(name='hidden 2d', input_shapes=(2,2))
@@ -3817,58 +3793,56 @@ class TestNestedLearning:
     #     #              MappingProjection(hidden_2d.output_ports[1], output_nodes[1]),
     #     #              output_nodes[1]]
     #
-    #     autodiff_results = execute_learning(comp_type='autodiff',
-    #                                         execution_mode=pnl.ExecutionMode.PyTorch,
-    #                                         pathways=[pathway_a, pathway_b],
-    #                                         inputs=inputs)
+    #     autodiff_results = self.execute_learning(comp_type='autodiff',
+    #                                              execution_mode=pnl.ExecutionMode.PyTorch,
+    #                                              pathways=[pathway_a, pathway_b],
+    #                                              inputs=inputs)
     #
     #     pathway_a = [input_nodes[0], hidden_nodes[0]]
     #     pathway_b = [input_nodes[0], hidden_nodes[1]]
-    #     comp_results = execute_learning(comp_type='composition',
-    #                                     execution_mode=pnl.ExecutionMode.Python,
-    #                                     pathways=[pathway_a, pathway_b],
-    #                                     inputs=inputs)
+    #     comp_results = self.execute_learning(comp_type='composition',
+    #                                          execution_mode=pnl.ExecutionMode.Python,
+    #                                          pathways=[pathway_a, pathway_b],
+    #                                          inputs=inputs)
     #
     #     for i in range(len(autodiff_results)):
     #         for j in range(len(autodiff_results[i])):
     #             np.testing.assert_allclose(comp_results[i][j], autodiff_results[i][j])
 
-    def test_2_direct_output_nodes_from_nested(self, nodes_for_testing_nested_comps, execute_learning):
+    def test_2_direct_output_nodes_from_nested(self):
         #        [   / node ]
         # node - | <        |
         #        [   \ node ]
 
-        nodes = nodes_for_testing_nested_comps(1, 2, 0)
-        input_nodes, hidden_nodes, output_nodes = nodes
+        input_nodes, hidden_nodes, output_nodes = self.nodes_for_testing_nested_comps(1, 2, 0)
 
         nested = AutodiffComposition(nodes = [hidden_nodes[0], hidden_nodes[1]], name='nested')
         pathway_a = [input_nodes[0], MappingProjection(input_nodes[0], hidden_nodes[0]), nested]
         pathway_b = [input_nodes[0], MappingProjection(input_nodes[0], hidden_nodes[1]), nested]
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        autodiff_results = execute_learning(comp_type='autodiff',
-                                            execution_mode=pnl.ExecutionMode.PyTorch,
-                                            pathways=[pathway_a, pathway_b],
-                                            inputs=inputs)
+        autodiff_results = self.execute_learning(comp_type='autodiff',
+                                                 execution_mode=pnl.ExecutionMode.PyTorch,
+                                                 pathways=[pathway_a, pathway_b],
+                                                 inputs=inputs)
 
         pathway_a = [input_nodes[0], hidden_nodes[0]]
         pathway_b = [input_nodes[0], hidden_nodes[1]]
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        comp_results = execute_learning(comp_type='composition',
-                                        execution_mode=pnl.ExecutionMode.Python,
-                                        pathways=[pathway_a, pathway_b],
-                                        inputs=inputs)
+        comp_results = self.execute_learning(comp_type='composition',
+                                             execution_mode=pnl.ExecutionMode.Python,
+                                             pathways=[pathway_a, pathway_b],
+                                             inputs=inputs)
 
         for i in range(len(autodiff_results)):
             for j in range(len(autodiff_results[i])):
                 np.testing.assert_allclose(comp_results[i][j], autodiff_results[i][j])
 
-    def test_1_direct_and_1_ordinary_output_from_nested(self, nodes_for_testing_nested_comps, execute_learning):
+    def test_1_direct_and_1_ordinary_output_from_nested(self):
         #           [   / hidden_2 ] -> output_1
         # input_1 - | <            |
         #           [   \ hidden_1 ]
 
-        nodes = nodes_for_testing_nested_comps(1, 2, 1)
-        input_nodes, hidden_nodes, output_nodes = nodes
+        input_nodes, hidden_nodes, output_nodes = self.nodes_for_testing_nested_comps(1, 2, 1)
 
         nested = AutodiffComposition(nodes = [hidden_nodes[0], hidden_nodes[1]], name='nested')
         pathway_a = [input_nodes[0], MappingProjection(input_nodes[0], hidden_nodes[0]), nested]
@@ -3878,30 +3852,27 @@ class TestNestedLearning:
                      MappingProjection(hidden_nodes[1]),
                      output_nodes[0]]
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        autodiff_results = execute_learning(comp_type='autodiff',
-                                            execution_mode=pnl.ExecutionMode.PyTorch,
-                                            pathways=[pathway_a, pathway_b],
-                                            inputs=inputs)
+        autodiff_results = self.execute_learning(comp_type='autodiff',
+                                                 execution_mode=pnl.ExecutionMode.PyTorch,
+                                                 pathways=[pathway_a, pathway_b],
+                                                 inputs=inputs)
 
         pathway_a = [input_nodes[0], hidden_nodes[0]]
         pathway_b = [input_nodes[0], hidden_nodes[1], output_nodes[0]]
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        comp_results = execute_learning(comp_type='composition',
-                                        execution_mode=pnl.ExecutionMode.Python,
-                                        pathways=[pathway_a, pathway_b],
-                                        inputs=inputs)
+        comp_results = self.execute_learning(comp_type='composition',
+                                             execution_mode=pnl.ExecutionMode.Python,
+                                             pathways=[pathway_a, pathway_b],
+                                             inputs=inputs)
 
         np.testing.assert_allclose(comp_results, autodiff_results)
 
-    def test_1_direct_and_1_ordinary_output_from_nested_to_another_node(self,
-                                                                        nodes_for_testing_nested_comps,
-                                                                        execute_learning):
+    def test_1_direct_and_1_ordinary_output_from_nested_to_another_node(self):
         #           [   / hidden_2 ] -> output_1 -> output_2
         # input_1 - | <            |
         #           [   \ hidden_1 ]
 
-        nodes = nodes_for_testing_nested_comps(1, 2, 2)
-        input_nodes, hidden_nodes, output_nodes = nodes
+        input_nodes, hidden_nodes, output_nodes = self.nodes_for_testing_nested_comps(1, 2, 2)
 
         nested = AutodiffComposition(nodes = [hidden_nodes[0], hidden_nodes[1]], name='nested')
         pathway_a = [input_nodes[0], MappingProjection(input_nodes[0], hidden_nodes[0]), nested]
@@ -3912,33 +3883,30 @@ class TestNestedLearning:
                      output_nodes[0],
                      output_nodes[1]]
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        autodiff_results = execute_learning(comp_type='autodiff',
-                                            execution_mode=pnl.ExecutionMode.PyTorch,
-                                            pathways=[pathway_a, pathway_b],
-                                            inputs=inputs)
+        autodiff_results = self.execute_learning(comp_type='autodiff',
+                                                 execution_mode=pnl.ExecutionMode.PyTorch,
+                                                 pathways=[pathway_a, pathway_b],
+                                                 inputs=inputs)
 
         pathway_a = [input_nodes[0], hidden_nodes[0]]
         pathway_b = [input_nodes[0], hidden_nodes[1], output_nodes[0], output_nodes[1]]
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        comp_results = execute_learning(comp_type='composition',
-                                        execution_mode=pnl.ExecutionMode.Python,
-                                        pathways=[pathway_a, pathway_b],
-                                        inputs=inputs)
+        comp_results = self.execute_learning(comp_type='composition',
+                                             execution_mode=pnl.ExecutionMode.Python,
+                                             pathways=[pathway_a, pathway_b],
+                                             inputs=inputs)
 
         for i in range(len(autodiff_results)):
             for j in range(len(autodiff_results[i])):
                 np.testing.assert_allclose(comp_results[i][j], autodiff_results[i][j])
 
-    def test_1_direct_and_1_ordinary_output_from_nested_to_another_and_parallel_pathway(self,
-                                                                                        nodes_for_testing_nested_comps,
-                                                                                        execute_learning):
+    def test_1_direct_and_1_ordinary_output_from_nested_to_another_and_parallel_pathway(self):
         #              [   / hidden_2 ] -> output_1 -> output_2
         # input_1 ---- | <            |            /
         #          \   [   \ hidden_1 ]           /
         #           \-- hidden_3 -- hidden_4---- /
 
-        nodes = nodes_for_testing_nested_comps(1, 4, 2)
-        input_nodes, hidden_nodes, output_nodes = nodes
+        input_nodes, hidden_nodes, output_nodes = self.nodes_for_testing_nested_comps(1, 4, 2)
 
         nested = AutodiffComposition(nodes = [hidden_nodes[0], hidden_nodes[1]], name='nested')
         pathway_a = [input_nodes[0], MappingProjection(input_nodes[0], hidden_nodes[0]), nested]
@@ -3950,19 +3918,19 @@ class TestNestedLearning:
                      output_nodes[1]]
         pathway_c = [input_nodes[0], hidden_nodes[2], hidden_nodes[3], output_nodes[1]]
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        autodiff_results = execute_learning(comp_type='autodiff',
-                                            execution_mode=pnl.ExecutionMode.PyTorch,
-                                            pathways=[pathway_a, pathway_b, pathway_c],
-                                            inputs=inputs)
+        autodiff_results = self.execute_learning(comp_type='autodiff',
+                                                 execution_mode=pnl.ExecutionMode.PyTorch,
+                                                 pathways=[pathway_a, pathway_b, pathway_c],
+                                                 inputs=inputs)
 
         pathway_a = [input_nodes[0], hidden_nodes[0]]
         pathway_b = [input_nodes[0], hidden_nodes[1], output_nodes[0], output_nodes[1]]
         pathway_c = [input_nodes[0], hidden_nodes[2], hidden_nodes[3], output_nodes[1]]
         inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
-        comp_results = execute_learning(comp_type='composition',
-                                        execution_mode=pnl.ExecutionMode.Python,
-                                        pathways=[pathway_a, pathway_b, pathway_c],
-                                        inputs=inputs)
+        comp_results = self.execute_learning(comp_type='composition',
+                                             execution_mode=pnl.ExecutionMode.Python,
+                                             pathways=[pathway_a, pathway_b, pathway_c],
+                                             inputs=inputs)
 
         for i in range(len(autodiff_results)):
             for j in range(len(autodiff_results[i])):
@@ -4022,24 +3990,23 @@ class TestNestedLearning:
             ]
         )
 
-    # def test_nested_with_diff_learning_rates(self, nodes_for_testing_nested_comps, execute_learning):
-    #     nodes = nodes_for_testing_nested_comps(1, 0, 1)
-    #     input_nodes, hidden_nodes, output_nodes = nodes
+    # def test_nested_with_diff_learning_rates(self):
+    #     input_nodes, hidden_nodes, output_nodes = self.nodes_for_testing_nested_comps(1, 0, 1)
     #     inputs = {input_nodes[0]:np.array([[0, 0], [0, 1], [1, 0], [1, 1]])}
     #
     #     hidden_1 = pnl.ProcessingMechanism(name='hidden_1', input_shapes=3)
     #     nested_01 = AutodiffComposition(name='nested_01', nodes=[hidden_1], learning_rate=.01)
-    #     autodiff_01_results = execute_learning(comp_type='autodiff',
-    #                                           execution_mode=pnl.ExecutionMode.PyTorch,
-    #                                           pathways=[input_nodes[0], nested_01, output_nodes[0]],
-    #                                           inputs=inputs)
+    #     autodiff_01_results = self.execute_learning(comp_type='autodiff',
+    #                                                 execution_mode=pnl.ExecutionMode.PyTorch,
+    #                                                 pathways=[input_nodes[0], nested_01, output_nodes[0]],
+    #                                                 inputs=inputs)
     #
     #     hidden_2 = pnl.ProcessingMechanism(name='hidden_2', input_shapes=3)
     #     nested_1 = AutodiffComposition(name='nested_2', nodes=[hidden_2], learning_rate=.1)
-    #     autodiff_1_results = execute_learning(comp_type='autodiff',
-    #                                           execution_mode=pnl.ExecutionMode.PyTorch,
-    #                                           pathways=[input_nodes[0], nested_1, output_nodes[0]],
-    #                                           inputs=inputs)
+    #     autodiff_1_results = self.execute_learning(comp_type='autodiff',
+    #                                                execution_mode=pnl.ExecutionMode.PyTorch,
+    #                                                pathways=[input_nodes[0], nested_1, output_nodes[0]],
+    #                                                inputs=inputs)
     #
     #     THIS SHOULD FAIL IF NESTED USED ITS OWN SPECIFIED LEARNING RATE:
     #     np.testing.assert_allclose(autodiff_01_results, autodiff_1_results)
