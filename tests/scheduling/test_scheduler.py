@@ -1322,8 +1322,7 @@ class TestFeedback:
     #      ^     /
     #       \  v
     #         E
-    @pytest.fixture
-    def seven_node_cycle_composition(self):
+    def create_seven_node_cycle_composition(self):
         A = pnl.TransferMechanism(name='A')
         B = pnl.TransferMechanism(name='B')
         C = pnl.TransferMechanism(name='C')
@@ -1348,10 +1347,9 @@ class TestFeedback:
     )
     def test_cycle_manual_feedback_projections(
         self,
-        seven_node_cycle_composition,
         cycle_feedback_proj_pair
     ):
-        [A, B, C, D, E, F], comp = seven_node_cycle_composition
+        [A, B, C, D, E, F], comp = self.create_seven_node_cycle_composition()
         fb_sender, fb_receiver = eval(cycle_feedback_proj_pair)
 
         cycle_nodes = [B, D, E, F]
@@ -1409,11 +1407,10 @@ class TestFeedback:
     )
     def test_cycle_manual_feedback_dependencies(
         self,
-        seven_node_cycle_composition,
         cycle_feedback_proj_pair,
         expected_dependencies
     ):
-        [A, B, C, D, E, F], comp = seven_node_cycle_composition
+        [A, B, C, D, E, F], comp = self.create_seven_node_cycle_composition()
         fb_sender, fb_receiver = eval(cycle_feedback_proj_pair)
         expected_dependencies = eval(expected_dependencies)
 
@@ -1657,8 +1654,8 @@ class TestAbsoluteTime:
             ({'A': Any(TimeInterval(repeat=1000), TimeInterval(repeat=1500)), 'B': TimeInterval(repeat=2000)}, fractions.Fraction(500, 3) * _unit_registry.ms),
         ]
     )
-    def test_absolute_interval_linear(self, three_node_linear_composition, conditions, interval):
-        [A, B, C], comp = three_node_linear_composition
+    def test_absolute_interval_linear(self, conditions, interval):
+        [A, B, C], comp = pytest.helpers.create_three_node_linear_composition()
 
         for node in conditions:
             comp.scheduler.add_condition(eval(node), conditions[node])
