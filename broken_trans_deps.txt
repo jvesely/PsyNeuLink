@@ -37,4 +37,4 @@ rpds-py < 0.28; platform_python_implementation == 'PyPy' and python_version < '3
 # https://github.com/pypy/pypy/issues/5402
 # crashes when creating dataframe
 # https://github.com/pypy/pypy/issues/5418
-pandas < 3; platform_python_implementation == 'PyPy' and implementation_version < '7.3.22a'
+pandas < 2.3; platform_python_implementation == 'PyPy' and implementation_version < '7.3.22a'
