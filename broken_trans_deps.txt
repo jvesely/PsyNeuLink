@@ -38,3 +38,17 @@ rpds-py < 0.28; platform_python_implementation == 'PyPy' and python_version < '3
 # crashes when creating dataframe
 # https://github.com/pypy/pypy/issues/5418
 pandas < 3; platform_python_implementation == 'PyPy' and implementation_version < '7.3.22a'
+
+
+# restrict few packages to triage segfault
+grpcio < 1.84.2; platform_python_implementation == 'PyPy' and implementation_version < '7.3.22a'
+pytest-benchmark < 5.3.1; platform_python_implementation == 'PyPy' and implementation_version < '7.3.22a'
+pyzmq < 27.3.0; platform_python_implementation == 'PyPy' and implementation_version < '7.3.22a'
+
+anyio < 4.16.0; platform_python_implementation == 'PyPy' and implementation_version < '7.3.22a'
+fastjsonschema < 2.22.3; platform_python_implementation == 'PyPy' and implementation_version < '7.3.22a'
+jsonpointer < 3.10; platform_python_implementation == 'PyPy' and implementation_version < '7.3.22a'
+jupyterlab < 4.6.6; platform_python_implementation == 'PyPy' and implementation_version < '7.3.22a'
+notebook < 7.6.5; platform_python_implementation == 'PyPy' and implementation_version < '7.3.22a'
+ruff < 0.17.4; platform_python_implementation == 'PyPy' and implementation_version < '7.3.22a'
+sqlalchemy < 2.0.57; platform_python_implementation == 'PyPy' and implementation_version < '7.3.22a'
