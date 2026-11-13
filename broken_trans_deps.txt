@@ -38,3 +38,9 @@ rpds-py < 0.28; platform_python_implementation == 'PyPy' and python_version < '3
 # crashes when creating dataframe
 # https://github.com/pypy/pypy/issues/5418
 pandas < 3; platform_python_implementation == 'PyPy' and implementation_version < '7.3.22a'
+
+
+# restrict few packages to triage segfault
+grpcio < 1.84.2; platform_python_implementation == 'PyPy' and implementation_version < '7.3.22a'
+pytest-benchmark < 5.3.1; platform_python_implementation == 'PyPy' and implementation_version < '7.3.22a'
+pyzmq < 27.3.0; platform_python_implementation == 'PyPy' and implementation_version < '7.3.22a'
