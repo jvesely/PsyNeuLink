@@ -521,51 +521,7 @@ class CompExecution(CUDAExecution):
                             self._data_struct,
                             self._conditions)
 
-    # Methods used to accelerate "Run"
-    def _get_run_input_struct(self, inputs, num_input_sets, arg=3):
-        # Callers that override input arg, should ensure that _bin_func is not None
-        bin_f = self._bin_run_func if arg == 3 else self._bin_func
-
-        input_type = bin_f.byref_arg_types[arg]
-        c_input_type = (input_type * num_input_sets)
-
-        # Extract input for each trial and execution id
-        run_inputs = ((x for x in self._composition._build_variable_for_input_CIM({k:v[i] for k,v in inputs.items()})) for i in range(num_input_sets))
-        c_inputs = c_input_type(*_tupleize(run_inputs))
-        if "stat" in self._debug_env:
-            print("Instantiated struct: input ( size:" ,
-                  _pretty_size(ctypes.sizeof(c_inputs)),
-                  ")",
-                  "for",
-                  self._obj.name)
-
-        return c_inputs
-
-    def _get_generator_run_input_struct(self, inputs, runs):
-        # ignore optimization_num from CompositionRunner._batch_inputs,
-        # but also handle externally-passed generators that do not
-        # include this second element
-        def _get_item_input(x):
-            if isinstance(x, tuple):
-                return x[0]
-            return x
-
-        # Extract input for each trial
-        run_inputs = (
-            (
-                x
-                for x in self._composition._build_variable_for_input_CIM(
-                    {k: v for k, v in _get_item_input(inp).items()}
-                )
-            )
-            for inp in inputs
-        )
-        run_inputs = _tupleize(run_inputs)
-        num_input_sets = len(run_inputs)
-        runs = num_input_sets if runs == 0 or runs == sys.maxsize else runs
-        c_input_type = self._bin_run_func.byref_arg_types[3] * num_input_sets
-        return c_input_type(*run_inputs), runs
-
+    # Methods used to invoke compiled "Composition.run"
     @property
     def _bin_run_func(self):
         if self.__bin_run_func is None:
@@ -576,15 +532,61 @@ class CompExecution(CUDAExecution):
 
         return self.__bin_run_func
 
-    def _prepare_run(self, inputs, runs, num_input_sets):
+    def _instantiate_run_input_struct(self, bin_f, arg, generator):
+        """
+        Generate ctype structure for input data for run()
 
+        The generator input expects to provide input for one trial in each iteration.
+        Input for each trial are parsed by _build_variable_for_input_CIM, and need
+        to match requirements of that function.
+        """
+        data = tuple(_tupleize(self._composition._build_variable_for_input_CIM(x)) for x in generator)
+
+        ct_input_type = bin_f.byref_arg_types[arg] * len(data)
+        ct_inputs = ct_input_type(*data)
+
+        if "stat" in self._debug_env:
+            print("Instantiated struct: input ( size:" ,
+                  _pretty_size(ctypes.sizeof(ct_inputs)),
+                  ") for",
+                  self._obj.name)
+
+        return ct_inputs
+
+    def _get_run_input_struct(self, inputs, num_input_sets, arg):
+        # Callers that override input arg, should ensure that _bin_func is not None
+        bin_f = self._bin_run_func if arg == 3 else self._bin_func
+
+        # Extract input for each trial
+        run_inputs = ({k:v[i] for k, v in inputs.items()} for i in range(num_input_sets))
+        return self._instantiate_run_input_struct(bin_f, arg, run_inputs)
+
+    def _get_run_input_struct_from_generator(self, inputs, runs):
+        # ignore optimization_num from CompositionRunner._batch_inputs,
+        # but also handle externally-passed generators that do not
+        # include this second element
+        def _get_item_input(x):
+            if isinstance(x, tuple):
+                assert len(x) == 2
+                return x[0]
+
+            return x
+
+        # Extract input for each trial
+        run_inputs = (_get_item_input(inp) for inp in inputs)
+        ct_inputs = self._instantiate_run_input_struct(self._bin_run_func, 3, run_inputs)
+
+        runs = len(ct_inputs) if runs == 0 or runs == sys.maxsize else runs
+        return ct_inputs, len(ct_inputs), runs
+
+    def _prepare_run(self, inputs, runs, num_input_sets):
         # Create input buffer
         if isgenerator(inputs):
-            inputs, runs = self._get_generator_run_input_struct(inputs, runs)
             assert num_input_sets == 0 or num_input_sets == sys.maxsize
-            num_input_sets = len(inputs)
+            inputs, num_input_sets, runs = self._get_run_input_struct_from_generator(inputs, runs)
+
         else:
-            inputs = self._get_run_input_struct(inputs, num_input_sets)
+            inputs = self._get_run_input_struct(inputs, num_input_sets, 3)
 
         # Create output buffer
         outputs = self._bin_func.np_buffer_for_arg(4, extra_dimensions=(runs,))
@@ -593,6 +595,8 @@ class CompExecution(CUDAExecution):
         if "stat" in self._debug_env:
             print("Output struct size:", _pretty_size(outputs.nbytes), "for", self._composition.name)
 
+        # runs_count returns the number of executed trials.
+        # Create a copy to avoid clobbering user input.
         runs_count = np.asarray(runs, dtype=np.uint32).copy()
         input_count = np.asarray(num_input_sets, dtype=np.uint32)
 
