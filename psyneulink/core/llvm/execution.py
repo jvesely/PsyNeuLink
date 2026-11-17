@@ -404,6 +404,21 @@ class CompExecution(CUDAExecution):
     def _data_struct(self, data_struct):
         self._data = data_struct
 
+    def _get_input_struct(self, inputs):
+        # Either node or composition execute.
+
+        # Read provided input data and parse into an array (generator)
+        data = self._composition._build_variable_for_input_CIM(inputs)
+
+        np_input = np.asarray(_tupleize(data), dtype=self._bin_func.np_arg_dtypes[2].base)
+        np_input = np_input.reshape(self._bin_func.np_arg_dtypes[2].shape)
+
+        if "stat" in self._debug_env:
+            print("Input struct size:", _pretty_size(np_input.nbytes), "for", self._composition.name)
+
+        return np_input
+
+    # Methods used to invoke compiled per-node execution
     def extract_node_struct(self, node, data):
         # state structure consists of a list of node states,
         #   followed by a list of projection contexts; get the first one
@@ -443,20 +458,6 @@ class CompExecution(CUDAExecution):
         value = all_nodes[all_nodes.dtype.names[index]]
         np.copyto(value, np.asarray(data, dtype=value.dtype))
 
-    def _get_input_struct(self, inputs):
-        # Either node or composition execute.
-
-        # Read provided input data and parse into an array (generator)
-        data = self._composition._build_variable_for_input_CIM(inputs)
-
-        np_input = np.asarray(_tupleize(data), dtype=self._bin_func.np_arg_dtypes[2].base)
-        np_input = np_input.reshape(self._bin_func.np_arg_dtypes[2].shape)
-
-        if "stat" in self._debug_env:
-            print("Input struct size:", _pretty_size(np_input.nbytes), "for", self._composition.name)
-
-        return np_input
-
     def freeze_values(self):
         self.__frozen_values = self._data_struct.copy()
 
@@ -491,6 +492,7 @@ class CompExecution(CUDAExecution):
         if node is not self._composition.input_CIM and node is not self._composition.parameter_CIM:
             assert self.__frozen_values is not None
             data_in = self.__frozen_values
+
         else:
             # The ndarray argument check doesn't allow None for null so just provide
             # the same structure as outputs.
@@ -505,6 +507,7 @@ class CompExecution(CUDAExecution):
 
         node._propagate_most_recent_context(context)
 
+    # Methods used to invoke compiled "Composition.execute"
     @property
     def _bin_exec_func(self):
         if self.__bin_exec_func is None:
@@ -632,6 +635,7 @@ class CompExecution(CUDAExecution):
         assert runs_count <= runs, "Composition ran more times than allowed: {}".format(runs)
         return self._get_indexable(outputs[0:runs_count])
 
+    # Methods to invoke compiled "Composition._controller._evaluate"
     def _prepare_evaluate(self, inputs, num_input_sets, num_evaluations, all_results:bool):
         ocm = self._composition.controller
 
@@ -695,18 +699,16 @@ class CompExecution(CUDAExecution):
         comp_params, comp_state, comp_data, ct_inputs, outputs, num_inputs = \
             self._prepare_evaluate(inputs, num_input_sets, num_evaluations, all_results)
 
-
-
         jobs = min(get_num_threads(), num_evaluations)
         evals_per_job = (num_evaluations + jobs - 1) // jobs
 
         parallel_start = time.time()
         with concurrent.futures.ThreadPoolExecutor(max_workers=jobs) as ex:
 
-            # Create input typed cast once, it is the same for every submitted job.
+            # Create input type-cast once, it is the same for every submitted job.
             input_arg = ctypes.cast(ct_inputs, self.__bin_func.c_func.argtypes[5])
 
-            # numpy dynamic args expect only one extra dimension
+            # Numpy dynamic args expect only one extra dimension
             output_arg = outputs.reshape(-1, *self.__bin_func.np_arg_dtypes[4].shape)
             assert output_arg.base is outputs
 
