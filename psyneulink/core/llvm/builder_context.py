@@ -20,7 +20,7 @@ import re
 import time
 import weakref
 
-from psyneulink._typing import Set
+from psyneulink._typing import List
 from psyneulink.core.scheduling.time import Time, TimeScale
 from psyneulink.core.globals import keywords as kw
 from psyneulink.core.globals.sampleiterator import SampleIterator
@@ -31,18 +31,22 @@ from . import codegen
 from . import helpers
 from .debug import debug_env
 
-__all__ = ['LLVMBuilderContext', '_modules', '_find_llvm_function']
+__all__ = ['LLVMBuilderContext', '_pending_generated_ir_modules', '_find_llvm_function']
 
 
-_modules: Set[ir.Module] = set()
-_all_modules: Set[ir.Module] = set()
+
+# All generated modules for quick access to ir.FunctionType
+_all_generated_ir_modules: List[ir.Module] = []
+
+# Generated modules that have not been parsed or compiled
+_pending_generated_ir_modules: List[ir.Module] = []
 _struct_count = 0
 
 
 @atexit.register
 def module_count():
     if "stat" in debug_env:
-        print("Active LLVM modules: ", len(_all_modules))
+        print("Active LLVM modules: ", len(_all_generated_ir_modules))
         print("Total ctype structures created: ", _struct_count)
 
 
@@ -128,8 +132,8 @@ class LLVMBuilderContext:
     def __exit__(self, e_type, e_value, e_traceback):
         assert len(self._modules) > 0
         module = self._modules.pop()
-        _modules.add(module)
-        _all_modules.add(module)
+        _pending_generated_ir_modules.append(module)
+        _all_generated_ir_modules.append(module)
 
     @property
     def module(self):
@@ -181,6 +185,8 @@ class LLVMBuilderContext:
     def init_builtins(self):
         start = time.perf_counter()
         with self as ctx:
+            self.module.name = "pnl_builtins"
+
             # Numeric
             pnlvm.builtins.setup_pnl_intrinsics(ctx)
             pnlvm.builtins.setup_csch(ctx)
@@ -288,13 +294,16 @@ class LLVMBuilderContext:
         obj_cache = self._cache.setdefault(obj, dict())
 
         self._stats["function_cache_requests"] += 1
-        if tags not in obj_cache:
+        if (function := obj_cache.get(tags, None)) is None:
             self._stats["function_cache_misses"] += 1
             with self:
-                obj_cache[tags] = obj._gen_llvm_function(ctx=self, tags=tags)
+                function = obj._gen_llvm_function(ctx=self, tags=tags)
+                obj_cache[tags] = function
                 self.check_used_params(obj, tags=tags)
 
-        return obj_cache[tags]
+                self.module.name = function.name
+
+        return function
 
     def import_llvm_function(self, fun, *, tags:frozenset=frozenset()) -> ir.Function:
         """
@@ -302,7 +311,8 @@ class LLVMBuilderContext:
         Create function declaration if it exists in a older module.
         """
         if isinstance(fun, str):
-            f = _find_llvm_function(fun, _all_modules | {self.module})
+            f = _find_llvm_function(fun, _all_generated_ir_modules + [self.module])
+
         else:
             f = self.gen_llvm_function(fun, tags=tags)
 
@@ -311,6 +321,7 @@ class LLVMBuilderContext:
             decl_f = ir.Function(self.module, f.type.pointee, f.name)
             assert decl_f.is_declaration
             return decl_f
+
         return f
 
     def get_random_state_ptr(self, builder, component, state, params):
@@ -427,23 +438,28 @@ class LLVMBuilderContext:
         if len(flags.operands) == 0:
             flags.add(d_version)
             flags.add(di_version)
+
         cu = mod.add_named_metadata("llvm.dbg.cu")
         di_file = mod.add_debug_info("DIFile", {
             "filename": os.path.basename(path),
             "directory": os.path.dirname(path),
         })
-        di_func_type = mod.add_debug_info("DISubroutineType", {
-            # None as `null`
-            "types": mod.add_metadata([None]),
-        })
+
         di_compileunit = mod.add_debug_info("DICompileUnit", {
             "language": ir.DIToken("DW_LANG_Python"),
             "file": di_file,
             "producer": "PsyNeuLink",
             "runtimeVersion": 0,
             "isOptimized": False,
+            "emissionKind": ir.DIToken("DebugDirectivesOnly"),
         }, is_distinct=True)
         cu.add(di_compileunit)
+
+        di_func_type = mod.add_debug_info("DISubroutineType", {
+            # None as `null`
+            "types": mod.add_metadata([None]),
+        })
+
         di_func = mod.add_debug_info("DISubprogram", {
             "name": func.name,
             "file": di_file,
@@ -455,6 +471,7 @@ class LLVMBuilderContext:
         di_loc = mod.add_debug_info("DILocation", {
             "line": 0, "column": 0, "scope": di_func,
         })
+
         return di_loc
 
     @staticmethod
@@ -619,7 +636,13 @@ class LLVMBuilderContext:
         assert False, "Don't know how to convert {}".format(type(t))
 
 
-def _find_llvm_function(name: str, mods=_all_modules) -> ir.Function:
+def _find_llvm_function(name: str, mods:List[ir.Module]=_all_generated_ir_modules) -> ir.Function:
+    """
+    Search modules for an ir.Function with given name.
+
+    Search _all_generated_ir_modules by default. The default value is a mutable
+    type, so it always works on the most recent set of modules.
+    """
     f = None
     for m in mods:
         if name in m.globals:
@@ -627,6 +650,7 @@ def _find_llvm_function(name: str, mods=_all_modules) -> ir.Function:
 
     if not isinstance(f, ir.Function):
         raise ValueError("No such function: {}".format(name))
+
     return f
 
 
